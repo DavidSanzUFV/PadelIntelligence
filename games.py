@@ -1,10 +1,11 @@
-from math import comb
+from math import comb, log, exp
 import pandas as pd
+import numpy as np
 
 # Parámetros
 p_serve = 0.645  # Probabilidad de ganar un punto al saque
-p_return = 1 - p_serve  # Probabilidad de perder un punto al saque (resto)
-
+p_return = 1 - p_serve  # Probabilidad de ganar un punto al resto
+  
 # Calcular combinaciones y probabilidades (Ganar antes de deuce)
 def calc_win_before_deuce(p_serve, p_return):
     resultados = []
@@ -13,7 +14,7 @@ def calc_win_before_deuce(p_serve, p_return):
     for t2_points in range(3):  # T2 puede ganar 0, 1 o 2 puntos
         t1_points_needed = 4
         t2_wins = t2_points
-        num_points = t1_points_needed + t2_wins  # Total de puntos jugados
+        num_points = t1_points_needed + t2_wins
 
         combin = comb(num_points - 1, t2_wins)
         prob = combin * (p_serve ** t1_points_needed) * ((1 - p_serve) ** t2_wins)
@@ -48,43 +49,48 @@ def calc_exact_deuce(p_serve, p_return):
     }
 
 
-# Calcular probabilidad de ganar después de deuce
-def calc_win_after_deuce(p_serve):
+# Calcular probabilidad de ganar después de deuce (máx 21 iteraciones)
+def calc_win_after_deuce(p_serve, max_iterations=21):
     results = []
     total_prob = 0
 
-    # Empezamos desde el deuce (40-40), ambos jugadores necesitan dos puntos seguidos para ganar
-    t1_needed = 2
-    t2_needed = 2
+    t1_wins, t2_wins = 4, 3  # T1 empieza en 4 (deuce + 1), T2 en 3
+    iterations = 0
 
-    for i in range(30):  # Máximo de iteraciones
-        t1_wins = i // 2
-        t2_wins = i - t1_wins
+    while iterations <= max_iterations:
+        t1_wins += 1
+        t2_wins = 3 + iterations  # T2 incrementa con cada iteración (3, 4, 5...)
 
-        # Se necesita ventaja de 2 puntos para ganar
         if t1_wins >= t2_wins + 2:
-            combin = comb(t1_wins + t2_wins, t1_wins)
-            prob = (p_serve ** t1_wins) * ((1 - p_serve) ** t2_wins) * combin
+            # Calcular puntos jugados después del deuce
+            num_points = (t1_wins - 3) + (t2_wins - 3)
+
+            # Determinar combinatoria siguiendo el patrón binomial
+            combin = 2**iterations
+
+            # Calcular probabilidad
+            log_prob = log(combin) + ((t1_wins - 3) * log(p_serve)) + ((t2_wins - 3) * log(1 - p_serve))
+            prob = exp(log_prob)
+
             total_prob += prob
-        else:
-            prob = 0
+            results.append({
+                "Points needed (T1)": t1_wins,
+                "Points needed (T2)": t2_wins,
+                "T1 wins": t1_wins - 3,
+                "T2 wins": t2_wins - 3,
+                "Num points": num_points,  # Refleja los puntos totales jugados
+                "Combin": combin,
+                "Probability": prob * 100
+            })
 
-        results.append({
-            "Points needed (T1)": t1_needed + t1_wins,
-            "Points needed (T2)": t2_needed + t2_wins,
-            "T1 wins": t1_wins,
-            "T2 wins": t2_wins,
-            "Num points": t1_wins + t2_wins,
-            "Combin": comb(t1_wins + t2_wins, t1_wins),
-            "Probability": prob * 100
-        })
-
-        # Detener iteraciones si la probabilidad es muy baja
-        if prob < 0.0001:
+        iterations += 1
+        if iterations > max_iterations:
+            print("Máximo de 21 iteraciones alcanzado después del deuce.")
             break
 
     df = pd.DataFrame(results)
     return df, total_prob * 100
+
 
 
 # Calcular y mostrar resultados
