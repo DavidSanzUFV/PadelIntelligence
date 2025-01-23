@@ -2,6 +2,14 @@ from games_calculations import calc_win_before_deuce, calc_exact_deuce, calc_win
 from match_result import MatchState
 import pandas as pd
 
+"""
+Este programa contiene todas las funcionalidades encapsuladas de otros módulos relacionados
+con el cálculo de probabilidades en un juego de pádel. Estas funciones están diseñadas para
+ser llamadas desde `predictioncall.py` o cualquier otro programa que las necesite, proporcionando
+resultados detallados y formateados sobre las probabilidades de ganar puntos, llegar a deuce,
+y ganar después de deuce en un juego de pádel.
+"""
+
 
 def calculate_game_probabilities(estado_actual, p_serve):
     """
