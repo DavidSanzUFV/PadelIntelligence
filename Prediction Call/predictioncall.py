@@ -5,7 +5,7 @@ def main():
     while True:
         print("\n--- Prediction Call Menu ---")
         print("1. Calcular probabilidad de ganar el juego")
-        print("2. Probabilidad de ganar ")
+        print("2. Probabilidad de ganar el set")
         print("3. Salir")
         
         choice = input("Selecciona una opción (1-3): ")

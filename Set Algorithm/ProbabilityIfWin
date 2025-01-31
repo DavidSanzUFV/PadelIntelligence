@@ -1,0 +1,126 @@
+import pandas as pd
+from match_result import MatchState
+
+class ProbabilityCalculator:
+    def __init__(self, analysis_file, probabilities_file, output_file, estado_actual):
+        """
+        Inicializa la clase con las rutas de los archivos y el estado actual del partido.
+        """
+        self.analysis_file = analysis_file
+        self.probabilities_file = probabilities_file
+        self.output_file = output_file
+        self.estado_actual = estado_actual
+        self.previous_sequences = set()
+        self.game_columns = [f'J{i}' for i in range(1, 14)]
+
+        # Cargar los archivos CSV
+        self.df_analysis = self.load_data(self.analysis_file)
+        self.df_prob = self.load_data(self.probabilities_file)
+
+        # Validar existencia de columnas necesarias
+        self.validate_columns()
+
+    def load_data(self, file_path):
+        """
+        Carga un archivo CSV en un DataFrame.
+        """
+        return pd.read_csv(file_path, delimiter=';', encoding='utf-8', on_bad_lines='skip')
+
+    def validate_columns(self):
+        """
+        Verifica que 'Game_Sequence' esté en df_analysis y renombra columnas de df_prob si es necesario.
+        """
+        if 'Game_Sequence' not in self.df_analysis.columns:
+            raise ValueError("❌ Error: La columna 'Game_Sequence' no está en Updated_Set_Analysis.csv")
+        
+        # Renombrar columnas en df_prob para que coincidan con df_analysis
+        self.df_prob.rename(columns={str(i): f'J{i}' for i in range(1, 14)}, inplace=True)
+
+        # Convertir valores a numéricos
+        self.df_prob[self.game_columns] = self.df_prob[self.game_columns].apply(pd.to_numeric, errors='coerce')
+        self.df_prob['W/L'] = pd.to_numeric(self.df_prob['W/L'], errors='coerce')
+
+    def validate_sequence(self, row):
+        """
+        Verifica si la secuencia de juegos es válida según el estado actual del partido.
+        """
+        # Obtener los primeros valores de la fila
+        first_values = row[self.game_columns[:self.estado_actual.t1_games + self.estado_actual.t2_games]].tolist()
+
+        # Validar si los primeros valores cumplen la cantidad de `1s` y `0s` esperados
+        if first_values.count(1) != self.estado_actual.t1_games or first_values.count(0) != self.estado_actual.t2_games:
+            return False  # ❌ No coincide con el resultado del partido
+
+        # Validar si la secuencia ya apareció antes
+        game_sequence = row['Game_Sequence'] if pd.notna(row['Game_Sequence']) else ""
+        if game_sequence in self.previous_sequences:
+            return False  # ❌ Secuencia repetida
+
+        # Agregar la secuencia actual a la lista de previas para futuras comprobaciones
+        self.previous_sequences.add(game_sequence)
+        return True
+
+    def calculate_probability(self, row):
+        """
+        Calcula la probabilidad en porcentaje (%) si la secuencia es válida.
+        """
+        start_index = self.estado_actual.t1_games + self.estado_actual.t2_games
+
+        # Si la secuencia no es válida, retorna 0%
+        if not self.validate_sequence(row):
+            return "0.00%"
+
+        # Si el índice no existe en df_prob, devolver 0%
+        if row.name >= len(self.df_prob):
+            return "0.00%"  
+
+        # Obtener la fila correspondiente en df_prob
+        prob_row = self.df_prob.iloc[row.name]
+
+        # Obtener las probabilidades a partir del índice correcto
+        selected_probs = prob_row[self.game_columns[start_index:]].dropna().tolist()
+
+        # Multiplicar las probabilidades seleccionadas
+        product_prob = 1.0
+        for prob in selected_probs:
+            product_prob *= prob
+
+        # Multiplicar por W/L
+        win_loss = prob_row['W/L']
+        probability = product_prob * win_loss
+
+        # Convertir a porcentaje y redondear a 2 decimales
+        return f"{round(probability * 100, 5)}%"
+
+    def process_probabilities(self):
+        """
+        Aplica el cálculo de probabilidades a todas las filas y guarda el resultado en un CSV.
+        """
+        self.df_analysis['Calculated_Probability'] = self.df_analysis.apply(self.calculate_probability, axis=1)
+
+        # Calcular la suma total de probabilidades en porcentaje
+        total_probability = round(self.df_analysis['Calculated_Probability'].apply(lambda x: float(x.strip('%'))).sum(), 5)
+
+        # Crear una fila con la suma total
+        sum_row = pd.DataFrame({'Iteración': ['Total'], 'Calculated_Probability': [f"{total_probability}%"]})
+
+        # Concatenar la fila con la suma total
+        self.df_analysis = pd.concat([self.df_analysis, sum_row], ignore_index=True)
+
+        # Guardar el resultado en un nuevo archivo CSV
+        self.df_analysis.to_csv(self.output_file, index=False, sep=';', encoding='utf-8')
+
+        print(f"\n✅ Archivo guardado correctamente en {self.output_file}, con probabilidades en porcentaje y correcciones aplicadas.")
+
+# 🔹 **Ejemplo de Uso**
+if __name__ == "__main__":
+    estado_actual = MatchState(2, 1, 2, 1, 0, 0, 1)  # Modificar según el partido actual
+    calculator = ProbabilityCalculator(
+        analysis_file="Set Algorithm/Updated_Set_Analysis.csv",
+        probabilities_file="Set Algorithm/Set_Probabilities.csv",
+        output_file="Set Algorithm/Final_Probabilities.csv",
+        estado_actual=estado_actual
+    )
+    calculator.process_probabilities()
+
+
