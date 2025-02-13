@@ -47,7 +47,7 @@ def generate_game_sequence(estado_actual, analysis_file_path, output_csv_ifwin, 
     # Guardar el archivo actualizado con la columna de secuencia
     df_analysis.to_csv(output_csv, index=False, sep=';', encoding='utf-8')
 
-    print(f"✅ Archivo guardado correctamente en {output_csv} ({'IfWin' if win else 'IfLoss'})")
+    #print(f"✅ Archivo guardado correctamente en {output_csv} ({'IfWin' if win else 'IfLoss'})")
 
 # 🔹 **Ejemplo de Uso**
 if __name__ == "__main__":

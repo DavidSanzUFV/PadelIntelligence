@@ -52,7 +52,7 @@ class SetProbabilityCalculator:
         df_analysis = pd.concat([df_analysis, sum_row], ignore_index=True)
         df_analysis.to_csv(output_file, index=False, sep=';', encoding='utf-8')
 
-        print(f"\n✅ Archivo guardado en {output_file} ({'IfWin' if win else 'IfLoss'}), con probabilidades en porcentaje.")
+        #print(f"\n✅ Archivo guardado en {output_file} ({'IfWin' if win else 'IfLoss'}), con probabilidades en porcentaje.")
 
     def calculate_probability(self, row, new_t1_games, new_t2_games):
         """

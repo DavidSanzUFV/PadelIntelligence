@@ -37,7 +37,7 @@ def probability_match(estado: MatchState):
 if __name__=="__main__":
     # Importando supuestamente desde match_result ya está,
     # creamos varios estados y los probamos
-
+    """
     # Caso 0-0
     s1 = MatchState(0,0,0,0,0,0,1)
     print("Estado (0,0):", probability_match(s1))  # (0.75, 0.25)
@@ -57,3 +57,4 @@ if __name__=="__main__":
     # Otro (ej: 2-0)
     s5 = MatchState(0,0,0,0,2,0,1)
     print("Estado (2,0):", probability_match(s5))  # (0.0, 0.0)
+    """

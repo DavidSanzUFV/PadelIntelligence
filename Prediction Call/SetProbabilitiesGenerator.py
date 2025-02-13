@@ -1,15 +1,19 @@
 import pandas as pd
 
 class SetProbabilitiesGenerator:
-    def __init__(self, analysis_file, probabilities_file, p_games_won_on_serve, quien_sirve):
+    def __init__(self, analysis_file, probabilities_file, p_games_won_on_serve, match_state):
         """
         Genera Set_Probabilities.csv basado en la probabilidad de ganar juegos al saque.
         """
         self.analysis_file = analysis_file
         self.probabilities_file = probabilities_file
         self.p_games_won_on_serve = p_games_won_on_serve
-        self.quien_sirve = quien_sirve
+        self.match_state = match_state
         self.game_columns = [f'J{i}' for i in range(1, 14)]
+
+        # Determinar quién sacó primero
+        total_games = self.match_state.t1_games + self.match_state.t2_games
+        self.quien_saco_primero = self.match_state.serve if total_games % 2 == 0 else 3 - self.match_state.serve
 
         # Generar las probabilidades
         self.generate_probabilities()
@@ -19,13 +23,12 @@ class SetProbabilitiesGenerator:
         Calcula las probabilidades y genera Set_Probabilities.csv.
         """
         df_analysis = pd.read_csv(self.analysis_file, delimiter=';', encoding='utf-8')
-
         df_prob = pd.DataFrame(columns=self.game_columns + ['W/L', 'Prob_Acumulada'])
 
         for index, row in df_analysis.iterrows():
             secuencia = row[self.game_columns].tolist()
             probabilidad_fila = []
-            servidor_actual = self.quien_sirve
+            servidor_actual = self.quien_saco_primero
 
             for i, valor in enumerate(secuencia):
                 if pd.isna(valor):
@@ -55,20 +58,21 @@ class SetProbabilitiesGenerator:
 
         # Guardar el CSV actualizado
         df_prob.to_csv(self.probabilities_file, index=False, sep=';', encoding='utf-8')
-        print(f"✅ Set_Probabilities.csv generado en {self.probabilities_file}")
 
         # Mostrar la suma de la columna Prob_Acumulada
         suma_prob_acumulada = df_prob['Prob_Acumulada'].sum()
-        print(f"🔢 Suma total de Prob_Acumulada: {suma_prob_acumulada}")
+        #print(f"🔢 Suma total de Prob_Acumulada: {suma_prob_acumulada}")
 
 # 🔹 **Ejemplo de uso**
 if __name__ == "__main__":
+    from match_result import MatchState
+    
+    match_state = MatchState(t1_points=0, t2_points=0, t1_games=4, t2_games=3, t1_sets=1, t2_sets=1, serve=1)
     p_games_won_on_serve = float(input("Introduce el porcentaje de **juegos** ganados al servicio (0-1): "))
-    quien_sirve = int(input("¿Quién comenzó sacando el partido? (1 para T1, 2 para T2): "))
 
     generator = SetProbabilitiesGenerator(
         analysis_file="Prediction Call/CSV Files/Data/Set_Analysis_with_T1_and_T2_Wins.csv",
         probabilities_file="Prediction Call/CSV Files/Exports/Set_Probabilities.csv",
         p_games_won_on_serve=p_games_won_on_serve,
-        quien_sirve=quien_sirve
+        match_state=match_state
     )
