@@ -1,4 +1,4 @@
-from match_result import MatchState
+from Modules.Match.match_result import MatchState
 
 def probability_match(estado: MatchState):
     """

@@ -1,5 +1,5 @@
 import pandas as pd
-from match_result import MatchState
+from Modules.TieBreak.match_result import MatchState
 
 class TiebreakCalculator:
     def __init__(self, estado_actual):

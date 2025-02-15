@@ -1,5 +1,5 @@
 import pandas as pd
-from match_result import MatchState
+from Modules.Sets.match_result import MatchState
 
 def generate_game_sequence(estado_actual, analysis_file_path, output_csv_ifwin, output_csv_ifloss, win=True):
     """

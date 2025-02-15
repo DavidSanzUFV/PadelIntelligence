@@ -65,6 +65,7 @@ class SetProbabilitiesGenerator:
 
 # 🔹 **Ejemplo de uso**
 if __name__ == "__main__":
+    """
     from match_result import MatchState
     
     match_state = MatchState(t1_points=0, t2_points=0, t1_games=4, t2_games=3, t1_sets=1, t2_sets=1, serve=1)
@@ -76,3 +77,4 @@ if __name__ == "__main__":
         p_games_won_on_serve=p_games_won_on_serve,
         match_state=match_state
     )
+    """

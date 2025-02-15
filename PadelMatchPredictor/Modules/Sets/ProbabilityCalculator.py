@@ -1,5 +1,5 @@
 import pandas as pd
-from match_result import MatchState
+from Modules.Sets.match_result import MatchState
 
 class SetProbabilityCalculator:
     def __init__(self, analysis_file_ifwin, analysis_file_ifloss, probabilities_file, output_file_ifwin, output_file_ifloss, estado_actual):

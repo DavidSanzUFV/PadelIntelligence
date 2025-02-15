@@ -1,7 +1,7 @@
 from math import comb, log, exp
 import pandas as pd
 from math import floor
-from match_result import MatchState
+from Modules.Games.match_result import MatchState
 """
 Este programa calcula las probabilidades detalladas de ganar un juego de pádel, basándose en el estado actual del partido.
 

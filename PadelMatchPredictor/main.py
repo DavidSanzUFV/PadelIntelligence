@@ -1,12 +1,12 @@
 import pandas as pd
-from match_result import MatchState
-from games_format_results import calculate_game_probabilities, print_game_probabilities
-from GenerateSecuences import generate_game_sequence
-from SetProbabilitiesGenerator import SetProbabilitiesGenerator
-from ProbabilityCalculator import SetProbabilityCalculator
-from TieBreak import TiebreakCalculator
-from games_calculations import calc_total_game_probability
-from Algo_match import probability_match
+from Modules.Games.match_result import MatchState
+from Modules.Games.games_format_results import calculate_game_probabilities, print_game_probabilities
+from Modules.Sets.GenerateSecuences import generate_game_sequence
+from Modules.Sets.SetProbabilitiesGenerator import SetProbabilitiesGenerator
+from Modules.Sets.ProbabilityCalculator import SetProbabilityCalculator
+from Modules.TieBreak.TieBreak import TiebreakCalculator
+from Modules.Games.games_calculations import calc_total_game_probability
+from Modules.Match.Algo_match import probability_match
 
 def leer_probabilidad_final(file_path):
     """
@@ -112,15 +112,15 @@ def main():
             
             else:
                 # 📌 Generar secuencias de juego
-                analysis_file_path = r"Prediction Call\CSV Files\Data\Set_Analysis_with_T1_and_T2_Wins.csv"
-                output_csv_ifwin = r"Prediction Call\CSV Files\Exports\Updated_Set_Analysis_IfWin.csv"
-                output_csv_ifloss = r"Prediction Call\CSV Files\Exports\Updated_Set_Analysis_IfLoss.csv"
+                analysis_file_path = r"PadelMatchPredictor\CSV Files\Data\Set_Analysis_with_T1_and_T2_Wins.csv"
+                output_csv_ifwin = r"PadelMatchPredictor\CSV Files\Exports\Updated_Set_Analysis_IfWin.csv"
+                output_csv_ifloss = r"PadelMatchPredictor\CSV Files\Exports\Updated_Set_Analysis_IfLoss.csv"
 
                 generate_game_sequence(estado_actual, analysis_file_path, output_csv_ifwin, output_csv_ifloss, win=True)
                 generate_game_sequence(estado_actual, analysis_file_path, output_csv_ifwin, output_csv_ifloss, win=False)
 
                 # 📌 Generar Set_Probabilities.csv con SetProbabilitiesGenerator
-                probabilities_file = r"Prediction Call\CSV Files\Exports\Set_Probabilities.csv"
+                probabilities_file = r"PadelMatchPredictor\CSV Files\Exports\Set_Probabilities.csv"
 
                 generator = SetProbabilitiesGenerator(
                     analysis_file=analysis_file_path,
@@ -130,8 +130,8 @@ def main():
                 )
                 
                 # 📌 Después, calcular probabilidades de IfWin y IfLoss con SetProbabilityCalculator
-                output_file_ifwin = r"Prediction Call\CSV Files\Exports\Final_Probabilities_IfWin.csv"
-                output_file_ifloss = r"Prediction Call\CSV Files\Exports\Final_Probabilities_IfLoss.csv"
+                output_file_ifwin = r"PadelMatchPredictor\CSV Files\Exports\Final_Probabilities_IfWin.csv"
+                output_file_ifloss = r"PadelMatchPredictor\CSV Files\Exports\Final_Probabilities_IfLoss.csv"
 
                 calculator = SetProbabilityCalculator(
                     analysis_file_ifwin=output_csv_ifwin,

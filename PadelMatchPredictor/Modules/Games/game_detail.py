@@ -1,5 +1,5 @@
-from games_calculations import calc_win_before_deuce, calc_exact_deuce, calc_win_after_deuce,calc_total_game_probability
-from match_result import MatchState
+from Modules.Games.games_calculations import calc_win_before_deuce, calc_exact_deuce, calc_win_after_deuce,calc_total_game_probability
+from Modules.Games.match_result import MatchState
 import pandas as pd
 
 # Este programa calcula las probabilidades de ganar un juego en un partido de pádel,
