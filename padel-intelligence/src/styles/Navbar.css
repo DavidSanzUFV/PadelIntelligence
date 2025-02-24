@@ -1,0 +1,121 @@
+:root {
+  --primary-bg: #1F2937; /* Azul oscuro */
+  --secondary-bg: #111827; /* Gris oscuro */
+  --highlight-purple: #6C4AB6; /* Morado corporativo */
+  --highlight-teal: #4AB6A6; /* Verde azulado */
+  --text-white: #FFFFFF;
+  --text-gray: #E5E7EB;
+}
+
+.navbar {
+  background-color: var(--primary-bg);
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+/* Ícono de menú */
+.menu-bars {
+  font-size: 2rem;
+  background: none;
+  color: var(--text-white);
+  cursor: pointer;
+  margin-right: 50px; /* Separación entre el menú y el logo */
+  align-items: center;
+  margin-left: 50px;
+}
+
+/* Logo */
+.navbar-logo {
+  height: 50px; /* Aumentado para que se vea más grande */
+  width: auto;
+}
+
+/* Menú lateral */
+.nav-menu {
+  background-color: var(--primary-bg);
+  width: 277px;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: -100%;
+  transition: 850ms;
+  z-index: 9999; /* <-- ASEGÚRATE DE QUE SEA MAYOR A CUALQUIER OTRO CONTENEDOR */
+}
+
+
+.nav-menu.active {
+  left: 0;
+  transition: 350ms;
+}
+
+.nav-text {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  padding: 10px 0 10px 20px;
+  list-style: none;
+  height: 60px;
+}
+
+.nav-text a {
+  text-decoration: none;
+  color: var(--text-white);
+  font-size: 18px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-radius: 4px;
+  transition: background 0.3s;
+  margin-top: 140px;
+}
+
+.nav-text a:hover {
+  background-color: var(--highlight-teal);
+}
+
+.nav-menu-items {
+  width: 100%;
+}
+
+.navbar-toggle {
+  background-color: var(--primary-bg);
+  width: 100%;
+  height: 80px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+span {
+  margin-left: 16px;
+}
+
+/* Iconos */
+.nav-text svg {
+  font-size: 18px;
+  color: var(--highlight-teal);
+  margin-left: 20px;
+}
+
+.navbar-logo {
+  filter: brightness(0) invert(1);
+}
+.navbar-logo-side
+{
+  filter: brightness(0) invert(1);
+  margin-left: -90px;
+  height: 50px; /* Aumentado para que se vea más grande */
+  width: auto;
+  margin-top: 130px;
+}

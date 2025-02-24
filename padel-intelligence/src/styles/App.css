@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+:root {
+  --primary-bg: #1F2937; /* Azul oscuro */
+  --secondary-bg: #111827; /* Gris oscuro */
+  --highlight-purple: #6C4AB6; /* Morado corporativo */
+  --highlight-teal: #4AB6A6; /* Verde azulado */
+  --text-white: #FFFFFF;
+  --text-gray: #E5E7EB;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Lato', sans-serif;
+}
+
+body {
+  background-color: var(--primary-bg);
+  color: var(--text-white);
+}
+
+.home,
+.couples,
+.prediction,
+.statistics {
+  display: flex;
+  height: 90vh;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: var(--text-white);
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+  background-color: var(--secondary-bg);
+  color: var(--text-white);
+}
+
+/* Ajuste general de enlaces */
+a {
+  color: var(--highlight-teal);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--highlight-purple);
+}

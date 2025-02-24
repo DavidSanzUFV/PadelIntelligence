@@ -194,6 +194,5 @@ def main():
         else:
             print("❌ Opción no válida. Por favor, selecciona una opción entre 1 y 5.")
 
-
 if __name__ == "__main__":
     main()

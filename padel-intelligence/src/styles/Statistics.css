@@ -1,0 +1,20 @@
+/* Statistics.css */
+.statistics-container {
+    padding: 20px;
+    background-color: #1e1e2f;
+    color: white;
+    min-height: 100vh;
+  }
+  
+  .title {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .stats-content {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1.2rem;
+  }
+  

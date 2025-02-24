@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap');
+
+/* ---------------------------------------------- */
+/* Variables de color corporativo                 */
+/* ---------------------------------------------- */
+:root {
+  --primary-bg: #1F2937;       /* Azul oscuro      */
+  --secondary-bg: #111827;     /* Gris oscuro      */
+  --highlight-purple: #6C4AB6; /* Morado corporativo */
+  --highlight-teal: #4AB6A6;   /* Verde azulado    */
+  --text-white: #FFFFFF;
+  --text-gray: #E5E7EB;
+}
+
+/* ---------------------------------------------- */
+/* Estilos generales                              */
+/* ---------------------------------------------- */
+
+/* Aseguramos que el html y el body ocupen todo el alto de la ventana */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--text-white);
+  font-family: 'Open Sans', sans-serif;
+}
+
+/* ---------------------------------------------- */
+/* Contenedor principal del Home                  */
+/* ---------------------------------------------- */
+.main-content {
+  /* Para que el contenedor llene el alto de la ventana */
+  min-height: 120vh;
+  width: 100vw;      /* Ocupar todo el ancho */
+  margin: 0;         /* Quitar márgenes por defecto */
+  padding: 0;        /* Ajustar si necesitas un padding */
+  box-sizing: border-box;
+  text-align: center;
+
+  /* Fondo con gradiente semitransparente + imagen */
+  background:
+    linear-gradient(rgba(17,24,39, 0.6), rgba(17,24,39, 0.6)),
+    url("../assets/fondohome.jpg") center center no-repeat;
+  background-size: cover; 
+  /* background-attachment: fixed;  (opcional, estilo parallax) */
+}
+
+.home-container
+{
+  min-height: 130vh;
+}
+
+/* Título principal */
+.home-title {
+  font-family: 'Verdana', sans-serif; 
+  color: var(--text-white);          
+  font-size: 3rem;                    
+  font-weight: 700;                   
+  text-transform: uppercase;          
+  letter-spacing: 2px;                
+  margin-bottom: 3rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  padding-top: 60px; /* Espacio adicional al final */
+}
+
+/* Descripción */
+.home-description {
+  font-size: 1.3rem;
+  color: var(--text-gray);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ---------------------------------------------- */
+/* Carrusel de imágenes                           */
+/* ---------------------------------------------- */
+.carousel-container {
+  position: relative;
+  width: 80%;
+  margin: 40px auto;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.carousel-slide {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  width: 100%;
+}
+
+.carousel-item {
+  min-width: 100%;
+  box-sizing: border-box;
+}
+
+.carousel-item img {
+  width: 100%;
+  height: 400px; /* Ajusta según tu necesidad */
+  object-fit: cover;
+  display: block;
+  border-radius: 10px;
+}
+
+/* Botones de flecha */
+.carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--highlight-purple);
+  color: var(--text-white);
+  border: none;
+  font-size: 1.5rem;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  z-index: 1;
+  transition: background 0.3s ease, transform 0.3s ease;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.carousel-button:hover {
+  background: var(--highlight-teal);
+  transform: scale(1.1);
+}
+
+.prev {
+  left: 10px;
+}
+
+.next {
+  right: 10px;
+}
+
+/* ---------------------------------------------- */
+/* Recuadro debajo del carrusel (Opción A)        */
+/* ---------------------------------------------- */
+.carousel-caption {
+  width: 80%; /* Mismo ancho que el carrusel */
+  margin: 10px auto 0;
+  background-color: var(--highlight-purple);
+  color: var(--text-white);
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.caption-logo {
+  height: 40px; 
+  width: auto;
+  display: block;
+}
+
+.caption-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------- */
+/* Título antes de los recuadros de beneficios    */
+/* ---------------------------------------------- */
+.benefits-title {
+  margin-top: 30px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-white);
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------------------------------------------- */
+/* Beneficios (3 recuadros)                       */
+/* ---------------------------------------------- */
+.benefits-container {
+  display: flex;
+  flex-wrap: wrap;     
+  justify-content: center;
+  gap: 2rem;
+  margin: 30px auto;
+  width: 80%;
+  padding-bottom: 60px; /* Espacio adicional al final */
+}
+
+.benefit-card {
+  background-color: var(--primary-bg);
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 300px;
+  text-align: center;
+  flex: 1 1 250px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.benefit-icon {
+  font-size: 3rem;      
+  margin-bottom: 10px;
+  color: var(--highlight-teal);
+}
+
+.benefit-card h4 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: var(--text-white);
+}
+
+.benefit-card p {
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--text-gray);
+}

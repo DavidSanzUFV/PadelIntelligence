@@ -1,0 +1,309 @@
+/* ---------------------------------------------- */
+/* Variables de color corporativo                 */
+/* ---------------------------------------------- */
+:root {
+  --primary-bg: #1F2937;       /* Azul oscuro      */
+  --secondary-bg: #111827;     /* Gris oscuro      */
+  --highlight-purple: #6C4AB6; /* Morado corporativo */
+  --highlight-teal: #4AB6A6;   /* Verde azulado    */
+  --text-white: #FFFFFF;
+  --text-gray: #E5E7EB;
+  --pink-box: #F2C6D2;         /* Caja rosa */
+}
+
+/* ---------------------------------------------- */
+/* Estilos generales                              */
+/* ---------------------------------------------- */
+
+/* Aseguramos que html y body ocupen toda la pantalla */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--text-white);
+  font-family: 'Open Sans', sans-serif;
+}
+
+/* Fondo en body, con gradiente + imagen de padel */
+body {
+  background: 
+    linear-gradient(rgba(17,24,39, 0.6), rgba(17,24,39, 0.6)),
+    url("../assets/fondohome.jpg") no-repeat center center;
+  background-size: cover;
+  /* background-attachment: fixed;  (opcional: para que el fondo se mantenga fijo) */
+}
+
+/* prediction-container sin min-height para que no fuerce margen oscuro abajo */
+.prediction-container {
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Título principal (SCOREBOARD) */
+.prediction-title {
+  font-family: 'Verdana', sans-serif; 
+  color: var(--text-white);          
+  font-size: 3rem;                    
+  font-weight: 700;                   
+  text-transform: uppercase;          
+  letter-spacing: 2px;                
+  margin-bottom: 3rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  padding-top: 10px; /* Espacio adicional al final */
+}
+
+/* Caja rosa con instrucciones */
+.prediction-instructions {
+  background-color: var(--pink-box);
+  color: #000; /* Texto negro para mejor contraste sobre rosa */
+  max-width: 800px;
+  margin: 0 auto 30px;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* "Who is serving?" */
+.row-serving {
+  margin-bottom: 20px;
+}
+.serving-box {
+  background-color: var(--highlight-purple);
+  width: 60%;
+  margin: 0 auto;
+  border-radius: 10px;
+  padding: 10px 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.serving-image {
+  height: 40px;
+  width: auto;
+  filter: grayscale(100%);
+}
+
+.serving-label {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0;
+}
+
+.serving-select {
+  font-size: 1rem;
+  height: 40px;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  padding: 5px 10px;
+}
+
+/* Team 1 / Team 2 (fila) */
+.row-teams {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 20px;
+}
+
+/* Team boxes*/
+.team-box {
+  background-color: var(--highlight-purple);
+  border-radius: 10px;
+  padding: 10px 15px;
+  min-width: 350px; /* Más ancho para nombres largos */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: flex-start;
+}
+
+.couple-image {
+  height: 40px;
+  width: auto;
+}
+
+.team-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.team-label {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.team-select {
+  font-size: 1rem;
+  height: 40px;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  padding: 5px 10px;
+  width: 100%;
+  max-width: 300px; /* Ajusta para textos muy largos */
+}
+
+/* Stats: Points, Games, Set (2 filas) */
+.row-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 20px;
+}
+
+/* Cajas stats en verde azulado */
+.stats-box {
+  background-color: var(--highlight-teal);
+  border-radius: 10px;
+  padding: 10px 15px;
+  min-width: 120px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.stats-label {
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.stats-input {
+  height: 40px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  text-align: center;
+  padding: 5px 10px;
+  width: 70px;
+}
+
+/* Botón PREDICT (rosa) */
+.predict-button {
+  background-color: #FFC0CB; /* Rosa */
+  color: #000;
+  border: none;
+  font-size: 1.2rem;
+  padding: 10px 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.predict-button:hover {
+  background-color: #ff9caf;
+  transform: scale(1.05);
+}
+.row-stats {
+  display: flex;
+  align-items: center; /* Alinear verticalmente */
+  gap: 2rem;
+  margin-bottom: 20px;
+}
+
+/* Icon-slot: ancho fijo */
+.icon-slot {
+  width: 50px; /* Ajusta a tu gusto */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ícono de la pelota */
+.serving-ball {
+  width: 30px; /* Tamaño del ícono */
+  height: auto;
+  display: block;
+}
+
+/* Overlay semitransparente para el Prediction Panel */
+.prediction-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 400vw;       /* Cubre todo el ancho de la ventana */
+  height: 400vh;      /* Cubre todo el alto de la ventana */
+  background-color: rgba(0,0,0,0.8); /* Semitransparente */
+  z-index: 9998;      /* Detrás del panel, pero encima del contenido */
+  animation: fadeIn 0.7s ease forwards;
+}
+
+/* Prediction Panel (modal) */
+.prediction-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 400px;           /* Ajusta el tamaño a tu gusto */
+  max-width: 90%;         /* Para pantallas pequeñas */
+  background-color: var(--highlight-purple);
+  color: var(--text-white);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+  z-index: 9999;          /* Encima del overlay */
+  text-align: center;     
+  animation: fadeIn 0.4s ease forwards; /* Animación de aparición */
+}
+
+/* Título dentro del panel */
+.prediction-panel h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+/* Texto dentro del panel */
+.prediction-panel p {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Botón para cerrar el panel */
+.close-panel {
+  background-color: var(--highlight-teal);
+  color: var(--text-white);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 15px;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.close-panel:hover {
+  background-color: #58b1a2; /* Un teal más claro */
+  transform: scale(1.05);
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 20px));
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
