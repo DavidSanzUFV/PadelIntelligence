@@ -233,48 +233,49 @@ body {
   display: block;
 }
 
-/* Overlay semitransparente para el Prediction Panel */
+/* Overlay: cover the entire screen */
 .prediction-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 400vw;       /* Cubre todo el ancho de la ventana */
-  height: 400vh;      /* Cubre todo el alto de la ventana */
-  background-color: rgba(0,0,0,0.8); /* Semitransparente */
-  z-index: 9998;      /* Detrás del panel, pero encima del contenido */
+  width: 400vw;       /* Full screen width */
+  height: 400vh;      /* Full screen height */
+  background-color: rgba(0,0,0,0.8); /* Darker background for more contrast */
+  z-index: 9998;
   animation: fadeIn 0.7s ease forwards;
 }
 
-/* Prediction Panel (modal) */
+/* Prediction Panel (modal) - bigger width and more padding */
 .prediction-panel {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-
-  width: 400px;           /* Ajusta el tamaño a tu gusto */
-  max-width: 90%;         /* Para pantallas pequeñas */
+  
+  width: 600px;          /* Increase panel width (e.g., 600px) */
+  max-width: 90%;        /* Still adapt for smaller screens */
   background-color: var(--highlight-purple);
   color: var(--text-white);
-  padding: 20px;
+  padding: 30px;         /* More padding for a spacious layout */
   border-radius: 10px;
   box-shadow: 0 6px 12px rgba(0,0,0,0.5);
-  z-index: 9999;          /* Encima del overlay */
-  text-align: center;     
-  animation: fadeIn 0.4s ease forwards; /* Animación de aparición */
+  z-index: 9999;
+  text-align: left;      /* Left-align text if you prefer */
+  animation: fadeIn 0.4s ease forwards;
 }
 
 /* Título dentro del panel */
 .prediction-panel h2 {
   margin-top: 0;
-  font-size: 1.5rem;
-  margin-bottom: 10px;
+  font-size: 1.8rem;     /* Slightly bigger title */
+  margin-bottom: 15px;
 }
 
 /* Texto dentro del panel */
 .prediction-panel p {
-  font-size: 1rem;
-  line-height: 1.4;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
 }
 
 /* Botón para cerrar el panel */
@@ -282,17 +283,18 @@ body {
   background-color: var(--highlight-teal);
   color: var(--text-white);
   border: none;
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  margin-top: 15px;
   text-transform: uppercase;
   transition: background-color 0.3s ease, transform 0.3s ease;
+  margin-top: 30px;
+  margin-left: 220px;
 }
 
 .close-panel:hover {
-  background-color: #58b1a2; /* Un teal más claro */
+  background-color: #58b1a2;
   transform: scale(1.05);
 }
 

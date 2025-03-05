@@ -154,6 +154,15 @@ html, body {
   gap: 1rem;
 }
 
+.carousel-caption:hover {
+  background: var(--highlight-teal);
+  transform: scale(1.0);
+  .caption-logo {
+    filter: brightness(0) invert(1);
+  }
+  
+}
+
 .caption-logo {
   height: 40px; 
   width: auto;

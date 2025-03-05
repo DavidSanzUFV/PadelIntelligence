@@ -21,7 +21,9 @@ const Navbar = () => {
             <Link to="#" className="menu-bars">
               <FaIcons.FaBars onClick={showSidebar} />
             </Link>
+            <Link to="/">
             <img src={logo} alt="Padel Intelligence Logo" className="navbar-logo" />
+            </Link>
           </div>
         </div>
 

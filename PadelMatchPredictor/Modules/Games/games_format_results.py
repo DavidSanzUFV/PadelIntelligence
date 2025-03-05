@@ -1,88 +1,92 @@
-from Modules.Games.games_calculations import calc_win_before_deuce, calc_exact_deuce, calc_win_after_deuce, calc_total_game_probability
+# Dentro de games_format_results.py
+from Modules.Games.games_calculations import (
+    calc_win_before_deuce,
+    calc_exact_deuce,
+    calc_win_after_deuce,
+    calc_total_game_probability
+)
+
 from Modules.Games.match_result import MatchState
 import pandas as pd
 
-"""
-Este programa contiene todas las funcionalidades encapsuladas de otros módulos relacionados
-con el cálculo de probabilidades en un juego de pádel. Estas funciones están diseñadas para
-ser llamadas desde `predictioncall.py` o cualquier otro programa que las necesite, proporcionando
-resultados detallados y formateados sobre las probabilidades de ganar puntos, llegar a deuce,
-y ganar después de deuce en un juego de pádel.
-"""
-
-
 def calculate_game_probabilities(estado_actual, p_serve):
     """
-    Calcula las probabilidades de ganar un juego de pádel, desglose completo.
+    Calculates the probabilities of winning a padel game in detail.
+    
+    Args:
+        estado_actual (MatchState): Current match state.
+        p_serve (float): Probability of winning a point on serve.
 
-    Parámetros:
-        estado_actual (MatchState): El estado actual del partido.
-        p_serve (float): Probabilidad de ganar un punto al servicio (para el jugador que saca).
-
-    Devuelve:
-        dict: Contiene todas las probabilidades calculadas y detalles.
+    Returns:
+        dict: Contains all the calculated probabilities and breakdowns.
     """
-    # Calcular la probabilidad de ganar al resto
     p_return = 1 - p_serve
 
-    # Calcular las probabilidades
+    # 1. Probability of winning before deuce
     resultados_df = calc_win_before_deuce(p_serve, p_return, estado_actual)
     prob_before_deuce = resultados_df.iloc[-1]['Probability']
 
+    # 2. Probability of reaching deuce exactly
     deuce_result = calc_exact_deuce(p_serve, p_return, estado_actual)
     prob_reach_deuce = deuce_result['Probability']
 
+    # 3. Probability of winning after deuce
     win_after_deuce_df, prob_win_after_deuce = calc_win_after_deuce(p_serve, estado_actual)
+
+    # 4. Total probability of winning the game
     total_prob = calc_total_game_probability(p_serve, p_return, estado_actual)
 
-    # Crear un desglose completo en un diccionario
     result = {
-        'Probabilidad de ganar antes de deuce': prob_before_deuce,
-        'Probabilidad de llegar a deuce': prob_reach_deuce,
-        'Total probabilidad de ganar después de deuce': prob_win_after_deuce,
-        'Total probabilidad de ganar el juego': total_prob,
-        'Desglose ganar después de deuce': []
+        'Probability before deuce': prob_before_deuce,
+        'Probability to reach deuce': prob_reach_deuce,
+        'Probability after deuce': prob_win_after_deuce,
+        'Total probability to win the game': total_prob,
+        'Breakdown after deuce': []
     }
 
-    # Si es necesario, añadir el desglose de ganar después de deuce
-    if prob_before_deuce == 0 and prob_reach_deuce > 0:
-        for _, row in win_after_deuce_df.iterrows():
-            if row['Points needed (T1)'] != '':
-                marcador = f"{row['Points needed (T1)']}-{row['Points needed (T2)']}"
-                result['Desglose ganar después de deuce'].append({
-                    'Marcador': marcador,
-                    'Probabilidad': row['Probability']
-                })
+    # Solo mostramos desglose si se cumplió que prob_before_deuce == 0 y prob_reach_deuce > 0
+    # y además omitimos la última fila con .iloc[:-1]
+    if prob_before_deuce == 0 and prob_reach_deuce > 0 and not win_after_deuce_df.empty:
+        # Recorremos todas las filas menos la última
+        truncated_df = win_after_deuce_df.iloc[:-1]
+        for i, (_, row) in enumerate(truncated_df.iterrows(), start=1):
+            # Para la primera: "Winning on next deuce"
+            if i == 1:
+                scenario_text = "Winning on next deuce"
+            else:
+                scenario_text = f"Winning after {i} more deuces"
+            result['Breakdown after deuce'].append({
+                'Scenario': scenario_text,
+                'Probability': row['Probability']
+            })
 
     return result
 
-
 def print_game_probabilities(result):
     """
-    Imprime de manera legible el desglose de probabilidades.
-
-    Parámetros:
-        result (dict): Diccionario con los resultados de las probabilidades.
+    Prints the probabilities in English with a user-friendly format.
     """
-    print(f"{'Probabilidades generales':^40}")
+    print(f"{'Current Game Probabilities':^40}")
     print(f"{'-'*40}")
-    print(f"{'Probabilidad de ganar antes de deuce:':<35} {result['Probabilidad de ganar antes de deuce']:.2f}%")
-    print(f"{'Probabilidad de llegar a deuce:':<35} {result['Probabilidad de llegar a deuce']:.2f}%")
-    print(f"{'Total probabilidad de ganar después de deuce:':<35} {result['Total probabilidad de ganar después de deuce']:.2f}%")
-    print(f"{'Total probabilidad de ganar el juego:':<35} {result['Total probabilidad de ganar el juego']:.2f}%")
+    print(f"{'Probability of winning before deuce:':<35} {result['Probability before deuce']:.2f}%")
+    print(f"{'Probability to reach deuce:':<35} {result['Probability to reach deuce']:.2f}%")
+    print(f"{'Probability of winning after deuce:':<35} {result['Probability after deuce']:.2f}%")
+    print(f"{'Total probability to win the game:':<35} {result['Total probability to win the game']:.2f}%")
     print(f"{'-'*40}")
 
-    if result['Desglose ganar después de deuce']:
-        print(f"{'Desglose ganar después de deuce':^40}")
+    breakdown = result['Breakdown after deuce']
+    if breakdown:
+        print(f"{'Breakdown after deuce':^40}")
         print(f"{'-'*40}")
-        print(f"{'Marcador':<15} {'Probabilidad':>15}")
-        for item in result['Desglose ganar después de deuce']:
-            print(f"{item['Marcador']:<15} {item['Probabilidad']:.6f}%")
+        print(f"{'Scenario':<25} {'Probability':>12}")
+        for item in breakdown:
+            print(f"{item['Scenario']:<25} {item['Probability']:.6f}%")
 
-"""
 # Ejemplo de uso
-estado_actual = MatchState(4, 4, 4, 3, 1, 1, 1)
-p_serve = 0.645
-resultado = calculate_game_probabilities(estado_actual, p_serve)
-print_game_probabilities(resultado)
-"""
+if __name__ == "__main__":
+    # Ejemplo: estado con 4-4 en puntos (tipo 40-40), 4-3 en juegos, 1-1 en sets, T1 sacando
+    estado_actual = MatchState(3, 4, 1, 5, 1, 0, 1)
+    p_serve = 0.645
+
+    resultado = calculate_game_probabilities(estado_actual, p_serve)
+    print_game_probabilities(resultado)

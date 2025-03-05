@@ -29,17 +29,35 @@ def leer_probabilidad_final(file_path):
 
 def obtener_estado_partido():
     """
-    Solicita al usuario el estado actual del partido y lo devuelve como un objeto MatchState.
+    Solicita al usuario el estado actual del partido, con los puntos en formato
+    de tenis (0, 15, 30, 40, Adv) y devuelve un objeto MatchState con los valores convertidos.
     """
+    score_map = {
+        "0": 0,
+        "15": 1,
+        "30": 2,
+        "40": 3,
+        "Adv": 4  # Si decides usar Adv, ajusta según tu lógica
+    }
+    
     print("\n--- Configuración inicial del partido ---")
-    t1_points = int(input("Introduce los puntos de T1: "))
-    t2_points = int(input("Introduce los puntos de T2: "))
+    # Leer puntos en formato de tenis:
+    t1_input = input("Introduce los puntos de T1 (0,15,30,40,Adv): ")
+    t2_input = input("Introduce los puntos de T2 (0,15,30,40,Adv): ")
+    
+    try:
+        t1_points = score_map[t1_input]
+        t2_points = score_map[t2_input]
+    except KeyError:
+        print("❌ Error: Ingresa valores válidos para los puntos (0,15,30,40,Adv).")
+        return None  # O vuelve a solicitar la entrada
+    
     t1_games = int(input("Introduce los juegos ganados por T1: "))
     t2_games = int(input("Introduce los juegos ganados por T2: "))
     t1_sets = int(input("Introduce los sets ganados por T1: "))
     t2_sets = int(input("Introduce los sets ganados por T2: "))
     serve = int(input("¿Quién sirve? (1 para T1, 2 para T2): "))
-
+    
     return MatchState(t1_points, t2_points, t1_games, t2_games, t1_sets, t2_sets, serve)
 
 def main():
@@ -112,15 +130,15 @@ def main():
             
             else:
                 # 📌 Generar secuencias de juego
-                analysis_file_path = r"PadelMatchPredictor\CSV Files\Data\Set_Analysis_with_T1_and_T2_Wins.csv"
-                output_csv_ifwin = r"PadelMatchPredictor\CSV Files\Exports\Updated_Set_Analysis_IfWin.csv"
-                output_csv_ifloss = r"PadelMatchPredictor\CSV Files\Exports\Updated_Set_Analysis_IfLoss.csv"
+                analysis_file_path = r"CSVFiles/Data/Set_Analysis_with_T1_and_T2_Wins.csv"
+                output_csv_ifwin = r"CSVFiles/Exports/Updated_Set_Analysis_IfWin.csv"
+                output_csv_ifloss = r"CSVFiles/Exports/Updated_Set_Analysis_IfLoss.csv"
 
                 generate_game_sequence(estado_actual, analysis_file_path, output_csv_ifwin, output_csv_ifloss, win=True)
                 generate_game_sequence(estado_actual, analysis_file_path, output_csv_ifwin, output_csv_ifloss, win=False)
 
                 # 📌 Generar Set_Probabilities.csv con SetProbabilitiesGenerator
-                probabilities_file = r"PadelMatchPredictor\CSV Files\Exports\Set_Probabilities.csv"
+                probabilities_file = r"CSVFiles/Exports/Set_Probabilities.csv"
 
                 generator = SetProbabilitiesGenerator(
                     analysis_file=analysis_file_path,
@@ -130,8 +148,8 @@ def main():
                 )
                 
                 # 📌 Después, calcular probabilidades de IfWin y IfLoss con SetProbabilityCalculator
-                output_file_ifwin = r"PadelMatchPredictor\CSV Files\Exports\Final_Probabilities_IfWin.csv"
-                output_file_ifloss = r"PadelMatchPredictor\CSV Files\Exports\Final_Probabilities_IfLoss.csv"
+                output_file_ifwin = r"CSVFiles/Exports/Final_Probabilities_IfWin.csv"
+                output_file_ifloss = r"CSVFiles/Exports/Final_Probabilities_IfLoss.csv"
 
                 calculator = SetProbabilityCalculator(
                     analysis_file_ifwin=output_csv_ifwin,

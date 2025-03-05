@@ -2,6 +2,7 @@ from math import comb, log, exp
 import pandas as pd
 from math import floor
 from Modules.Games.match_result import MatchState
+
 """
 Este programa calcula las probabilidades detalladas de ganar un juego de pádel, basándose en el estado actual del partido.
 
@@ -32,6 +33,7 @@ Salida:
 - DataFrames con detalles de cada escenario y probabilidades.
 - Valores agregados como la probabilidad total de ganar el juego.
 """
+
 # Calcular probabilidad de ganar el juego antes de deuce
 def calc_win_before_deuce(p_serve, p_return, state:MatchState):
     t1_points = state.t1_points
@@ -133,18 +135,20 @@ def calc_win_after_deuce(p_serve, state:MatchState, max_iterations=21):
     comb_dict = generate_comb_dict(50)
 
     # Lista de puntos necesarios después de deuce
-    POINTS_NEEDED_AFTER_DEUCE = [(5 + i, 3 + i) for i in range(22)]  # (5, 3) hasta (26, 24)
+    POINTS_NEEDED_AFTER_DEUCE = [(5 + i, 3 + i) for i in range(10)]  # (5, 3) hasta (14, 12) --> 10 deuces
 
     for i, (t1_needed, t2_needed) in enumerate(POINTS_NEEDED_AFTER_DEUCE):
         t1_wins = t1_needed - max(t1_points, 3)
         t2_wins = t2_needed - max(t2_points, 3)
         num_points = t1_wins + t2_wins
 
-        # Buscar en el diccionario, si no existe devolver 0
-        combin = comb_dict.get(num_points, 0)
-        
-        # Calcular probabilidad directamente
-        prob = combin * (p_serve ** t1_wins) * ((1 - p_serve) ** t2_wins) if combin > 0 else 0
+        # Si alguno de los puntos necesarios es negativo, ese escenario es imposible.
+        if t1_wins < 0 or t2_wins < 0:
+            prob = 0
+            combin = 0
+        else:
+            combin = comb_dict.get(num_points, 0)
+            prob = combin * (p_serve ** t1_wins) * ((1 - p_serve) ** t2_wins) if combin > 0 else 0
 
         total_prob += prob
         results.append({
@@ -156,6 +160,7 @@ def calc_win_after_deuce(p_serve, state:MatchState, max_iterations=21):
             "Combin": combin,
             "Probability": prob * 100
         })
+
 
     # Convertir a DataFrame
     df = pd.DataFrame(results)

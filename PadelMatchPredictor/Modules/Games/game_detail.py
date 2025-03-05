@@ -6,7 +6,7 @@ import pandas as pd
 # considerando múltiples escenarios: ganar antes de deuce, llegar a deuce, y ganar después de deuce.
 # ¡¡Proporciona un desglose detallado de los cálculos de probabilidades de cada punto!!.
 
-estado_actual = MatchState(1, 1, 4, 3, 1, 1, 2)
+estado_actual = MatchState(3, 4, 1, 5, 1, 0, 1)
 p_serve = 0.645 if estado_actual.serve == 1 else (1-0.645)
 p_return = 1 - p_serve
 
