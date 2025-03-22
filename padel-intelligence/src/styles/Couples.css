@@ -1,19 +1,206 @@
-/* Couples.css */
+/* Definición de la paleta de colores */
+:root {
+  --primary-bg: #1F2937; /* Azul oscuro */
+  --secondary-bg: #111827; /* Gris oscuro */
+  --highlight-purple: #6C4AB6; /* Morado corporativo */
+  --highlight-teal: #4AB6A6; /* Verde azulado */
+  --text-white: #FFFFFF;
+  --text-gray: #E5E7EB;
+}
+
+/* Contenedor general */
 .couples-container {
-    padding: 20px;
-    text-align: center;
-    background-color: #1f2937;
-    color: white;
-    min-height: 100vh;
-  }
-  
-  .couples-title {
-    font-size: 2rem;
-    font-weight: bold;
-  }
-  
-  .couples-description {
-    font-size: 1.2rem;
-    margin-top: 10px;
-  }
-  
+  padding: 20px;
+  text-align: center;
+  background-color: var(--primary-bg);
+  color: var(--text-white);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Título */
+.couples-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Descripción */
+.couples-description {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  max-width: 600px;
+  color: var(--text-gray);
+}
+
+/* Grid con una pareja por fila */
+.couples-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 900px;
+  padding: 20px;
+}
+
+/* Aumentar el tamaño de la tarjeta */
+.couple-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--secondary-bg);
+  padding: 20px 30px;  /* Más espacio interno */
+  border-radius: 15px;
+  box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 1100px;  /* Ampliar el ancho */
+  text-align: left;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Ajustar el espacio entre los jugadores */
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Aumentar el espacio entre imagen y nombre */
+  min-width: 250px; /* Asegurar suficiente espacio */
+}
+
+/* Hacer que los nombres puedan ocupar varias líneas */
+.player-name {
+  font-size: 1.4rem;  /* Aumentar el tamaño del texto */
+  font-weight: bold;
+  color: var(--text-white);
+  white-space: normal; /* Permitir que el texto pase a la siguiente línea si es necesario */
+  word-wrap: break-word; /* Evitar desbordamiento */
+  text-align: center;
+}
+
+/* Aumentar el tamaño de las imágenes */
+.player-photo {
+  width: 55px;  
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid white;
+}
+
+/* Icono de estadísticas */
+.stats-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Efecto hover en el icono */
+.stats-icon:hover {
+  background-color: var(--highlight-teal);
+}
+
+/* Imagen de estadísticas en blanco y negro y fondo transparente */
+.stats-icon img {
+  width: 30px;
+  height: 30px;
+  filter: brightness(0) invert(1);
+  background: transparent;
+}
+
+/* Contenedor del filtro */
+.filter-container {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Label del filtro */
+.filter-container label {
+  font-size: 1rem;
+  color: var(--text-gray);
+}
+
+/* Estilos para el select */
+.filter-container select {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-white);
+  border: 2px solid white;
+  padding: 10px 15px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  outline: none;
+  font-weight: bold;
+  transition: background 0.3s ease-in-out;
+  appearance: none;
+}
+
+/* Opciones dentro del select */
+.filter-container select option {
+  background-color: var(--secondary-bg);
+  color: var(--text-white);
+  font-weight: bold;
+}
+
+/* Efecto hover sin cambiar el borde */
+.filter-container select:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Estilo al hacer click (focus) */
+.filter-container select:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Contenedor de controles (Filtro + Buscador) */
+.controls-container {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Estilos para el input de búsqueda */
+.search-container input {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-white);
+  border: 2px solid white;
+  padding: 8px 15px;
+  border-radius: 25px;
+  font-size: 1rem;
+  outline: none;
+  font-weight: bold;
+  transition: background 0.3s ease-in-out;
+  width: 200px;
+  text-align: center;
+  margin-left: 8px;
+}
+
+/* Efecto hover */
+.search-container input:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Efecto al hacer foco */
+.search-container input:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Estilo para la bandera */
+.flag {
+  font-size: 1.5rem;
+  margin-right: 5px;
+}
+
+.flag-img {
+  width: 25px;
+  height: 18px;
+  margin-right: 8px;
+  border-radius: 3px;
+}

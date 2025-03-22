@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import uvicorn
 import pandas as pd
+import psycopg2
 from fastapi.middleware.cors import CORSMiddleware
 
 # Import your algorithm modules
@@ -16,6 +17,14 @@ from Modules.Sets.ProbabilityCalculator import SetProbabilityCalculator
 from Modules.TieBreak.TieBreak import TiebreakCalculator
 from Modules.Games.games_calculations import calc_total_game_probability
 from Modules.Match.Algo_match import probability_match
+
+DB_CONFIG = {
+    "dbname": "postgres",
+    "user": "postgres",
+    "password": "PadelIntelligence1",
+    "host": "localhost",
+    "port": "5432"
+}
 
 def leer_probabilidad_final(file_path):
     """
@@ -168,6 +177,103 @@ def run_prediction(match: MatchInput):
     # Return the captured output as a string
     output = buffer.getvalue()
     return {"prediction_output": output}
+
+@app.get("/pairs")
+def get_pairs():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+
+        query = """
+            SELECT DISTINCT ON (LEAST(p1.player, p2.player), GREATEST(p1.player, p2.player))
+                p1.player AS player1,
+                p2.player AS player2,
+                p1.photo AS photo1,
+                p2.photo AS photo2,
+                p1.gender AS gender1,
+                p2.gender AS gender2,
+                p1.nationality AS nationality1,
+                p2.nationality AS nationality2
+            FROM player_stats p1
+            JOIN player_stats p2 
+                ON p1.partner = p2.player
+                AND p1.player < p2.player  -- 🔹 Evita duplicados invirtiendo parejas
+            WHERE p1.player IS NOT NULL 
+            AND p2.player IS NOT NULL
+            ORDER BY LEAST(p1.player, p2.player), GREATEST(p1.player, p2.player);
+        """
+
+        cursor.execute(query)
+        pairs = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        def determine_gender(g1, g2):
+            if g1 == "W" and g2 == "W":
+                return "W"
+            elif g1 == "M" and g2 == "M":
+                return "M"
+            else:
+                return "Mixed"
+
+        return [  # Convertir datos a JSON
+            {
+                "player1": pair[0], 
+                "player2": pair[1], 
+                "photo1": pair[2], 
+                "photo2": pair[3],
+                "gender": determine_gender(pair[4], pair[5]),
+                "nationality1": pair[6],  
+                "nationality2": pair[7]   
+            } 
+            for pair in pairs
+        ]
+
+    except Exception as e:
+        print(f"⚠️ ERROR en la consulta SQL: {e}")  # Mostrará el error en la consola
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/players")
+def get_players():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+
+        query = """
+            SELECT DISTINCT 
+                player, 
+                photo, 
+                gender, 
+                nationality,
+                brand,
+                hand,
+                side 
+            FROM player_stats 
+            ORDER BY player;
+        """
+
+        cursor.execute(query)
+        players = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return [  # Convertir datos a JSON
+            {
+                "player": player[0], 
+                "photo": player[1], 
+                "gender": player[2], 
+                "nationality": player[3],
+                "brand": player[4],
+                "hand": player[5],
+                "side": player[6]
+            } 
+            for player in players
+        ]
+
+    except Exception as e:
+        print(f"⚠️ ERROR en la consulta SQL: {e}")  
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 if __name__ == "__main__":
     # For testing without API, you could call main() here,
