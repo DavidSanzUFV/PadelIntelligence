@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../styles/Statistics.css";
 
-// Importa el fondo
-import backgroundImage from "../assets/fondohome.jpg";
-
 import statsIcon from "../assets/stats-icon.png"; // Asegúrate de tener esta imagen
 
 // Función para obtener la bandera
@@ -113,8 +110,8 @@ const Statistics = () => {
   };
 
   return (
-    <div className="statistics-container" style={{ background: `url(${backgroundImage}) center center / cover no-repeat` }}>
-      <h1 className="title">Statistics</h1>
+    <div className="statistics-container">
+      <h1 className="title">INDIVIDUAL STATISTICS</h1>
       <p className="subtitle">Click on a player to see detailed statistics.</p>
 
       {/* 📌 Menú de Filtros */}

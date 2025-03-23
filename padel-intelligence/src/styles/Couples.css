@@ -17,7 +17,9 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-top: 100px; /* 🟣 Da espacio para el navbar fijo */
   align-items: center;
+  background: linear-gradient(to bottom, #7E5BEF 50%, #4A3BAA 50%);
 }
 
 /* Título */
@@ -25,6 +27,7 @@
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 10px;
+  color: var(--highlight-teal);
 }
 
 /* Descripción */
@@ -41,75 +44,98 @@
   flex-direction: column;
   gap: 15px;
   width: 100%;
-  max-width: 900px;
+  max-width: 1300px;
   padding: 20px;
 }
 
-/* Aumentar el tamaño de la tarjeta */
+/* 🟣 Nuevo contenedor por pareja */
+/* 🟣 Nuevo contenedor por pareja */
+.couple-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto 15px auto; /* ⬅️ centrado horizontal */
+}
+
+
+/* Tarjeta visual */
 .couple-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--secondary-bg);
-  padding: 20px 30px;  /* Más espacio interno */
+  background: linear-gradient(135deg, #1F2937, #6C4AB6); /* de tu azul a morado corporativo */
+  padding: 20px 30px;
   border-radius: 15px;
+  flex: 1;
   box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.1);
-  width: 100%;
-  max-width: 1100px;  /* Ampliar el ancho */
-  text-align: left;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-/* Ajustar el espacio entre los jugadores */
-.player-info {
+.couple-card:hover {
+  background: linear-gradient(90deg, #6C4AB6, #4AB6A6);
+  color: white; /* Para que el texto contraste */
+  cursor: pointer;
+}
+
+
+/* Cada bloque de jugador */
+.player-block {
   display: flex;
   align-items: center;
-  gap: 15px; /* Aumentar el espacio entre imagen y nombre */
-  min-width: 250px; /* Asegurar suficiente espacio */
+  gap: 10px;
+  min-width: 250px;
 }
 
-/* Hacer que los nombres puedan ocupar varias líneas */
-.player-name {
-  font-size: 1.4rem;  /* Aumentar el tamaño del texto */
-  font-weight: bold;
-  color: var(--text-white);
-  white-space: normal; /* Permitir que el texto pase a la siguiente línea si es necesario */
-  word-wrap: break-word; /* Evitar desbordamiento */
-  text-align: center;
-}
-
-/* Aumentar el tamaño de las imágenes */
+/* Foto y bandera */
 .player-photo {
-  width: 55px;  
+  width: 55px;
   height: 55px;
   border-radius: 50%;
-  object-fit: cover;
   border: 2px solid white;
+  object-fit: cover;
 }
 
-/* Icono de estadísticas */
-.stats-icon {
+.flag-img {
+  width: 25px;
+  height: 18px;
+  border-radius: 3px;
+}
+
+/* Nombre */
+.player-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--text-white);
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+/* 🟣 Icono fuera del card */
+.stats-icon-couples {
   width: 50px;
   height: 50px;
+  background: linear-gradient(135deg, #1F2937, #6C4AB6); /* de tu azul a morado corporativo */
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.3s ease;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
-/* Efecto hover en el icono */
-.stats-icon:hover {
-  background-color: var(--highlight-teal);
+.stats-icon-couples:hover {
+  background: linear-gradient(90deg, #6C4AB6, #4AB6A6);
 }
 
-/* Imagen de estadísticas en blanco y negro y fondo transparente */
-.stats-icon img {
-  width: 30px;
-  height: 30px;
+.stats-icon-couples img {
+  width: 40px;
+  height: 40px;
   filter: brightness(0) invert(1);
-  background: transparent;
 }
+
 
 /* Contenedor del filtro */
 .filter-container {
@@ -129,7 +155,7 @@
 .filter-container select {
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--text-white);
-  border: 2px solid white;
+  border: 2px solid #4AB6A6;
   padding: 10px 15px;
   border-radius: 25px;
   cursor: pointer;
@@ -170,7 +196,7 @@
 .search-container input {
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--text-white);
-  border: 2px solid white;
+  border: 2px solid #4AB6A6;
   padding: 8px 15px;
   border-radius: 25px;
   font-size: 1rem;

@@ -1,0 +1,51 @@
+.curiosities-container {
+  padding: 40px 20px;
+  color: var(--text-white);
+  text-align: center;
+  background: linear-gradient(to bottom, #7E5BEF 50%, #4A3BAA 50%);
+  min-height: 100vh;
+  padding-top: 100px;
+}
+
+.curiosities-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.curiosities-subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  opacity: 0.9;
+}
+
+.curiosities-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.curiosity-tab {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.curiosity-tab.active {
+  background: var(--highlight-purple);
+}
+
+.curiosities-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 60px;
+}

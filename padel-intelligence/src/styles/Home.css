@@ -37,18 +37,13 @@ html, body {
   padding: 0;        /* Ajustar si necesitas un padding */
   box-sizing: border-box;
   text-align: center;
-
-  /* Fondo con gradiente semitransparente + imagen */
-  background:
-    linear-gradient(rgba(17,24,39, 0.6), rgba(17,24,39, 0.6)),
-    url("../assets/fondohome.jpg") center center no-repeat;
-  background-size: cover; 
-  /* background-attachment: fixed;  (opcional, estilo parallax) */
+  background: linear-gradient(to bottom, #7E5BEF 50%, #4A3BAA 50%);
 }
 
 .home-container
 {
   min-height: 130vh;
+  padding-top: 100px; /* 🟣 Da espacio para el navbar fijo */
 }
 
 /* Título principal */

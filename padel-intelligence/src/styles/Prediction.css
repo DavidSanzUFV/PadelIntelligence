@@ -27,11 +27,7 @@ html, body {
 
 /* Fondo en body, con gradiente + imagen de padel */
 body {
-  background: 
-    linear-gradient(rgba(17,24,39, 0.6), rgba(17,24,39, 0.6)),
-    url("../assets/fondohome.jpg") no-repeat center center;
-  background-size: cover;
-  /* background-attachment: fixed;  (opcional: para que el fondo se mantenga fijo) */
+  background: linear-gradient(to bottom, #7E5BEF 50%, #4A3BAA 50%);
 }
 
 /* prediction-container sin min-height para que no fuerce margen oscuro abajo */
@@ -39,6 +35,15 @@ body {
   text-align: center;
   padding: 20px;
   box-sizing: border-box;
+  padding-top: 100px; /* 🟣 Da espacio para el navbar fijo */
+}
+.prediction-main-card {
+  background: linear-gradient(135deg, #1F2937, #6C4AB6);
+  padding: 30px 40px;
+  border-radius: 20px;
+  max-width: 1000px;
+  margin: 10px auto;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* Título principal (SCOREBOARD) */
@@ -53,18 +58,40 @@ body {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   padding-top: 10px; /* Espacio adicional al final */
 }
+.info-wrapper {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+}
 
-/* Caja rosa con instrucciones */
-.prediction-instructions {
-  background-color: var(--pink-box);
-  color: #000; /* Texto negro para mejor contraste sobre rosa */
-  max-width: 800px;
-  margin: 0 auto 30px;
+.info-icon {
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 1.4rem;
+  vertical-align: middle;
+  transition: transform 0.2s ease;
+}
+
+.info-icon:hover {
+  transform: scale(1.2);
+}
+
+/* Caja desplegable */
+.info-box {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--text-white); /* Blanco */
+  color: var(--highlight-purple); /* Morado corporativo */
+  width: 500px;
   padding: 15px 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  font-size: 1rem;
-  line-height: 1.5;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+  z-index: 1000;
+  margin-top: 10px;
+  font-size: 0.95rem;
+  animation: fadeIn 0.3s ease-in-out forwards;
 }
 
 /* "Who is serving?" */
@@ -72,7 +99,7 @@ body {
   margin-bottom: 20px;
 }
 .serving-box {
-  background-color: var(--highlight-purple);
+  background-color: var(--highlight-teal);
   width: 60%;
   margin: 0 auto;
   border-radius: 10px;
@@ -105,6 +132,10 @@ body {
   outline: none;
   padding: 5px 10px;
 }
+.serving-box:hover {
+transform: scale(1.03);
+box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
 
 /* Team 1 / Team 2 (fila) */
 .row-teams {
@@ -117,17 +148,23 @@ body {
 
 /* Team boxes*/
 .team-box {
-  background-color: var(--highlight-purple);
+  background-color: var(--highlight-teal);
   border-radius: 10px;
   padding: 10px 15px;
   min-width: 350px; /* Más ancho para nombres largos */
   box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 
   display: flex;
   align-items: center;
   gap: 1rem;
   justify-content: flex-start;
 }
+.team-box:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
 
 .couple-image {
   height: 40px;
@@ -172,8 +209,13 @@ body {
   min-width: 120px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.3);
   text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.stats-box:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
 .stats-label {
   font-weight: 600;
   margin-bottom: 4px;
@@ -191,26 +233,28 @@ body {
   width: 70px;
 }
 
-/* Botón PREDICT (rosa) */
 .predict-button {
-  background-color: #FFC0CB; /* Rosa */
-  color: #000;
-  border: none;
+  background-color: var(--text-white); /* Blanco */
+  color: var(--highlight-purple); /* Morado corporativo */
+  border: 2px solid var(--highlight-purple);
   font-size: 1.2rem;
   padding: 10px 30px;
   border-radius: 10px;
   cursor: pointer;
   font-weight: 700;
   text-transform: uppercase;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
   margin-bottom: 20px;
 }
 
 .predict-button:hover {
-  background-color: #ff9caf;
+  background-color: var(--highlight-purple); /* Relleno morado al hacer hover */
+  color: var(--text-white); /* Texto blanco */
   transform: scale(1.05);
 }
+
+
 .row-stats {
   display: flex;
   align-items: center; /* Alinear verticalmente */

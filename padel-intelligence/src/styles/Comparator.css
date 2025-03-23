@@ -1,0 +1,73 @@
+.players-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  /* Este contenedor ocupa las 2 columnas del grid */
+  .comparison-block {
+    grid-column: span 2;
+    background-color: linear-gradient(135deg, #4AB6A6, #6C4AB6);
+    border-radius: 20px;
+    padding: 25px 0;
+    margin-top: 30px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .comparison-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: white;
+    text-transform: uppercase;
+  }
+  
+  .comparison-box {
+    width: 100%;
+    padding: 0 20px;
+  }
+  
+ /* Estilo base para la tabla */
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  
+  /* Estilo para las filas pares (índices impares) */
+  .comparison-table tr:nth-child(odd) {
+    background: linear-gradient(135deg, #1F2937, #6C4AB6); /* mismo que tarjetas */
+    color: white;
+  }
+  
+  /* Estilo para las filas impares (índices pares) */
+  .comparison-table tr:nth-child(even) {
+    background: linear-gradient(135deg, #2d3650, #7d61d4); /* un poco más suave */
+    color: white;
+  }
+  
+  /* Ajustes para las celdas */
+  .comparison-table td {
+    padding: 15px 20px;
+    font-weight: bold;
+    font-size: 1rem;
+    text-align: center;
+    color: inherit; /* hereda color de fila */
+  }
+  
+  /* Título de campo centrado y en verde */
+  .field-label {
+    color: #4AB6A6;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  
+.statistics-container-comparator
+{
+  background: linear-gradient(to bottom, #7E5BEF 50%, #4A3BAA 50%);
+}  

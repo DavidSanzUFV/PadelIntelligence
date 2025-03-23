@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import "../styles/Prediction.css";
 
-// Background image
-import backgroundImage from "../assets/fondohome.jpg";
 import logo from "../assets/logo.png";
 
 // Icons
 import servingImg from "../assets/whoisserving.png";
 import coupleImg from "../assets/couple.png";
 import ballImg from "../assets/bola.png";
+
 
 const Prediction = () => {
   // Fijamos estas probabilidades:
@@ -36,6 +35,7 @@ const Prediction = () => {
   const [showPanel, setShowPanel] = useState(false);
   const [predictionOutput, setPredictionOutput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   // Opciones para equipos
   const teamOptions = [
@@ -43,13 +43,6 @@ const Prediction = () => {
     "Juan Lebrón Chincoa/Alejandro Galán Romo"
   ];
 
-  // Estilo del fondo
-  const containerStyle = {
-    background: `
-      linear-gradient(rgba(17,24,39, 0.6), rgba(17,24,39, 0.6)),
-      url(${backgroundImage}) center center / cover no-repeat
-    `
-  };
 
   // Objeto de mapeo para convertir puntos en formato de tenis a valores internos
   const tennisScoreMap = {
@@ -101,15 +94,23 @@ const Prediction = () => {
   };
 
   return (
-    <div className="prediction-container" style={containerStyle}>
-      <h1 className="prediction-title">SCOREBOARD</h1>
+    <div className="prediction-container">
+      <div className="prediction-main-card">
+        <div className="info-wrapper">
+          <h1 className="prediction-title">
+            SCOREBOARD
+            <span className="info-icon" onClick={() => setShowInfo(!showInfo)}>ℹ️</span>
+          </h1>
 
-      <div className="prediction-instructions">
-        <p>
-          Enter the current match result by specifying the teams that are playing and the points, games, and sets currently in progress.
-          If you click on <b>PREDICT</b>, you will receive key information to help you analyze the match’s progress and foresee potential outcomes.
-        </p>
-      </div>
+          {showInfo && (
+            <div className="info-box">
+              <p>
+                Enter the current match result by specifying the teams that are playing and the points, games, and sets currently in progress.
+                If you click on <b>PREDICT</b>, you will receive key information to help you analyze the match’s progress and foresee potential outcomes.
+              </p>
+          </div>
+          )}
+        </div>
 
       {/* Quién sirve */}
       <div className="row-serving">
@@ -304,6 +305,7 @@ const Prediction = () => {
           </div>
         </>
       )}
+      </div>
     </div>
   );
 };

@@ -2,9 +2,6 @@ import React, { useEffect, useState } from "react";
 import "../styles/Couples.css";
 import statsIcon from "../assets/stats-icon.png"; // Asegúrate de tener esta imagen
 
-// Importa el fondo
-import backgroundImage from "../assets/fondohome.jpg";
-
 const getFlagURL = (nationality) => {
   const countryCodes = {
     Argentina: "ar",
@@ -66,8 +63,8 @@ const Couples = () => {
   };
   
   return (
-    <div className="couples-container" style={{ background: `url(${backgroundImage}) center center / cover no-repeat` }}>
-      <h2 className="couples-title">Player Couples</h2>
+    <div className="couples-container">
+      <h2 className="couples-title">PLAYER COUPLES</h2>
       <p className="couples-description">
         View and analyze player couples, their performance, and statistics.
       </p>
@@ -82,8 +79,8 @@ const Couples = () => {
             onChange={(e) => setGenderFilter(e.target.value)}
           >
             <option value="all">All</option>
-            <option value="M">Man</option>
-            <option value="W">woman</option>
+            <option value="M">Men</option>
+            <option value="W">Women</option>
           </select>
         </div>
 
@@ -102,21 +99,27 @@ const Couples = () => {
       <div className="couples-grid">
         {filteredPairs.length > 0 ? (
           filteredPairs.map((pair, index) => (
-            <div key={index} className="couple-card">
-              <div className="player-info">
-                <img src={pair.photo1} alt={pair.player1} className="player-photo" />
-                <img src={getFlagURL(pair.nationality1)} alt="Flag" className="flag-img" />
+          <div className="couple-row" key={index}>
+            <div className="couple-card">
+              <div className="player-block">
+                <img src={pair.photo1} className="player-photo" alt={pair.player1} />
+                <img src={getFlagURL(pair.nationality1)} className="flag-img" alt="Flag" />
                 <span className="player-name">{formatName(pair.player1)}</span>
               </div>
-              <div className="player-info">
-              <span className="player-name">{formatName(pair.player2)}</span>
-                <img src={pair.photo2} alt={pair.player2} className="player-photo" />
-                <img src={getFlagURL(pair.nationality2)} alt="Flag" className="flag-img" />
-              </div>
-              <div className="stats-icon">
-                <img src={statsIcon} alt="Stats" />
+
+              <div className="player-block">
+                <span className="player-name">{formatName(pair.player2)}</span>
+                <img src={getFlagURL(pair.nationality2)} className="flag-img" alt="Flag" />
+                <img src={pair.photo2} className="player-photo" alt={pair.player2} />
               </div>
             </div>
+
+            {/* Icono de estadísticas FUERA del card */}
+            <div className="stats-icon-couples">
+              <img src={statsIcon} alt="Stats" />
+            </div>
+          </div>
+
           ))
         ) : (
           <p>No couples found.</p>

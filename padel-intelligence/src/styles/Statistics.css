@@ -6,12 +6,15 @@
   flex-direction: column;
   align-items: center;
   color: white;
+  padding-top: 100px;
+  background: linear-gradient(to bottom, #7E5BEF 50%, #4A3BAA 50%);
 }
 
 .title {
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 10px;
+  color: #4AB6A6;
 }
 
 .subtitle {
@@ -31,7 +34,7 @@
 
 /* 📌 Tarjeta del jugador */
 .player-card {
-  background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+  background: linear-gradient(135deg, #1F2937, #6C4AB6);
   border-radius: 20px;
   padding: 20px;
   text-align: center;
@@ -101,7 +104,7 @@
 }
 
 .stats-button {
-  padding: 10px 20px;
+  padding: 20px 30px;
   background-color: white;
   color: #007bff;
   border: none;
@@ -131,7 +134,7 @@
 .filters-container input {
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--text-white);
-  border: 2px solid white;
+  border: 2px solid #4AB6A6;
   padding: 10px 15px;
   border-radius: 25px;
   cursor: pointer;
@@ -166,6 +169,7 @@
 .filters-container input {
   width: 200px;
   text-align: center;
+  border: 2px solid #4AB6A6;
 }
 
 /* 📌 Estilos para el botón de limpiar filtros */
@@ -174,7 +178,7 @@
   color: white;
   font-weight: bold;
   padding: 10px 15px;
-  border: 2px solid white;
+  border: 2px solid #4AB6A6;
   border-radius: 25px;
   cursor: pointer;
   transition: background 0.3s ease-in-out;
