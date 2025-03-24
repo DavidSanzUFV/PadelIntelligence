@@ -69,5 +69,17 @@
   
 .statistics-container-comparator
 {
-  background: linear-gradient(to bottom, #7E5BEF 50%, #4A3BAA 50%);
+  background: linear-gradient(135deg, #b39ddb, #90caf9, #80deea);
 }  
+.highlight-winner {
+  background-color: #a5d6a7; /* verde pastel */
+  font-weight: bold;
+  color: #1b5e20; /* verde más oscuro para contraste */
+}
+
+.highlight-loser {
+  background-color: #ef9a9a; /* rojo pastel */
+  font-weight: bold;
+  color: #b71c1c; /* rojo más oscuro para contraste */
+}
+

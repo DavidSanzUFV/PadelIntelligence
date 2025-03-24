@@ -273,6 +273,104 @@ def get_players():
     except Exception as e:
         print(f"⚠️ ERROR en la consulta SQL: {e}")  
         raise HTTPException(status_code=500, detail=str(e))
+@app.get("/player_stats/{player_name}")
+def get_basic_player_stats(player_name: str):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+
+        # Obtener el side del jugador (para calcular el % cruzado)
+        cursor.execute("SELECT side FROM player_stats WHERE player = %s LIMIT 1;", (player_name,))
+        side_result = cursor.fetchone()
+        side = side_result[0] if side_result else None
+
+        if not side or side not in ['Left', 'Right']:
+            raise HTTPException(status_code=400, detail=f"Invalid or missing side for player {player_name}")
+
+        # columna cruzada según el lado
+        cross_col = "shot_to_l" if side == "Left" else "shot_to_r"
+
+        query = f"""
+            SELECT 
+                COUNT(DISTINCT tournament_id) AS tournaments_played,
+                COUNT(DISTINCT match_id) AS matches_played,
+                ROUND(SUM(CASE WHEN result = 'W' THEN 1 ELSE 0 END)::numeric / 
+                    NULLIF(COUNT(DISTINCT match_id), 0) * 100, 2) AS win_rate,
+
+                -- Servicios
+                ROUND(AVG(
+                    CASE 
+                        WHEN num_serves > 0 THEN num_1st_serves::numeric / num_serves
+                        ELSE NULL 
+                    END
+                ) * 100, 2) AS percentage_1st_serves,
+
+                ROUND(AVG(
+                    CASE 
+                        WHEN num_games_served > 0 THEN num_games_served_won::numeric / num_games_served
+                        ELSE NULL 
+                    END
+                ) * 100, 2) AS percentage_service_games_won,
+
+                -- Táctica
+                ROUND(SUM({cross_col})::numeric / NULLIF(SUM(num_shots_wo_returns), 0) * 100, 2) AS percentage_cross,
+
+                -- Resto
+                ROUND(SUM(num_flat_returns)::numeric / NULLIF(SUM(num_returns), 0) * 100, 2) AS percentage_flat_returns,
+                ROUND(SUM(num_lobbed_returns)::numeric / NULLIF(SUM(num_returns), 0) * 100, 2) AS percentage_lobbed_returns,
+                ROUND(SUM(num_return_errors)::numeric / NULLIF(SUM(num_returns), 0) * 100, 2) AS percentage_return_errors,
+
+                -- Juego aéreo
+                ROUND(AVG(num_lobs_received)::numeric, 2) AS lobs_received_per_match,
+                ROUND(SUM(num_smashes)::numeric / NULLIF(SUM(num_lobs_received), 0) * 100, 2) AS percentage_smashes_from_lobs,
+                ROUND(SUM(num_rulos)::numeric / NULLIF(SUM(num_lobs_received), 0) * 100, 2) AS percentage_rulos_from_lobs,
+                ROUND(SUM(viborejas)::numeric / NULLIF(SUM(num_lobs_received), 0) * 100, 2) AS percentage_viborejas_from_lobs,
+                ROUND(SUM(num_bajadas)::numeric / NULLIF(SUM(num_lobs_received), 0) * 100, 2) AS percentage_bajadas_from_lobs,
+                ROUND(SUM(num_points_won_after_smash + rulos_winners + bajadas_winners + viborejas_winners)::numeric 
+                      / NULLIF(SUM(num_lobs_received), 0) * 100, 2) AS winners_from_lobs,
+
+                -- Defensa y globos
+                SUM(num_smash_defense_winners_salida) AS outside_recoveries,
+                ROUND(AVG(num_lobs)::numeric, 2) AS lobs_played_per_match,
+                ROUND(AVG(percentage_net_regains_after_lob), 2)*100 AS percentage_net_regains_with_lob,
+                ROUND(AVG( num_unforced_error)::numeric, 2) AS unforced_errors_per_match
+
+            FROM player_stats
+            WHERE player = %s;
+        """
+
+        cursor.execute(query, (player_name,))
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        return {
+            "player": player_name,
+            "tournaments_played": result[0],
+            "matches_played": result[1],
+            "win_rate": float(result[2]) if result[2] is not None else 0.0,
+            "percentage_1st_serves": float(result[3]) if result[3] is not None else 0.0,
+            "percentage_service_games_won": float(result[4]) if result[4] is not None else 0.0,
+            "percentage_cross": float(result[5]) if result[5] is not None else 0.0,
+            "percentage_parallel": float(100 - result[5]) if result[5] is not None else 0.0,
+            "percentage_flat_returns": float(result[6]) if result[6] is not None else 0.0,
+            "percentage_lobbed_returns": float(result[7]) if result[7] is not None else 0.0,
+            "percentage_return_errors": float(result[8]) if result[8] is not None else 0.0,
+            "lobs_received_per_match": float(result[9]) if result[9] is not None else 0.0,
+            "percentage_smashes_from_lobs": float(result[10]) if result[10] is not None else 0.0,
+            "percentage_rulos_from_lobs": float(result[11]) if result[11] is not None else 0.0,
+            "percentage_viborejas_from_lobs": float(result[12]) if result[12] is not None else 0.0,
+            "percentage_bajadas_from_lobs": float(result[13]) if result[13] is not None else 0.0,
+            "winners_from_lobs": float(result[14]) if result[14] is not None else 0.0,
+            "outside_recoveries": int(result[15]) if result[15] is not None else 0,
+            "lobs_played_per_match": float(result[16]) if result[16] is not None else 0.0,
+            "net_recovery_with_lob": float(result[17]) if result[17] is not None else 0.0,
+            "unforced_errors_per_match": float(result[18]) if result[18] is not None else 0.0
+        }
+
+    except Exception as e:
+        print(f"❌ Error en player_stats para {player_name}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":

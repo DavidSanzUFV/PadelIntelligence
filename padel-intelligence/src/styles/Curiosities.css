@@ -2,7 +2,7 @@
   padding: 40px 20px;
   color: var(--text-white);
   text-align: center;
-  background: linear-gradient(to bottom, #7E5BEF 50%, #4A3BAA 50%);
+  background: linear-gradient(135deg, #b39ddb, #90caf9, #80deea);
   min-height: 100vh;
   padding-top: 100px;
 }

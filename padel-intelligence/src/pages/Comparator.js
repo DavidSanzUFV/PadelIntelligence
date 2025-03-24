@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import "../styles/Statistics.css"; // reutilizamos estilos existentes
-import "../styles/Comparator.css"; // reutilizamos estilos existentes
+import "../styles/Statistics.css";
+import "../styles/Comparator.css";
 
 const Comparator = () => {
   const [players, setPlayers] = useState([]);
@@ -36,8 +36,19 @@ const Comparator = () => {
       });
   }, []);
 
-  const findPlayer = (query) =>
-    players.find((p) => p.player.toLowerCase().includes(query.toLowerCase()));
+  const findPlayer = async (query, setPlayer) => {
+    const basicInfo = players.find((p) => p.player.toLowerCase().includes(query.toLowerCase()));
+    if (!basicInfo) return;
+
+    try {
+      const res = await fetch(`http://localhost:8000/player_stats/${basicInfo.player}`);
+      const extraInfo = await res.json();
+      setPlayer({ ...basicInfo, ...extraInfo });
+    } catch (error) {
+      console.error("Error fetching advanced stats:", error);
+      setPlayer(basicInfo); // fallback
+    }
+  };
 
   const PlayerCard = ({ player }) => {
     if (!player) return null;
@@ -53,7 +64,11 @@ const Comparator = () => {
     };
 
     const getBrandLogo = (brand) => {
-      const formatted = brand?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "").replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+      const formatted = brand?.normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, "")
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .toLowerCase();
       return `/assets/brands/${formatted}.png`;
     };
 
@@ -72,41 +87,44 @@ const Comparator = () => {
       </div>
     );
   };
-/*
-  const renderComparisonSection = (title, fields) => (
-    <div className="comparison-wrapper">
-      <h3 className="comparison-title">{title}</h3>
-      <div className="comparison-box">
-        <table className="comparison-table">
-          <tbody>
-            {fields.map(({ label, key, unit }) => (
-              <tr key={key}>
-                <td>{player1?.[key] ? `${player1[key]}${unit}` : "-"}</td>
-                <td className="field-label">{label}</td>
-                <td>{player2?.[key] ? `${player2[key]}${unit}` : "-"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-  */
+
+  const getHighlightClass = (val1, val2) => {
+    const n1 = parseFloat(val1);
+    const n2 = parseFloat(val2);
+  
+    if (isNaN(n1) || isNaN(n2)) return ["", ""];
+  
+    if (n1 > n2) return ["highlight-winner", "highlight-loser"];
+    if (n1 < n2) return ["highlight-loser", "highlight-winner"];
+    return ["", ""]; // empate
+  };
+  
+
+  const renderRow = (label, key, format = (v) => `${v}%`) => {
+    const [p1Class, p2Class] = getHighlightClass(player1?.[key], player2?.[key]);
+    return (
+      <tr>
+        <td className={p1Class}>{player1?.[key] !== undefined ? format(player1[key]) : "-"}</td>
+        <td className="field-label">{label}</td>
+        <td className={p2Class}>{player2?.[key] !== undefined ? format(player2[key]) : "-"}</td>
+      </tr>
+    );
+  };
+
   return (
     <div className="statistics-container-comparator">
       <h1 className="title">PLAYER COMPARATOR</h1>
       <p className="subtitle">Search and compare two players side by side.</p>
 
-      {/* Buscadores */}
       <div className="filters-container">
         <input
           type="text"
           placeholder="Search player 1..."
           value={query1}
           onChange={(e) => {
-            setQuery1(e.target.value);
-            const found = findPlayer(e.target.value);
-            if (found) setPlayer1(found);
+            const value = e.target.value;
+            setQuery1(value);
+            findPlayer(value, setPlayer1);
           }}
         />
         <input
@@ -114,161 +132,104 @@ const Comparator = () => {
           placeholder="Search player 2..."
           value={query2}
           onChange={(e) => {
-            setQuery2(e.target.value);
-            const found = findPlayer(e.target.value);
-            if (found) setPlayer2(found);
+            const value = e.target.value;
+            setQuery2(value);
+            findPlayer(value, setPlayer2);
           }}
         />
       </div>
 
-      {/* Tarjetas comparativas */}
-<div className="players-grid">
-  <PlayerCard player={player1} />
-  <PlayerCard player={player2} />
+      <div className="players-grid">
+        <PlayerCard player={player1} />
+        <PlayerCard player={player2} />
+      </div>
 
-  {player1 && player2 && (
-    <>
-<div className="comparison-block">
-  <h3 className="comparison-title">TOURNAMENTS</h3>
-  <div className="comparison-box">
-    <table className="comparison-table">
-      <tbody>
-        <tr>
-          <td>{player1?.tournaments_played ?? "-"}</td>
-          <td className="field-label">Tournaments Played</td>
-          <td>{player2?.tournaments_played ?? "-"}</td>
-        </tr>
-        <tr>
-          <td>{player1?.matches ?? "-"}</td>
-          <td className="field-label">Matches Played</td>
-          <td>{player2?.matches ?? "-"}</td>
-        </tr>
-        <tr>
-          <td>{player1?.win_rate ? `${player1.win_rate}%` : "-"}</td>
-          <td className="field-label">Win Rate</td>
-          <td>{player2?.win_rate ? `${player2.win_rate}%` : "-"}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+      {player1 && player2 && (
+        <>
+          <div className="comparison-block">
+            <h3 className="comparison-title">TOURNAMENTS</h3>
+            <div className="comparison-box">
+              <table className="comparison-table">
+                <tbody>
+                  {renderRow("Tournaments Played", "tournaments_played", (v) => v)}
+                  {renderRow("Matches Played", "matches_played", (v) => v)}
+                  {renderRow("Win Rate", "win_rate")}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-<div className="comparison-block">
-  <h3 className="comparison-title">SERVES</h3>
-  <div className="comparison-box">
-    <table className="comparison-table">
-      <tbody>
-        <tr>
-          <td>{player1?.first_serve_percentage ? `${player1.first_serve_percentage}%` : "-"}</td>
-          <td className="field-label">% First Serves</td>
-          <td>{player2?.first_serve_percentage ? `${player2.first_serve_percentage}%` : "-"}</td>
-        </tr>
-        <tr>
-          <td>{player1?.service_games_won ? `${player1.service_games_won}%` : "-"}</td>
-          <td className="field-label">% Service Games Won</td>
-          <td>{player2?.service_games_won ? `${player2.service_games_won}%` : "-"}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+          <div className="comparison-block">
+            <h3 className="comparison-title">SERVES</h3>
+            <div className="comparison-box">
+              <table className="comparison-table">
+                <tbody>
+                  {renderRow("% First Serves", "percentage_1st_serves")}
+                  {renderRow("% Service Games Won", "percentage_service_games_won")}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-<div className="comparison-block">
-  <h3 className="comparison-title">TACTICS</h3>
-  <div className="comparison-box">
-    <table className="comparison-table">
-      <tbody>
-        <tr>
-          <td>{player1?.cross_vs_parallel ? `${player1.cross_vs_parallel}` : "-"}</td>
-          <td className="field-label">% Cross-court vs Down-the-line Shots</td>
-          <td>{player2?.cross_vs_parallel ? `${player2.cross_vs_parallel}` : "-"}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+          <div className="comparison-block">
+            <h3 className="comparison-title">TACTICS</h3>
+            <div className="comparison-box">
+              <table className="comparison-table">
+                <tbody>
+                  {renderRow("% Cross-court Shots", "percentage_cross")}
+                  {renderRow("% Parallel Shots", "percentage_parallel")}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-<div className="comparison-block">
-  <h3 className="comparison-title">RETURNS</h3>
-  <div className="comparison-box">
-    <table className="comparison-table">
-      <tbody>
-        <tr>
-          <td>{player1?.return_lobs ? `${player1.return_lobs}%` : "-"}</td>
-          <td className="field-label">% Return Lobs</td>
-          <td>{player2?.return_lobs ? `${player2.return_lobs}%` : "-"}</td>
-        </tr>
-        <tr>
-          <td>{player1?.return_low ? `${player1.return_low}%` : "-"}</td>
-          <td className="field-label">% Low Returns</td>
-          <td>{player2?.return_low ? `${player2.return_low}%` : "-"}</td>
-        </tr>
-        <tr>
-          <td>{player1?.return_errors ? `${player1.return_errors}%` : "-"}</td>
-          <td className="field-label">% Return Errors</td>
-          <td>{player2?.return_errors ? `${player2.return_errors}%` : "-"}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+          <div className="comparison-block">
+            <h3 className="comparison-title">RETURNS</h3>
+            <div className="comparison-box">
+              <table className="comparison-table">
+                <tbody>
+                  {renderRow("% Lob Returns", "percentage_lobbed_returns")}
+                  {renderRow("% Flat Returns", "percentage_flat_returns")}
+                  {renderRow("% Error Returns", "percentage_return_errors")}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-<div className="comparison-block">
-  <h3 className="comparison-title">AERIAL GAME</h3>
-  <div className="comparison-box">
-    <table className="comparison-table">
-      <tbody>
-        <tr>
-          <td>{player1?.lobs_received_per_match ?? "-"}</td>
-          <td className="field-label">Lobs Received per Match</td>
-          <td>{player2?.lobs_received_per_match ?? "-"}</td>
-        </tr>
-        <tr>
-          <td>{player1?.lob_response_distribution ?? "-"}</td>
-          <td className="field-label">Response to Lobs (% smashes, rulos, víboras/bandejas, bajadas)</td>
-          <td>{player2?.lob_response_distribution ?? "-"}</td>
-        </tr>
-        <tr>
-          <td>{player1?.winners_from_lobs ? `${player1.winners_from_lobs}%` : "-"}</td>
-          <td className="field-label">% Winners from Lobs Received</td>
-          <td>{player2?.winners_from_lobs ? `${player2.winners_from_lobs}%` : "-"}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+          <div className="comparison-block">
+            <h3 className="comparison-title">AERIAL GAME</h3>
+            <div className="comparison-box">
+              <table className="comparison-table">
+                <tbody>
+                  {renderRow("Lobs Received per Match", "lobs_received_per_match", (v) => v)}
+                  {renderRow("% Smashes from Lobs", "percentage_smashes_from_lobs")}
+                  {renderRow("% Rulos from Lobs", "percentage_rulos_from_lobs")}
+                  {renderRow("% Viborejas from Lobs", "percentage_viborejas_from_lobs")}
+                  {renderRow("% Bajadas from Lobs", "percentage_bajadas_from_lobs")}
+                  {renderRow("% Winners from Lobs Received", "winners_from_lobs")}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-<div className="comparison-block">
-  <h3 className="comparison-title">DEFENSE</h3>
-  <div className="comparison-box">
-    <table className="comparison-table">
-      <tbody>
-        <tr>
-          <td>{player1?.smash_recovery_percentage ? `${player1.smash_recovery_percentage}%` : "-"}</td>
-          <td className="field-label">% Smashes Recovered</td>
-          <td>{player2?.smash_recovery_percentage ? `${player2.smash_recovery_percentage}%` : "-"}</td>
-        </tr>
-        <tr>
-          <td>{player1?.lobs_played_per_point ?? "-"}</td>
-          <td className="field-label">Lobs Played per Point</td>
-          <td>{player2?.lobs_played_per_point ?? "-"}</td>
-        </tr>
-        <tr>
-          <td>{player1?.net_recovery_with_lob ? `${player1.net_recovery_with_lob}%` : "-"}</td>
-          <td className="field-label">% Net Recovery with Lob</td>
-          <td>{player2?.net_recovery_with_lob ? `${player2.net_recovery_with_lob}%` : "-"}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-    </>
-  )}
-</div>
-
-
-          {/* Más secciones futuras */}
-        </div>
+          <div className="comparison-block">
+            <h3 className="comparison-title">DEFENSE</h3>
+            <div className="comparison-box">
+              <table className="comparison-table">
+                <tbody>
+                  {renderRow("Number of Outside recoveries in the season", "outside_recoveries", (v) => v)}
+                  {renderRow("Lobs Played per Match", "lobs_played_per_match", (v) => v)}
+                  {renderRow("% Net Recovery with Lob", "net_recovery_with_lob", (v) => `${(v * 100).toFixed(2)}%`)}
+                  {renderRow("Number of Unforced Errors per Match", "unforced_errors_per_match", (v) => v)}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
+    </div>
+  );
+};
 
 export default Comparator;
+

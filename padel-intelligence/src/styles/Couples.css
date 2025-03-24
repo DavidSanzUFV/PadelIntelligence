@@ -19,7 +19,7 @@
   flex-direction: column;
   padding-top: 100px; /* 🟣 Da espacio para el navbar fijo */
   align-items: center;
-  background: linear-gradient(to bottom, #7E5BEF 50%, #4A3BAA 50%);
+  background: linear-gradient(135deg, #b39ddb, #90caf9, #80deea);
 }
 
 /* Título */
