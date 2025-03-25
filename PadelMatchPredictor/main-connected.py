@@ -333,7 +333,7 @@ def get_basic_player_stats(player_name: str):
                 SUM(num_smash_defense_winners_salida) AS outside_recoveries,
                 ROUND(AVG(num_lobs)::numeric, 2) AS lobs_played_per_match,
                 ROUND(AVG(percentage_net_regains_after_lob), 2)*100 AS percentage_net_regains_with_lob,
-                ROUND(AVG( num_unforced_error)::numeric, 2) AS unforced_errors_per_match
+                ROUND(AVG(num_Unforced_Errors)::numeric, 2) AS unforced_errors_per_match
 
             FROM player_stats
             WHERE player = %s;
