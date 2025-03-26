@@ -495,6 +495,7 @@ def get_curiosities():
             FROM player_stats ps
             WHERE ps.percentage_net_regains_after_lob IS NOT NULL
             GROUP BY ps.player
+            HAVING COUNT(*) >= 5
             ORDER BY avg_net_recovery_lob DESC
             LIMIT 3;
         """)
@@ -511,6 +512,7 @@ def get_curiosities():
             FROM player_stats ps
             WHERE ps.num_smashes IS NOT NULL AND ps.num_lobs_received > 0
             GROUP BY ps.player
+            HAVING COUNT(*) >= 5
             ORDER BY smash_percentage DESC
             LIMIT 3;
         """)
@@ -529,6 +531,7 @@ def get_curiosities():
             FROM player_stats ps
             WHERE ps.num_lobs IS NOT NULL
             GROUP BY ps.player
+            HAVING COUNT(*) >= 5
             ORDER BY avg_lobs_per_match DESC
             LIMIT 3;
         """)
@@ -555,6 +558,7 @@ def get_curiosities():
             FROM player_stats ps
             WHERE ps.percentage_lobs IS NOT NULL
             GROUP BY ps.player
+            HAVING COUNT(*) >= 5
             ORDER BY avg_lob_percentage DESC
             LIMIT 3;
         """)
@@ -572,6 +576,7 @@ def get_curiosities():
             FROM player_stats ps
             WHERE ps.viborejas_winners IS NOT NULL
             GROUP BY ps.player
+            HAVING COUNT(*) >= 5
             ORDER BY avg_viborejas_winners DESC
             LIMIT 3;
         """)
@@ -624,6 +629,7 @@ def get_curiosities():
             FROM player_stats ps
             WHERE ps.num_serves > 0
             GROUP BY ps.player
+            HAVING COUNT(*) >= 5
             ORDER BY first_serve_percentage DESC
             LIMIT 3;
         """)
@@ -641,6 +647,7 @@ def get_curiosities():
             FROM player_stats ps
             WHERE ps.percentage_lobbed_returns IS NOT NULL
             GROUP BY ps.player
+            HAVING COUNT(*) >= 5
             ORDER BY avg_lobbed_returns DESC
             LIMIT 3;
         """)
@@ -660,8 +667,8 @@ def get_curiosities():
                     END
                 ) * 100, 2) AS return_error_percentage
             FROM player_stats ps
-            WHERE ps.num_returns > 0
             GROUP BY ps.player
+            HAVING COUNT(*) >= 5  -- al menos 5 partidos jugados
             ORDER BY return_error_percentage DESC
             LIMIT 3;
         """)
@@ -711,6 +718,398 @@ def get_curiosities():
         print(f"❌ Error in /curiosities: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/highlights")
+def get_highlights():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+
+        highlights = []
+
+        # 🧊 QUERY 1 - Biggest Nevera
+        cursor.execute("""          WITH lowest_stat AS (
+                SELECT 
+                    player_id,
+                    partner_id,
+                    match_id,
+                    player,
+                    date,
+                    tournament_id,
+                    percentage_balls
+                FROM 
+                    player_stats
+                ORDER BY 
+                    percentage_balls ASC
+                LIMIT 1
+            ),
+            players_in_match AS (
+                SELECT 
+                    ps.player AS opponent_name
+                FROM 
+                    player_stats ps
+                JOIN lowest_stat ls ON ps.match_id = ls.match_id
+                WHERE 
+                    ps.player_id NOT IN (ls.player_id, ls.partner_id)
+            ),
+            partner AS (
+                SELECT player AS partner_name
+                FROM player_stats
+                WHERE player_id = (SELECT partner_id FROM lowest_stat)
+                LIMIT 1
+            ),
+            tournament AS (
+                SELECT tournament_name
+                FROM tournaments
+                WHERE tournament_id = (SELECT tournament_id FROM lowest_stat)
+            )
+            SELECT 
+                ls.player,
+                p.partner_name,
+                ls.percentage_balls,
+                t.tournament_name,
+                ARRAY_AGG(pim.opponent_name) AS opponents
+            FROM lowest_stat ls
+            JOIN players_in_match pim ON TRUE
+            JOIN partner p ON TRUE
+            JOIN tournament t ON TRUE
+            GROUP BY ls.player, p.partner_name, ls.percentage_balls, t.tournament_name;""")  
+        row = cursor.fetchone()
+        player, partner_name, percentage_balls, tournament_name, opponents = row
+
+        description = (
+            f"The biggest nevera of the year happened at {tournament_name}, "
+            f"in a match featuring {player}, {partner_name}, {opponents[0]} and {opponents[1]}. "
+            f"{player} hit only {round(percentage_balls * 100, 1)}% of the balls."
+        )
+
+        highlights.append({
+            "player": f"{player} & {partner_name} vs {opponents[0]} & {opponents[1]}",
+            "value": description,
+            "location": tournament_name
+        })
+
+        # 🔁 QUERY 2 - Most Shots
+        cursor.execute("""WITH total_shots_per_match AS (
+    SELECT 
+        match_id,
+        SUM(num_shots) AS total_shots
+    FROM 
+        player_stats
+    GROUP BY 
+        match_id
+),
+top_match AS (
+    SELECT 
+        match_id,
+        total_shots
+    FROM 
+        total_shots_per_match
+    ORDER BY 
+        total_shots DESC
+    LIMIT 1
+),
+players_in_match AS (
+    SELECT 
+        player,
+        match_id,
+        ROW_NUMBER() OVER () AS rn
+    FROM 
+        player_stats
+    WHERE 
+        match_id = (SELECT match_id FROM top_match)
+),
+tournament AS (
+    SELECT 
+        tournament_name
+    FROM 
+        tournaments
+    WHERE 
+        tournament_id = (
+            SELECT tournament_id FROM player_stats
+            WHERE match_id = (SELECT match_id FROM top_match)
+            LIMIT 1
+        )
+)
+SELECT 
+    (SELECT total_shots FROM top_match) AS total_shots,
+    (SELECT tournament_name FROM tournament) AS tournament_name,
+    MAX(CASE WHEN rn = 1 THEN player END) AS player1,
+    MAX(CASE WHEN rn = 2 THEN player END) AS player2,
+    MAX(CASE WHEN rn = 3 THEN player END) AS player3,
+    MAX(CASE WHEN rn = 4 THEN player END) AS player4
+FROM 
+    players_in_match;
+
+""")  
+        row = cursor.fetchone()
+        total_shots, tournament_name, p1, p2, p3, p4 = row
+
+        description = (
+            f"The match with the most shots was played at {tournament_name}, "
+            f"featuring {p1}, {p2}, {p3} and {p4}, with a total of {total_shots} shots."
+        )
+
+        highlights.append({
+            "player": f"{p1} & {p2} vs {p3} & {p4}",
+            "value": description,
+            "location": tournament_name
+        })
+# 🟣 QUERY 3 - Most Points in a Match
+        cursor.execute("""
+            WITH top_match AS (
+                SELECT 
+                    match_id,
+                    points_played
+                FROM 
+                    player_stats
+                ORDER BY 
+                    points_played DESC
+                LIMIT 1
+            ),
+            players_in_match AS (
+                SELECT 
+                    player,
+                    ROW_NUMBER() OVER () AS rn
+                FROM 
+                    player_stats
+                WHERE 
+                    match_id = (SELECT match_id FROM top_match)
+            ),
+            tournament AS (
+                SELECT tournament_name
+                FROM tournaments
+                WHERE tournament_id = (
+                    SELECT tournament_id FROM player_stats
+                    WHERE match_id = (SELECT match_id FROM top_match)
+                    LIMIT 1
+                )
+            )
+            SELECT 
+                (SELECT points_played FROM top_match) AS points_played,
+                (SELECT tournament_name FROM tournament),
+                MAX(CASE WHEN rn = 1 THEN player END),
+                MAX(CASE WHEN rn = 2 THEN player END),
+                MAX(CASE WHEN rn = 3 THEN player END),
+                MAX(CASE WHEN rn = 4 THEN player END)
+            FROM players_in_match;
+        """)
+
+        row = cursor.fetchone()
+        points, tournament_name, p1, p2, p3, p4 = row
+
+        description = (
+            f"The match with the most points was played at {tournament_name}, "
+            f"featuring {p1}, {p2}, {p3}, and {p4}, with a total of {points} points."
+        )
+
+        highlights.append({
+            "player": f"{p1} & {p2} vs {p3} & {p4}",
+            "value": description,
+            "location": tournament_name
+        })
+# 🌫️ QUERY 4 - Most Lobs in a Match
+        cursor.execute("""
+            WITH total_lobs_per_match AS (
+                SELECT 
+                    match_id,
+                    SUM(num_lobs) AS total_lobs
+                FROM 
+                    player_stats
+                GROUP BY 
+                    match_id
+            ),
+            top_match AS (
+                SELECT 
+                    match_id,
+                    total_lobs
+                FROM 
+                    total_lobs_per_match
+                ORDER BY 
+                    total_lobs DESC
+                LIMIT 1
+            ),
+            players_in_match AS (
+                SELECT 
+                    player,
+                    ROW_NUMBER() OVER () AS rn
+                FROM 
+                    player_stats
+                WHERE 
+                    match_id = (SELECT match_id FROM top_match)
+            ),
+            tournament AS (
+                SELECT tournament_name
+                FROM tournaments
+                WHERE tournament_id = (
+                    SELECT tournament_id FROM player_stats
+                    WHERE match_id = (SELECT match_id FROM top_match)
+                    LIMIT 1
+                )
+            )
+            SELECT 
+                (SELECT total_lobs FROM top_match) AS total_lobs,
+                (SELECT tournament_name FROM tournament),
+                MAX(CASE WHEN rn = 1 THEN player END),
+                MAX(CASE WHEN rn = 2 THEN player END),
+                MAX(CASE WHEN rn = 3 THEN player END),
+                MAX(CASE WHEN rn = 4 THEN player END)
+            FROM players_in_match;
+        """)
+
+        row = cursor.fetchone()
+        total_lobs, tournament_name, p1, p2, p3, p4 = row
+
+        description = (
+            f"The match with the most lobs was played at {tournament_name}, "
+            f"featuring {p1}, {p2}, {p3}, and {p4}, with a total of {total_lobs} lobs."
+        )
+
+        highlights.append({
+            "player": f"{p1} & {p2} vs {p3} & {p4}",
+            "value": description,
+            "location": tournament_name
+        })
+        # 🚪 QUERY 5 - Most Door Exits in a Match
+        cursor.execute("""
+            WITH total_door_exits_per_match AS (
+                SELECT 
+                    match_id,
+                    SUM(num_Smash_Defense_winners_Salida) AS total_door_exits
+                FROM 
+                    player_stats
+                GROUP BY 
+                    match_id
+            ),
+            top_match AS (
+                SELECT 
+                    match_id,
+                    total_door_exits
+                FROM 
+                    total_door_exits_per_match
+                ORDER BY 
+                    total_door_exits DESC
+                LIMIT 1
+            ),
+            players_in_match AS (
+                SELECT 
+                    player,
+                    ROW_NUMBER() OVER () AS rn
+                FROM 
+                    player_stats
+                WHERE 
+                    match_id = (SELECT match_id FROM top_match)
+            ),
+            tournament AS (
+                SELECT tournament_name
+                FROM tournaments
+                WHERE tournament_id = (
+                    SELECT tournament_id FROM player_stats
+                    WHERE match_id = (SELECT match_id FROM top_match)
+                    LIMIT 1
+                )
+            )
+            SELECT 
+                (SELECT total_door_exits FROM top_match) AS total_door_exits,
+                (SELECT tournament_name FROM tournament),
+                MAX(CASE WHEN rn = 1 THEN player END),
+                MAX(CASE WHEN rn = 2 THEN player END),
+                MAX(CASE WHEN rn = 3 THEN player END),
+                MAX(CASE WHEN rn = 4 THEN player END)
+            FROM players_in_match;
+        """)
+
+        row = cursor.fetchone()
+        door_exits, tournament_name, p1, p2, p3, p4 = row
+
+        description = (
+            f"The match with the most door exits was played at {tournament_name}, "
+            f"featuring {p1}, {p2}, {p3}, and {p4}, with a total of {door_exits} exits."
+        )
+
+        highlights.append({
+            "player": f"{p1} & {p2} vs {p3} & {p4}",
+            "value": description,
+            "location": tournament_name
+        })
+        # 💥 QUERY 6 - Most Smashes in a Match
+        cursor.execute("""
+            WITH total_smashes_per_match AS (
+                SELECT 
+                    match_id,
+                    SUM(num_smashes) AS total_smashes
+                FROM 
+                    player_stats
+                GROUP BY 
+                    match_id
+            ),
+            top_match AS (
+                SELECT 
+                    match_id,
+                    total_smashes
+                FROM 
+                    total_smashes_per_match
+                ORDER BY 
+                    total_smashes DESC
+                LIMIT 1
+            ),
+            players_in_match AS (
+                SELECT 
+                    player,
+                    ROW_NUMBER() OVER () AS rn
+                FROM 
+                    player_stats
+                WHERE 
+                    match_id = (SELECT match_id FROM top_match)
+            ),
+            tournament AS (
+                SELECT tournament_name
+                FROM tournaments
+                WHERE tournament_id = (
+                    SELECT tournament_id FROM player_stats
+                    WHERE match_id = (SELECT match_id FROM top_match)
+                    LIMIT 1
+                )
+            )
+            SELECT 
+                (SELECT total_smashes FROM top_match) AS total_smashes,
+                (SELECT tournament_name FROM tournament),
+                MAX(CASE WHEN rn = 1 THEN player END),
+                MAX(CASE WHEN rn = 2 THEN player END),
+                MAX(CASE WHEN rn = 3 THEN player END),
+                MAX(CASE WHEN rn = 4 THEN player END)
+            FROM players_in_match;
+        """)
+
+        row = cursor.fetchone()
+        smashes, tournament_name, p1, p2, p3, p4 = row
+
+        description = (
+            f"The match with the most smashes was played at {tournament_name}, "
+            f"featuring {p1}, {p2}, {p3}, and {p4}, with a total of {smashes} smashes."
+        )
+
+        highlights.append({
+            "player": f"{p1} & {p2} vs {p3} & {p4}",
+            "value": description,
+            "location": tournament_name
+        })
+       
+
+
+
+#TERMINAR
+        cursor.close()
+        conn.close()
+    
+
+        return highlights
+
+    except Exception as e:
+        print(f"❌ ERROR en /highlights: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+    
 if __name__ == "__main__":
     # For testing without API, you could call main() here,
     # but typically this module would be run via uvicorn.

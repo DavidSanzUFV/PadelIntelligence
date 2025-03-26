@@ -100,4 +100,85 @@
     font-size: 1rem;
     color: var(--text-gray);
   }
+  .highlights-intense {
+    margin-top: 5px;
+    background: linear-gradient(
+      135deg,
+      #b39ddb,     /* mismo color del fondo original */
+      #ffd180,     /* naranja pastel suave */
+      #ffab91,     /* salmón suave */
+      #ffd180,     /* vuelta al naranja pastel */
+      #90caf9      /* azul suave */
+    );
+    background-size: 400% 400%;
+    animation: fireWaveSoft 12s ease-in-out infinite;
+    padding: 30px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    text-align: center;
+  }
   
+  
+  
+  .intense-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--text-white);
+    letter-spacing: 1px;
+  }
+  
+  .intense-subtitle {
+    font-size: 1rem;
+    color: var(--text-gray);
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  @keyframes fireWaveSoft {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  .highlights-grid-3 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    padding-bottom: 100px;
+    padding-top: 60px;
+    }
+    .highlight-card-intense {
+      background: linear-gradient(
+        135deg,
+        #ffcc80,
+        #ffab91,
+        #ffd180,
+        #ffab91,
+        #ffcc80
+      );
+      background-size: 400% 400%;
+      animation: fireCard 10s ease-in-out infinite;
+      color: var(--text-white);
+      box-shadow: 0 4px 20px rgba(255, 87, 34, 0.3);
+    }
+    @keyframes fireCard {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+        

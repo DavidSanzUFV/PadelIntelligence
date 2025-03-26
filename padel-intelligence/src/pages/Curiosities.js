@@ -53,6 +53,19 @@ const transformCuriosities = (data) => {
     "Return Errors": "❌"
   };
 
+  const percentageTitles = [
+    "Main Draw Gender Ratio",
+    "Cross vs Parallel",
+    "Lob to Net Gain %",
+    "Smash Percentage",
+    "Lob Usage %",
+    "1st vs 2nd Serve",
+    "Returns: Lob vs Low",
+    "Return Errors"
+  ];
+  
+  const isPercentageTitle = (title) => percentageTitles.includes(title);
+  
   for (const [category, items] of Object.entries(data)) {
     for (const [title, facts] of Object.entries(items)) {
       const entry = {
@@ -60,18 +73,42 @@ const transformCuriosities = (data) => {
         icon: icons[title] || "📌",
         description: descriptions[title] || "",
         facts: Array.isArray(facts)
-        ? facts.map((f, i) => {
-            const medal = ["🥇", "🥈", "🥉"][i] || "🥇";
-            if (typeof f === "string") return `${medal} ${f}`;
-            if (typeof f === "object" && f !== null) {
-              // Intenta serializar los campos comunes como player + value
-              const keys = Object.keys(f);
-              return `${medal} ${f.player || f.nationality || f.brand || "Item"} (${Object.values(f).filter(v => typeof v === 'number' || typeof v === 'string').slice(1).join(", ")})`;
-            }
-            return `${medal} ${String(f)}`;
-          })
-        : [`🥇 ${String(facts)}`]
-      
+          ? facts.map((f, i) => {
+              const medal = ["🥇", "🥈", "🥉"][i] || "🏅";
+  
+              // 🧠 Si ya es string como "54% Men / 46% Women"
+              if (typeof f === "string") return `${medal} ${f}`;
+  
+              // 🧠 Si es un objeto tipo { player: ..., value: ... }
+              if (typeof f === "object" && f !== null) {
+                const label =
+                  f.player || f.nationality || f.brand || "Item";
+                const value = Object.values(f).find(v => typeof v === "number");
+  
+                if (value !== undefined) {
+                  let displayValue;
+
+                  if (["Returns: Lob vs Low", "Lob Usage %"].includes(title)) {
+                    displayValue = (value * 100).toFixed(2);
+                  } else {
+                    displayValue = value.toFixed(2);
+                  }
+  
+                  const suffix = isPercentageTitle(title) ? "%" : "";
+                  return `${medal} ${label} (${displayValue}${suffix})`;
+                }
+  
+                // Fallback si no hay número
+                const fallback = Object.values(f)
+                  .filter(v => typeof v === "string" || typeof v === "number")
+                  .slice(1)
+                  .join(", ");
+                return `${medal} ${label} (${fallback})`;
+              }
+  
+              return `${medal} ${String(f)}`;
+            })
+          : [`🥇 ${String(facts)}`]
       };
   
       if (transformed[category]) {
@@ -79,8 +116,6 @@ const transformCuriosities = (data) => {
       }
     }
   }
-  
-
   return transformed;
 };
 
