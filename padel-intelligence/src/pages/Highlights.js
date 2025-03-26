@@ -1,104 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import HighlightCard from "../components/HighlightCard";
 import "../styles/Highlights.css";
-import { FaSnowflake, FaCloud, FaDoorOpen, FaRunning } from "react-icons/fa";
-import { GiTennisRacket, GiClick } from "react-icons/gi";
-import { GiFlame, GiPathDistance, GiPunch } from "react-icons/gi";
+import {
+  FaSnowflake, FaCloud, FaDoorOpen, FaRunning
+} from "react-icons/fa";
+import {
+  GiTennisRacket, GiClick, GiFlame, GiPathDistance, GiPunch
+} from "react-icons/gi";
 
-const seasonSummaryTop = [
-  {
-    icon: <FaSnowflake className="highlight-icon" />,
-    title: "Biggest Nevera of the Year",
-    player: "Lebrón & Galán vs Coello & Tapia",
-    value: "Biggest Nevera of the Year",
-    location: "Madrid Master Final",
-  },
-  {
-    icon: <GiClick className="highlight-icon" />,
-    title: "Most Shots in a Match",
-    player: "Chingotto & Navarro vs Sánchez & Gutiérrez",
-    value: "Most Shots in a Match",
-    location: "Barcelona Open",
-  },
-  {
-    icon: <FaCloud className="highlight-icon" />,
-    title: "Most Lobs in a Match",
-    player: "Bela & Tello vs Lebrón & Galán",
-    value: "Most Lobs in a Match",
-    location: "Buenos Aires P1",
-  },
-  {
-    icon: <GiTennisRacket className="highlight-icon" />,
-    title: "Most Points in a Match",
-    player: "Stupa & Di Nenno vs Coello & Tapia",
-    value: "Most Points in a Match",
-    location: "Málaga P1",
-  },
-];
-
-const seasonSummaryExtra = [
-  {
-    icon: <FaDoorOpen className="highlight-icon" />,
-    title: "Most Door Exits per Match",
-    player: "Coello & Tapia vs Galán & Lebrón",
-    value: "Most Door Exits per Match",
-    location: "Sevilla Open",
-  },
-  {
-    icon: <GiTennisRacket className="highlight-icon" />,
-    title: "Most Smashes in a Match",
-    player: "Coello & Tapia vs Chingotto & Navarro",
-    value: "Most Smashes in a Match",
-    location: "Roma Major",
-  },
-  {
-    icon: <GiTennisRacket className="highlight-icon" />,
-    title: "Fewest Smashes in a Match",
-    player: "Bela & Yanguas vs Sánchez & Gutiérrez",
-    value: "Fewest Smashes in a Match",
-    location: "Santander Open",
-  },
-  {
-    icon: <FaRunning className="highlight-icon" />,
-    title: "Fewest Unforced Errors",
-    player: "Stupa & Di Nenno vs Tello & Ruiz",
-    value: "Fewest Unforced Errors",
-    location: "Vigo P1",
-  },
-];
-
-const intenseMatches = [
-  {
-    icon: <GiFlame className="highlight-icon" />,
-    title: "Most Repeated Matchup",
-    player: "Galán & Lebrón vs Coello & Tapia",
-    value: "Played 6 times this season",
-    location: "Various Tournaments",
-  },
-  {
-    icon: <GiPathDistance className="highlight-icon" />,
-    title: "Most Long Points Played",
-    player: "Galán & Lebrón vs Coello & Tapia",
-    value: "238 Long Points",
-    location: "Roma Major",
-  },
-  {
-    icon: <GiTennisRacket className="highlight-icon" />,
-    title: "Most Winners in a Match",
-    player: "Coello & Tapia vs Stupa & Di Nenno",
-    value: "182 Winners",
-    location: "Madrid P1",
-  },
-  {
-    icon: <GiPunch className="highlight-icon" />,
-    title: "Most Forced Errors in a Match",
-    player: "Galán & Lebrón vs Coello & Tapia",
-    value: "76 Forced Errors",
-    location: "Valencia P1",
-  },
-];
+// 🎯 Mapeo de iconos por título
+const iconMap = {
+  "Biggest Nevera of the Year": <FaSnowflake className="highlight-icon" />,
+  "Most Shots in a Match": <GiClick className="highlight-icon" />,
+  "Most Lobs in a Match": <FaCloud className="highlight-icon" />,
+  "Most Points in a Match": <GiTennisRacket className="highlight-icon" />,
+  "Most Door Exits per Match": <FaDoorOpen className="highlight-icon" />,
+  "Most Smashes in a Match": <GiTennisRacket className="highlight-icon" />,
+  "Fewest Smashes in a Match": <GiTennisRacket className="highlight-icon" />,
+  "Fewest Unforced Errors": <FaRunning className="highlight-icon" />,
+  "Most Repeated Matchup": <GiFlame className="highlight-icon" />,
+  "Most Long Points Played": <GiPathDistance className="highlight-icon" />,
+  "Most Winners in a Match": <GiTennisRacket className="highlight-icon" />,
+  "Most Forced Errors in a Match": <GiPunch className="highlight-icon" />
+};
 
 const Highlights = () => {
+  const [highlights, setHighlights] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/highlights")
+      .then(res => res.json())
+      .then(data => setHighlights(data))
+      .catch(err => console.error("Error loading highlights", err));
+  }, []);
+
+  const top = highlights.slice(0, 4);
+  const extra = highlights.slice(4, 8);
+  const intense = highlights.slice(8, 12);
+
   return (
     <div className="highlights-container">
       <h1 className="highlights-title">SEASON HIGHLIGHTS</h1>
@@ -107,12 +46,15 @@ const Highlights = () => {
       </p>
 
       <div className="highlights-grid">
-        {seasonSummaryTop.map((item, idx) => (
-          <HighlightCard key={idx} {...item} />
+        {top.map((item, idx) => (
+          <HighlightCard
+            key={idx}
+            icon={iconMap[item.title]}
+            {...item}
+          />
         ))}
       </div>
 
-      {/* NUEVA SECCIÓN DE ESTADÍSTICAS TOTALES */}
       <div className="highlights-summary">
         <h2 className="summary-title">📊 SEASON SUMMARY</h2>
         <div className="summary-stats">
@@ -130,23 +72,34 @@ const Highlights = () => {
           </div>
         </div>
       </div>
+
       <div className="highlights-grid-2">
-        {seasonSummaryExtra.map((item, idx) => (
-          <HighlightCard key={idx} {...item} />
+        {extra.map((item, idx) => (
+          <HighlightCard
+            key={idx}
+            icon={iconMap[item.title]}
+            {...item}
+          />
         ))}
       </div>
+
       <div className="highlights-intense">
         <h2 className="intense-title">🔥 MOST INTENSE MATCHES</h2>
         <p className="intense-subtitle">
           Discover the fiercest battles and the most spectacular duels of the season.
         </p>
       </div>
+
       <div className="highlights-grid-3">
-        {intenseMatches.map((item, idx) => (
-          <HighlightCard key={idx} {...item} isIntense={true} />
+        {intense.map((item, idx) => (
+          <HighlightCard
+            key={idx}
+            icon={iconMap[item.title]}
+            {...item}
+            isIntense={true}
+          />
         ))}
       </div>
-
     </div>
   );
 };

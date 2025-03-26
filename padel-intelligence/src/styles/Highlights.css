@@ -7,11 +7,11 @@
     padding-top: 100px;
   }
   
-  .highlights-title {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    letter-spacing: 1px;
+  .highlight-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-white);
   }
   
   .highlights-subtitle {
@@ -50,15 +50,19 @@
   .highlight-icon {
     font-size: 2.5rem;
     color: var(--highlight-teal);
-    margin-bottom: 10px;
+    margin-bottom: 16px; /* más espacio respecto al título */
   }
+  
   
   .highlight-value {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     font-weight: bold;
     color: var(--text-gray);
+    transition: all 0.3s ease;
+    min-height: 4rem; /* espacio mínimo para evitar que cambie el tamaño de la tarjeta */
   }
   
+
   .highlight-player, .highlight-match {
     font-size: 1rem;
     opacity: 0.9;
@@ -181,4 +185,28 @@
         background-position: 0% 50%;
       }
     }
+    .highlight-toggle {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: var(--text-gray);
+      cursor: pointer;
+      opacity: 0.8;
+    }
+    
+    .highlight-card:hover .highlight-toggle {
+      opacity: 1;
+    }
+    .highlight-location {
+      font-size: 1rem;
+      color: var(--text-gray);
+      margin-bottom: 10px;
+      opacity: 0.9;
+    }
+    
+.highlight-details {
+  font-size: 0.9rem;
+  color: var(--text-gray);
+  margin-top: 10px;
+  line-height: 1.4;
+}
         

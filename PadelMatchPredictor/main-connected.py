@@ -776,15 +776,19 @@ def get_highlights():
         row = cursor.fetchone()
         player, partner_name, percentage_balls, tournament_name, opponents = row
 
-        description = (
+        value_short = f"{player} hit only {round(percentage_balls * 100, 1)}% of the balls"
+
+        value_long = (
             f"The biggest nevera of the year happened at {tournament_name}, "
             f"in a match featuring {player}, {partner_name}, {opponents[0]} and {opponents[1]}. "
             f"{player} hit only {round(percentage_balls * 100, 1)}% of the balls."
         )
 
         highlights.append({
+            "title": "Biggest Nevera of the Year",
             "player": f"{player} & {partner_name} vs {opponents[0]} & {opponents[1]}",
-            "value": description,
+            "valueShort": value_short,
+            "valueLong": value_long,
             "location": tournament_name
         })
 
@@ -844,16 +848,21 @@ FROM
         row = cursor.fetchone()
         total_shots, tournament_name, p1, p2, p3, p4 = row
 
-        description = (
+        value_short = f"{total_shots} shots played"
+
+        value_long = (
             f"The match with the most shots was played at {tournament_name}, "
             f"featuring {p1}, {p2}, {p3} and {p4}, with a total of {total_shots} shots."
         )
 
         highlights.append({
+            "title": "Most Shots in a Match",
             "player": f"{p1} & {p2} vs {p3} & {p4}",
-            "value": description,
+            "valueShort": value_short,
+            "valueLong": value_long,
             "location": tournament_name
         })
+
 # 🟣 QUERY 3 - Most Points in a Match
         cursor.execute("""
             WITH top_match AS (
@@ -897,16 +906,21 @@ FROM
         row = cursor.fetchone()
         points, tournament_name, p1, p2, p3, p4 = row
 
-        description = (
+        value_short = f"{points} points played"
+
+        value_long = (
             f"The match with the most points was played at {tournament_name}, "
             f"featuring {p1}, {p2}, {p3}, and {p4}, with a total of {points} points."
         )
 
         highlights.append({
+            "title": "Most Points in a Match",
             "player": f"{p1} & {p2} vs {p3} & {p4}",
-            "value": description,
+            "valueShort": value_short,
+            "valueLong": value_long,
             "location": tournament_name
         })
+
 # 🌫️ QUERY 4 - Most Lobs in a Match
         cursor.execute("""
             WITH total_lobs_per_match AS (
@@ -959,16 +973,21 @@ FROM
         row = cursor.fetchone()
         total_lobs, tournament_name, p1, p2, p3, p4 = row
 
-        description = (
+        value_short = f"{total_lobs} lobs played"
+
+        value_long = (
             f"The match with the most lobs was played at {tournament_name}, "
             f"featuring {p1}, {p2}, {p3}, and {p4}, with a total of {total_lobs} lobs."
         )
 
         highlights.append({
+            "title": "Most Lobs in a Match",
             "player": f"{p1} & {p2} vs {p3} & {p4}",
-            "value": description,
+            "valueShort": value_short,
+            "valueLong": value_long,
             "location": tournament_name
         })
+
         # 🚪 QUERY 5 - Most Door Exits in a Match
         cursor.execute("""
             WITH total_door_exits_per_match AS (
@@ -1021,16 +1040,20 @@ FROM
         row = cursor.fetchone()
         door_exits, tournament_name, p1, p2, p3, p4 = row
 
-        description = (
+        value_short = f"{door_exits} door exits"
+        value_long = (
             f"The match with the most door exits was played at {tournament_name}, "
             f"featuring {p1}, {p2}, {p3}, and {p4}, with a total of {door_exits} exits."
         )
 
         highlights.append({
+            "title": "Most Door Exits per Match",
             "player": f"{p1} & {p2} vs {p3} & {p4}",
-            "value": description,
+            "valueShort": value_short,
+            "valueLong": value_long,
             "location": tournament_name
         })
+
         # 💥 QUERY 6 - Most Smashes in a Match
         cursor.execute("""
             WITH total_smashes_per_match AS (
@@ -1083,18 +1106,402 @@ FROM
         row = cursor.fetchone()
         smashes, tournament_name, p1, p2, p3, p4 = row
 
-        description = (
+        value_short = f"{smashes} smashes"
+        value_long = (
             f"The match with the most smashes was played at {tournament_name}, "
             f"featuring {p1}, {p2}, {p3}, and {p4}, with a total of {smashes} smashes."
         )
 
         highlights.append({
+            "title": "Most Smashes in a Match",
             "player": f"{p1} & {p2} vs {p3} & {p4}",
-            "value": description,
+            "valueShort": value_short,
+            "valueLong": value_long,
             "location": tournament_name
         })
-       
 
+        # ❄️ QUERY 7 - Fewest Smashes in a Match
+        cursor.execute("""
+            WITH total_smashes_per_match AS (
+                SELECT 
+                    match_id,
+                    SUM(num_smashes) AS total_smashes
+                FROM 
+                    player_stats
+                GROUP BY 
+                    match_id
+            ),
+            bottom_match AS (
+                SELECT 
+                    match_id,
+                    total_smashes
+                FROM 
+                    total_smashes_per_match
+                ORDER BY 
+                    total_smashes ASC
+                LIMIT 1
+            ),
+            players_in_match AS (
+                SELECT 
+                    player,
+                    ROW_NUMBER() OVER () AS rn
+                FROM 
+                    player_stats
+                WHERE 
+                    match_id = (SELECT match_id FROM bottom_match)
+            ),
+            tournament AS (
+                SELECT tournament_name
+                FROM tournaments
+                WHERE tournament_id = (
+                    SELECT tournament_id FROM player_stats
+                    WHERE match_id = (SELECT match_id FROM bottom_match)
+                    LIMIT 1
+                )
+            )
+            SELECT 
+                (SELECT total_smashes FROM bottom_match) AS total_smashes,
+                (SELECT tournament_name FROM tournament),
+                MAX(CASE WHEN rn = 1 THEN player END),
+                MAX(CASE WHEN rn = 2 THEN player END),
+                MAX(CASE WHEN rn = 3 THEN player END),
+                MAX(CASE WHEN rn = 4 THEN player END)
+            FROM players_in_match;
+        """)
+
+        row = cursor.fetchone()
+        smashes, tournament_name, p1, p2, p3, p4 = row
+
+        value_short = f"{smashes} smashes"
+        value_long = (
+            f"The match with the fewest smashes was played at {tournament_name}, "
+            f"featuring {p1}, {p2}, {p3}, and {p4}, with only {smashes} smashes."
+        )
+
+        highlights.append({
+            "title": "Fewest Smashes in a Match",
+            "player": f"{p1} & {p2} vs {p3} & {p4}",
+            "valueShort": value_short,
+            "valueLong": value_long,
+            "location": tournament_name
+        })
+
+        # 🧼 QUERY 8 - Fewest Unforced Errors in a Match
+        cursor.execute("""
+            WITH total_errors_per_match AS (
+                SELECT 
+                    match_id,
+                    SUM(num_Unforced_Errors) AS total_errors
+                FROM 
+                    player_stats
+                GROUP BY 
+                    match_id
+            ),
+            bottom_match AS (
+                SELECT 
+                    match_id,
+                    total_errors
+                FROM 
+                    total_errors_per_match
+                ORDER BY 
+                    total_errors ASC
+                LIMIT 1
+            ),
+            players_in_match AS (
+                SELECT 
+                    player,
+                    ROW_NUMBER() OVER () AS rn
+                FROM 
+                    player_stats
+                WHERE 
+                    match_id = (SELECT match_id FROM bottom_match)
+            ),
+            tournament AS (
+                SELECT tournament_name
+                FROM tournaments
+                WHERE tournament_id = (
+                    SELECT tournament_id FROM player_stats
+                    WHERE match_id = (SELECT match_id FROM bottom_match)
+                    LIMIT 1
+                )
+            )
+            SELECT 
+                (SELECT total_errors FROM bottom_match) AS total_unforced_errors,
+                (SELECT tournament_name FROM tournament),
+                MAX(CASE WHEN rn = 1 THEN player END),
+                MAX(CASE WHEN rn = 2 THEN player END),
+                MAX(CASE WHEN rn = 3 THEN player END),
+                MAX(CASE WHEN rn = 4 THEN player END)
+            FROM players_in_match;
+        """)
+
+        row = cursor.fetchone()
+        errors, tournament_name, p1, p2, p3, p4 = row
+
+        value_short = f"{errors} unforced errors"
+        value_long = (
+            f"The match with the fewest unforced errors was played at {tournament_name}, "
+            f"featuring {p1}, {p2}, {p3}, and {p4}, with only {errors} unforced errors."
+        )
+
+        highlights.append({
+            "title": "Fewest Unforced Errors",
+            "player": f"{p1} & {p2} vs {p3} & {p4}",
+            "valueShort": value_short,
+            "valueLong": value_long,
+            "location": tournament_name
+        })
+
+        # 🔁 QUERY 9 - Most Repeated Matchup of the Year
+        cursor.execute("""
+            WITH player_pairs AS (
+                SELECT
+                    match_id,
+                    LEAST(player_id, partner_id) AS p1,
+                    GREATEST(player_id, partner_id) AS p2
+                FROM player_stats
+            ),
+            matchups_ordered AS (
+                SELECT
+                    match_id,
+                    MIN(p1) AS teamA_player1,
+                    MIN(p2) AS teamA_player2,
+                    MAX(p1) AS teamB_player1,
+                    MAX(p2) AS teamB_player2
+                FROM player_pairs
+                GROUP BY match_id
+            ),
+            matchup_counts AS (
+                SELECT
+                    LEAST(teamA_player1, teamB_player1) AS a1,
+                    LEAST(teamA_player2, teamB_player2) AS a2,
+                    GREATEST(teamA_player1, teamB_player1) AS b1,
+                    GREATEST(teamA_player2, teamB_player2) AS b2,
+                    COUNT(*) AS times_played,
+                    MAX(match_id) AS sample_match
+                FROM matchups_ordered
+                GROUP BY
+                    LEAST(teamA_player1, teamB_player1),
+                    LEAST(teamA_player2, teamB_player2),
+                    GREATEST(teamA_player1, teamB_player1),
+                    GREATEST(teamA_player2, teamB_player2)
+                ORDER BY times_played DESC
+                LIMIT 1
+            ),
+            players_in_match AS (
+                SELECT
+                    player_id,
+                    player
+                FROM player_stats
+                WHERE match_id = (SELECT sample_match FROM matchup_counts)
+            )
+            SELECT
+                mc.times_played,
+                MAX(CASE WHEN pim.player_id = mc.a1 THEN pim.player END),
+                MAX(CASE WHEN pim.player_id = mc.a2 THEN pim.player END),
+                MAX(CASE WHEN pim.player_id = mc.b1 THEN pim.player END),
+                MAX(CASE WHEN pim.player_id = mc.b2 THEN pim.player END)
+            FROM matchup_counts mc
+            JOIN players_in_match pim
+            ON pim.player_id IN (mc.a1, mc.a2, mc.b1, mc.b2)
+            GROUP BY mc.a1, mc.a2, mc.b1, mc.b2, mc.times_played;
+        """)
+
+        row = cursor.fetchone()
+        times_played, p1, p2, p3, p4 = row
+
+        value_short = f"Played {times_played} times"
+        value_long = (
+            f"The most repeated matchup of the year was played {times_played} times "
+            f"between {p1} & {p2} vs {p3} & {p4}."
+        )
+
+        highlights.append({
+            "title": "Most Repeated Matchup",
+            "player": f"{p1} & {p2} vs {p3} & {p4}",
+            "valueShort": value_short,
+            "valueLong": value_long,
+            "location": "Premier Padel"
+        })
+
+        # 🔥 QUERY 10 - Most Long Points in a Match
+        cursor.execute("""
+            WITH long_point_totals AS (
+                SELECT
+                    match_id,
+                    tournament_id,
+                    SUM(num_long_points_winners + num_long_points_ue + num_long_points_pe) AS total_long_points
+                FROM player_stats
+                GROUP BY match_id, tournament_id
+            ),
+            top_match AS (
+                SELECT 
+                    match_id,
+                    tournament_id,
+                    total_long_points
+                FROM long_point_totals
+                ORDER BY total_long_points DESC
+                LIMIT 1
+            ),
+            players_in_top_match AS (
+                SELECT 
+                    player,
+                    ROW_NUMBER() OVER () AS rn
+                FROM player_stats
+                WHERE match_id = (SELECT match_id FROM top_match)
+            ),
+            tournament AS (
+                SELECT tournament_name
+                FROM tournaments
+                WHERE tournament_id = (SELECT tournament_id FROM top_match)
+            )
+            SELECT 
+                tm.total_long_points,
+                (SELECT tournament_name FROM tournament),
+                MAX(CASE WHEN pitm.rn = 1 THEN pitm.player END),
+                MAX(CASE WHEN pitm.rn = 2 THEN pitm.player END),
+                MAX(CASE WHEN pitm.rn = 3 THEN pitm.player END),
+                MAX(CASE WHEN pitm.rn = 4 THEN pitm.player END)
+            FROM top_match tm
+            JOIN players_in_top_match pitm ON TRUE
+            GROUP BY tm.total_long_points;
+        """)
+
+        row = cursor.fetchone()
+        long_points, tournament_name, p1, p2, p3, p4 = row
+
+        value_short = f"{long_points} long rallies"
+        value_long = (
+            f"The match with the most long points was played at {tournament_name}, "
+            f"featuring {p1}, {p2}, {p3}, and {p4}, with a total of {long_points} long rallies."
+        )
+
+        highlights.append({
+            "title": "Most Long Points Played",
+            "player": f"{p1} & {p2} vs {p3} & {p4}",
+            "valueShort": value_short,
+            "valueLong": value_long,
+            "location": tournament_name
+        })
+
+        # 🎯 QUERY 11 - Most Winners in a Match
+        cursor.execute("""
+            WITH total_winners_per_match AS (
+                SELECT
+                    match_id,
+                    tournament_id,
+                    SUM(num_winners) AS total_winners
+                FROM player_stats
+                GROUP BY match_id, tournament_id
+            ),
+            top_match AS (
+                SELECT 
+                    match_id,
+                    tournament_id,
+                    total_winners
+                FROM total_winners_per_match
+                ORDER BY total_winners DESC
+                LIMIT 1
+            ),
+            players_in_match AS (
+                SELECT 
+                    player,
+                    ROW_NUMBER() OVER () AS rn
+                FROM player_stats
+                WHERE match_id = (SELECT match_id FROM top_match)
+            ),
+            tournament AS (
+                SELECT tournament_name
+                FROM tournaments
+                WHERE tournament_id = (SELECT tournament_id FROM top_match)
+            )
+            SELECT 
+                tm.total_winners,
+                (SELECT tournament_name FROM tournament),
+                MAX(CASE WHEN pim.rn = 1 THEN pim.player END),
+                MAX(CASE WHEN pim.rn = 2 THEN pim.player END),
+                MAX(CASE WHEN pim.rn = 3 THEN pim.player END),
+                MAX(CASE WHEN pim.rn = 4 THEN pim.player END)
+            FROM top_match tm
+            JOIN players_in_match pim ON TRUE
+            GROUP BY tm.total_winners;
+        """)
+
+        row = cursor.fetchone()
+        winners, tournament_name, p1, p2, p3, p4 = row
+        value_short = f"{winners} winners"
+        value_long = (
+            f"The match with the most winners was played at {tournament_name}, "
+            f"featuring {p1}, {p2}, {p3}, and {p4}, with a total of {winners} winners."
+        )
+
+        highlights.append({
+            "title": "Most Winners in a Match",
+            "player": f"{p1} & {p2} vs {p3} & {p4}",
+            "valueShort": value_short,
+            "valueLong": value_long,
+            "location": tournament_name
+        })
+
+        # 💣 QUERY 12 - Most Forced Errors in a Match
+        cursor.execute("""
+            WITH total_forced_errors_per_match AS (
+                SELECT
+                    match_id,
+                    tournament_id,
+                    SUM(num_pressured_errors) AS total_forced_errors
+                FROM player_stats
+                GROUP BY match_id, tournament_id
+            ),
+            top_match AS (
+                SELECT 
+                    match_id,
+                    tournament_id,
+                    total_forced_errors
+                FROM total_forced_errors_per_match
+                ORDER BY total_forced_errors DESC
+                LIMIT 1
+            ),
+            players_in_match AS (
+                SELECT 
+                    player,
+                    ROW_NUMBER() OVER () AS rn
+                FROM player_stats
+                WHERE match_id = (SELECT match_id FROM top_match)
+            ),
+            tournament AS (
+                SELECT tournament_name
+                FROM tournaments
+                WHERE tournament_id = (SELECT tournament_id FROM top_match)
+            )
+            SELECT 
+                tm.total_forced_errors,
+                (SELECT tournament_name FROM tournament),
+                MAX(CASE WHEN pim.rn = 1 THEN pim.player END),
+                MAX(CASE WHEN pim.rn = 2 THEN pim.player END),
+                MAX(CASE WHEN pim.rn = 3 THEN pim.player END),
+                MAX(CASE WHEN pim.rn = 4 THEN pim.player END)
+            FROM top_match tm
+            JOIN players_in_match pim ON TRUE
+            GROUP BY tm.total_forced_errors;
+        """)
+
+        row = cursor.fetchone()
+        forced_errors, tournament_name, p1, p2, p3, p4 = row
+
+        value_short = f"{forced_errors} forced errors"
+        value_long = (
+            f"The match with the most forced errors was played at {tournament_name}, "
+            f"featuring {p1}, {p2}, {p3}, and {p4}, with a total of {forced_errors} forced errors."
+        )
+
+        highlights.append({
+            "title": "Most Forced Errors in a Match",
+            "player": f"{p1} & {p2} vs {p3} & {p4}",
+            "valueShort": value_short,
+            "valueLong": value_long,
+            "location": tournament_name
+        })
 
 
 #TERMINAR
@@ -1108,8 +1515,6 @@ FROM
         print(f"❌ ERROR en /highlights: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
-    
 if __name__ == "__main__":
     # For testing without API, you could call main() here,
     # but typically this module would be run via uvicorn.
