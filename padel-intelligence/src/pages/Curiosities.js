@@ -1,137 +1,110 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CuriosityCard from "../components/CuriosityCard";
 import "../styles/Curiosities.css";
 
-const curiositiesData = {
-  "Rankings & Player Profiles": [
-    {
-      icon: "📊",
-      title: "Nationality Ranking",
-      fact: "TOP 5",
-      description: "The most represented countries on tour this season."
-    },
-    {
-      icon: "🥎",
-      title: "Racket Brand Usage",
-      fact: "TOP 5",
-      description: "Top brands used by pro players this year."
-    },
-    {
-      icon: "🏆",
-      title: "Most Wins",
-      fact: "36",
-      description: "Player with the most matches won this season."
-    },
-    {
-      icon: "💔",
-      title: "Most Partner Changes",
-      fact: "6",
-      description: "Javi Leal played with 6 different partners this season."
-    },
-    {
-      icon: "🔁",
-      title: "Side Switchers",
-      fact: "Multiple",
-      description: "Players who played both left and right sides during the year."
-    },
-    {
-      icon: "🚻",
-      title: "Main Draw Gender Ratio",
-      fact: "63% Men / 37% Women",
-      description: "Proportion of men and women in main draws in 2024."
+const transformCuriosities = (data) => {
+  const transformed = {
+    "Rankings & Player Profiles": [],
+    "Playing Style & Tactics": [],
+    "Shot Frequency": [],
+    "Effectiveness": [],
+    "Serve & Return": []
+  };
+
+  const descriptions = {
+    "Nationality Ranking": "The most represented countries on tour this season.",
+    "Racket Brand Usage": "Top brands used by pro players this year.",
+    "Most Wins": "Player with the most matches won this season.",
+    "Most Partner Changes": "Player who played with the most different partners.",
+    "Side Switchers": "Players who played both left and right sides during the year.",
+    "Main Draw Gender Ratio": "Proportion of men and women in main draws in 2024.",
+    "Cross vs Parallel": "Top 3 players with highest % of cross-court shots.",
+    "Lob to Net Gain %": "Top 3 players who recover net after lob.",
+    "Lob Outcomes": "Top 3 players with highest smash-to-lob ratio.",
+    "Lobs per Point": "Top 3 players with highest avg of lobs per match.",
+    "Total Lobs This Season": "Total number of lobs in the season.",
+    "Lob Usage %": "Top 3 players with highest lob usage %. ",
+    "Avg of Winners of Viborejas per match": "Top 3 players with most vibora winners per match.",
+    "Smash Defenses": "% of smashes defended successfully this season.",
+    "Court Exits": "Top 3 players with most smash-defense exits.",
+    "1st vs 2nd Serve": "Top 3 players with highest % of 1st serves.",
+    "Returns: Lob vs Low": "Top 3 players with highest lob return %.",
+    "Return Errors": "Top 3 players with most return error %."
+  };
+
+  const icons = {
+    "Nationality Ranking": "📊",
+    "Racket Brand Usage": "🥎",
+    "Most Wins": "🏆",
+    "Most Partner Changes": "💔",
+    "Side Switchers": "🔁",
+    "Main Draw Gender Ratio": "🚻",
+    "Cross vs Parallel": "🧭",
+    "Lob to Net Gain %": "🎯",
+    "Lob Outcomes": "🌀",
+    "Lobs per Point": "🌫️",
+    "Total Lobs This Season": "📈",
+    "Lob Usage %": "🔢",
+    "Avg of Winners of Viborejas per match": "💥",
+    "Smash Defenses": "🛡️",
+    "Court Exits": "🚪",
+    "1st vs 2nd Serve": "🎯",
+    "Returns: Lob vs Low": "🆙",
+    "Return Errors": "❌"
+  };
+
+  for (const [category, items] of Object.entries(data)) {
+    for (const [title, facts] of Object.entries(items)) {
+      const entry = {
+        title,
+        icon: icons[title] || "📌",
+        description: descriptions[title] || "",
+        facts: Array.isArray(facts)
+        ? facts.map((f, i) => {
+            const medal = ["🥇", "🥈", "🥉"][i] || "🥇";
+            if (typeof f === "string") return `${medal} ${f}`;
+            if (typeof f === "object" && f !== null) {
+              // Intenta serializar los campos comunes como player + value
+              const keys = Object.keys(f);
+              return `${medal} ${f.player || f.nationality || f.brand || "Item"} (${Object.values(f).filter(v => typeof v === 'number' || typeof v === 'string').slice(1).join(", ")})`;
+            }
+            return `${medal} ${String(f)}`;
+          })
+        : [`🥇 ${String(facts)}`]
+      
+      };
+  
+      if (transformed[category]) {
+        transformed[category].push(entry);
+      }
     }
-  ],
-  "Playing Style & Tactics": [
-    {
-      icon: "🧭",
-      title: "Cross vs Parallel",
-      fact: "62% Cross",
-      description: "Majority of points played cross-court this season."
-    },
-    {
-      icon: "🎯",
-      title: "Lob to Net Gain %",
-      fact: "31%",
-      description: "How often lobs helped players win the net."
-    },
-    {
-      icon: "🌀",
-      title: "Lob Outcomes",
-      fact: "Mixed",
-      description: "What usually happens after a lob: remate, bandeja, etc."
-    }
-  ],
-  "Shot Frequency": [
-    {
-      icon: "🌫️",
-      title: "Lobs per Point",
-      fact: "1.4 avg",
-      description: "Average number of lobs per point played."
-    },
-    {
-      icon: "🎾",
-      title: "Shot Mix per Point",
-      fact: "4 types",
-      description: "Smashes, bandejas, rulos and bajadas in each rally."
-    },
-    {
-      icon: "📈",
-      title: "Total Lobs This Season",
-      fact: "6,830",
-      description: "Number of lobs registered during the season."
-    },
-    {
-      icon: "🔢",
-      title: "Lob Usage %",
-      fact: "28%",
-      description: "Percentage of points that include at least one lob."
-    }
-  ],
-  "Effectiveness": [
-    {
-      icon: "💥",
-      title: "Winner % by Shot Type",
-      fact: "47%",
-      description: "How effective are smashes, rulos, etc. in ending points."
-    },
-    {
-      icon: "🛡️",
-      title: "Smash Defenses",
-      fact: "18%",
-      description: "How often smashes are successfully defended."
-    },
-    {
-      icon: "🚪",
-      title: "Court Exits",
-      fact: "3.1 per match",
-      description: "Average number of exits per match to recover balls."
-    }
-  ],
-  "Serve & Return": [
-    {
-      icon: "🎯",
-      title: "1st vs 2nd Serve",
-      fact: "79% / 21%",
-      description: "Percentage of points played with first or second serve."
-    },
-    {
-      icon: "🆙",
-      title: "Returns: Lob vs Low",
-      fact: "42% lobs",
-      description: "How players chose to return: lob or drive."
-    },
-    {
-      icon: "❌",
-      title: "Return Errors",
-      fact: "11%",
-      description: "Direct unforced errors made while returning serve."
-    }
-  ]
+  }
+  
+
+  return transformed;
 };
 
-
 const Curiosities = () => {
+  const [curiositiesData, setCuriositiesData] = useState(null);
   const [activeTab, setActiveTab] = useState("Rankings & Player Profiles");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/curiosities")
+      .then((res) => res.json())
+      .then((data) => {
+        const transformed = transformCuriosities(data);
+        setCuriositiesData(transformed);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error loading curiosities:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div className="curiosities-container">Loading...</div>;
+  if (!curiositiesData) return <div className="curiosities-container">No data</div>;
 
   return (
     <div className="curiosities-container">
@@ -140,7 +113,6 @@ const Curiosities = () => {
         Discover surprising facts and quirky moments from this season.
       </p>
 
-      {/* Tabs */}
       <div className="curiosities-tabs">
         {Object.keys(curiositiesData).map((category) => (
           <button
@@ -153,7 +125,6 @@ const Curiosities = () => {
         ))}
       </div>
 
-      {/* Grid */}
       <div className="curiosities-grid">
         {curiositiesData[activeTab].map((item, idx) => (
           <CuriosityCard key={idx} {...item} />

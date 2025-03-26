@@ -372,6 +372,344 @@ def get_basic_player_stats(player_name: str):
         print(f"❌ Error en player_stats para {player_name}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/curiosities")
+def get_curiosities():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+
+        curiosities = {}
+
+        # 1. Nationality Ranking
+        cursor.execute("""
+            SELECT nationality, COUNT(*) AS count
+            FROM (
+                SELECT DISTINCT player_id, nationality
+                FROM player_stats
+                WHERE nationality IS NOT NULL
+            ) AS unique_players
+            GROUP BY nationality
+            ORDER BY count DESC
+            LIMIT 3;
+        """)
+        nationalities = cursor.fetchall()
+        curiosities["Nationality Ranking"] = [f"{row[0]} ({row[1]})" for row in nationalities]
+
+        # 2. Racket Brand Usage
+        cursor.execute("""
+            SELECT brand, COUNT(*) AS count
+            FROM (
+                SELECT DISTINCT player_id, brand
+                FROM player_stats
+                WHERE brand IS NOT NULL AND brand != 'Default' 
+            ) AS unique_players
+            GROUP BY brand
+            ORDER BY count DESC
+            LIMIT 3;
+        """)
+        brands = cursor.fetchall()
+        curiosities["Racket Brand Usage"] = [f"{row[0]} ({row[1]})" for row in brands]
+
+        # 3. Most Wins
+        cursor.execute("""
+            SELECT player, COUNT(*) as wins
+            FROM player_stats
+            WHERE result = 'W'
+            GROUP BY player
+            ORDER BY wins DESC
+            LIMIT 3;
+        """)
+        wins = cursor.fetchall()
+        curiosities["Most Wins"] = [f"{row[0]} ({row[1]} wins)" for row in wins]
+
+        # 4. Most Partner Changes
+        cursor.execute("""
+            SELECT player, COUNT(DISTINCT partner) as num_partners
+            FROM player_stats
+            WHERE partner IS NOT NULL
+            GROUP BY player
+            ORDER BY num_partners DESC
+            LIMIT 3;
+        """)
+
+        partner_changes = cursor.fetchall()
+        curiosities["Most Partner Changes"] = [
+            f"{row[0]} ({row[1]} partners)" for row in partner_changes
+        ]
+
+
+        # 5. Main Draw Gender Ratio
+        cursor.execute("""
+            SELECT gender, COUNT(*) 
+            FROM (
+                SELECT DISTINCT player_id, gender
+                FROM player_stats
+                WHERE gender IS NOT NULL
+            ) AS unique_players
+            GROUP BY gender;
+        """)
+        gender_counts = dict(cursor.fetchall())
+        total = sum(gender_counts.values())
+        men = gender_counts.get("M", 0)
+        women = gender_counts.get("W", 0)
+        ratio = f"{round(men / total * 100)}% Men / {round(women / total * 100)}% Women"
+        curiosities["Main Draw Gender Ratio"] = [ratio]
+    #6  Cross vs Parallel — Top 3 jugadores con mayor % de bolas cruzadas:
+        cursor.execute("""
+                WITH player_sides AS (
+                    SELECT player_id, MAX(side) AS side
+                    FROM player_stats
+                    WHERE side IN ('Left', 'Right')
+                    GROUP BY player_id
+                ),
+                player_cross_stats AS (
+                    SELECT 
+                        ps.player_id,
+                        CASE 
+                            WHEN ps.side = 'Left' THEN AVG(shot_to_l::float / NULLIF(num_shots_wo_returns, 0)) 
+                            WHEN ps.side = 'Right' THEN AVG(shot_to_r::float / NULLIF(num_shots_wo_returns, 0)) 
+                        END AS avg_cross_percentage
+                    FROM player_stats ps
+                    JOIN player_sides USING (player_id)
+                    GROUP BY ps.player_id, ps.side
+                )
+                SELECT ps.player AS player_name, 
+                    ROUND((pcs.avg_cross_percentage * 100)::numeric, 2) AS cross_percentage
+                FROM player_cross_stats pcs
+                JOIN player_stats ps ON ps.player_id = pcs.player_id
+                GROUP BY ps.player, pcs.avg_cross_percentage
+                ORDER BY cross_percentage DESC
+                LIMIT 3;
+            """)
+        cross_top3 = cursor.fetchall()
+
+        cross_results = [
+                {"player": row[0], "cross_percentage": float(row[1])}
+                for row in cross_top3
+            ]
+
+# 7 Top 3 jugadores en net recovery después de lob (% promedio):
+        cursor.execute("""
+            SELECT ps.player AS player_name, 
+                ROUND(AVG(ps.percentage_net_regains_after_lob) * 100, 2) AS avg_net_recovery_lob
+            FROM player_stats ps
+            WHERE ps.percentage_net_regains_after_lob IS NOT NULL
+            GROUP BY ps.player
+            ORDER BY avg_net_recovery_lob DESC
+            LIMIT 3;
+        """)
+        lob_net_recovery_top3 = cursor.fetchall()
+
+        lob_recovery_results = [
+            {"player": row[0], "net_recovery_lob": float(row[1])}
+            for row in lob_net_recovery_top3
+        ]
+# 8 Top 3 jugadores con mayor % de smashes por globo recibido:
+        cursor.execute("""
+            SELECT ps.player AS player_name,
+                ROUND((SUM(ps.num_smashes)::numeric / NULLIF(SUM(ps.num_lobs_received), 0)) * 100, 2) AS smash_percentage
+            FROM player_stats ps
+            WHERE ps.num_smashes IS NOT NULL AND ps.num_lobs_received > 0
+            GROUP BY ps.player
+            ORDER BY smash_percentage DESC
+            LIMIT 3;
+        """)
+
+        smash_lobs_top3 = cursor.fetchall()
+
+        smash_lobs_results = [
+            {"player": row[0], "smash_percentage": float(row[1])}
+            for row in smash_lobs_top3
+        ]
+
+#9 - Top 3 jugadores con más lobs jugados por partido (AVG(num_lobs)):
+        cursor.execute("""
+            SELECT ps.player AS player_name,
+                ROUND(AVG(ps.num_lobs)::numeric, 2) AS avg_lobs_per_match
+            FROM player_stats ps
+            WHERE ps.num_lobs IS NOT NULL
+            GROUP BY ps.player
+            ORDER BY avg_lobs_per_match DESC
+            LIMIT 3;
+        """)
+
+        top3_avg_lobs = cursor.fetchall()
+        avg_lobs_results = [
+            {"player": row[0], "avg_lobs_per_match": float(row[1])}
+            for row in top3_avg_lobs
+        ]
+
+#10 - Total de globos jugados en toda la temporada (SUM(num_lobs)):
+        cursor.execute("""
+            SELECT SUM(num_lobs)
+            FROM player_stats
+            WHERE num_lobs IS NOT NULL;
+        """)
+
+        total_lobs = cursor.fetchone()[0] or 0
+
+#11 - Top 3 jugadores con mayor % de globos en sus partidos
+        cursor.execute("""
+            SELECT ps.player AS player_name,
+                ROUND(AVG(ps.percentage_lobs)::numeric, 2) AS avg_lob_percentage
+            FROM player_stats ps
+            WHERE ps.percentage_lobs IS NOT NULL
+            GROUP BY ps.player
+            ORDER BY avg_lob_percentage DESC
+            LIMIT 3;
+        """)
+
+        top3_lob_percentage = cursor.fetchall()
+        lob_percentage_results = [
+            {"player": row[0], "avg_lob_percentage": float(row[1])}
+            for row in top3_lob_percentage
+        ]
+#12 - Top 3 jugadores con más winners de viborejas por partido (AVG(viborejas_winners)):
+
+        cursor.execute("""
+            SELECT ps.player AS player_name,
+                ROUND(AVG(ps.viborejas_winners)::numeric, 2) AS avg_viborejas_winners
+            FROM player_stats ps
+            WHERE ps.viborejas_winners IS NOT NULL
+            GROUP BY ps.player
+            ORDER BY avg_viborejas_winners DESC
+            LIMIT 3;
+        """)
+
+        top3_viborejas = cursor.fetchall()
+        viborejas_results = [
+            {"player": row[0], "avg_viborejas_winners": float(row[1])}
+            for row in top3_viborejas
+        ]
+
+#13 - Porcentaje de remates defendidos (Total remates ganados en defensa / Total remates intentados):
+        cursor.execute("""
+            SELECT 
+                SUM(num_smash_defense_winners_salida) AS total_defended,
+                SUM(num_points_won_after_smash) AS total_attacking_points
+            FROM player_stats;
+        """)
+
+        total_defense_data = cursor.fetchone()
+        total_defended = total_defense_data[0] or 0
+        total_remates = total_defense_data[1] or 1  # Para evitar división por 0
+        percentage_defended = round((total_defended / total_remates) * 100, 2)
+
+#14 - Top 3 jugadores con más salidas defensivas (smash_defense_winners_salida):
+        cursor.execute("""
+            SELECT ps.player AS player_name,
+                SUM(ps.num_smash_defense_winners_salida) AS total_exits
+            FROM player_stats ps
+            WHERE ps.num_smash_defense_winners_salida IS NOT NULL
+            GROUP BY ps.player
+            ORDER BY total_exits DESC
+            LIMIT 3;
+        """)
+
+        top3_exits = cursor.fetchall()
+        exits_results = [
+            {"player": row[0], "total_exits": int(row[1])}
+            for row in top3_exits
+        ]            
+
+#15 - Top 3 jugadores con mayor porcentaje de primeros saques
+        cursor.execute("""
+            SELECT ps.player AS player_name,
+                ROUND(AVG(
+                    CASE 
+                        WHEN ps.num_serves > 0 THEN ps.num_1st_serves::numeric / ps.num_serves
+                        ELSE NULL
+                    END
+                ) * 100, 2) AS first_serve_percentage
+            FROM player_stats ps
+            WHERE ps.num_serves > 0
+            GROUP BY ps.player
+            ORDER BY first_serve_percentage DESC
+            LIMIT 3;
+        """)
+
+        top3_first_serves = cursor.fetchall()
+        first_serves_results = [
+            {"player": row[0], "first_serve_percentage": float(row[1])}
+            for row in top3_first_serves
+        ]
+
+ #16 - Top 3 jugadores con mayor media de percentage_lobbed_returns:
+        cursor.execute("""
+            SELECT ps.player AS player_name,
+                ROUND(AVG(ps.percentage_lobbed_returns)::numeric, 2) AS avg_lobbed_returns
+            FROM player_stats ps
+            WHERE ps.percentage_lobbed_returns IS NOT NULL
+            GROUP BY ps.player
+            ORDER BY avg_lobbed_returns DESC
+            LIMIT 3;
+        """)
+
+        top3_lobbed_returns = cursor.fetchall()
+        lobbed_returns_results = [
+            {"player": row[0], "avg_lobbed_returns": float(row[1])}
+            for row in top3_lobbed_returns
+        ]
+ #17 - Top 3 jugadores con mayor ratio de errores al resto (num_return_errors / num_returns):
+        cursor.execute("""
+            SELECT ps.player AS player_name,
+                ROUND(AVG(
+                    CASE 
+                        WHEN ps.num_returns > 0 THEN ps.num_return_errors::numeric / ps.num_returns
+                        ELSE NULL
+                    END
+                ) * 100, 2) AS return_error_percentage
+            FROM player_stats ps
+            WHERE ps.num_returns > 0
+            GROUP BY ps.player
+            ORDER BY return_error_percentage DESC
+            LIMIT 3;
+        """)
+
+        top3_return_errors = cursor.fetchall()
+        return_errors_results = [
+            {"player": row[0], "return_error_percentage": float(row[1])}
+            for row in top3_return_errors
+        ]
+        cursor.close()
+        conn.close()
+
+        cursor.close()
+        conn.close()
+
+        return {
+            "Rankings & Player Profiles": {
+                "Nationality Ranking": curiosities["Nationality Ranking"],
+                "Racket Brand Usage": curiosities["Racket Brand Usage"],
+                "Most Wins": curiosities["Most Wins"],
+                "Most Partner Changes": curiosities["Most Partner Changes"],
+                "Main Draw Gender Ratio": curiosities["Main Draw Gender Ratio"]
+            },
+            "Playing Style & Tactics": {
+                "Cross vs Parallel": cross_results,
+                "Lob to Net Gain %": lob_recovery_results,
+                "Smash Percentage": smash_lobs_results
+            },
+            "Shot Frequency": {
+                "Lobs per Match": avg_lobs_results,
+                "Total Lobs This Season": [f"{total_lobs:,}"],
+                "Lob Usage %": lob_percentage_results
+            },
+            "Effectiveness": {
+                "Avg of Winners of Viborejas per match": viborejas_results,
+                "Smash Defenses": [f"{percentage_defended}%"],
+                "Court Exits": exits_results
+            },
+            "Serve & Return": {
+                "1st vs 2nd Serve": first_serves_results,
+                "Returns: Lob vs Low": lobbed_returns_results,
+                "Return Errors": return_errors_results
+            }
+        }
+
+    except Exception as e:
+        print(f"❌ Error in /curiosities: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     # For testing without API, you could call main() here,
