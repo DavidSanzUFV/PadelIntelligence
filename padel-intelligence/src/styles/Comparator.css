@@ -1,3 +1,7 @@
+.statistics-container-comparator{
+  background-color: #4e3a65;
+  margin-top: 50px;
+}
 .players-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -10,12 +14,17 @@
   /* Este contenedor ocupa las 2 columnas del grid */
   .comparison-block {
     grid-column: span 2;
-    background-color: linear-gradient(135deg, #4AB6A6, #6C4AB6);
+    background-color: var(--highlight-teal);
     border-radius: 20px;
     padding: 25px 0;
     margin-top: 30px;
     text-align: center;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+      margin: 30px auto; /* añade auto horizontal */
   }
   
   .comparison-title {
@@ -24,6 +33,7 @@
     margin-bottom: 10px;
     color: white;
     text-transform: uppercase;
+    text-shadow: 4px 4px 8px rgba(0,0,0,0.3);
   }
   
   .comparison-box {
@@ -32,12 +42,22 @@
   }
   
  /* Estilo base para la tabla */
-.comparison-table {
-    width: 100%;
-    border-collapse: collapse;
-    border-radius: 20px;
-    overflow: hidden;
-  }
+ .comparison-table {
+  table-layout: fixed;
+  width: 90%; /* más estrecha que el contenedor */
+  margin: 0 auto; /* centrado horizontal */
+  border-collapse: collapse;
+}
+
+
+.comparison-table td {
+  width: 33.33%; /* Cada una ocupa 1/3 del ancho */
+  text-align: center;
+  padding: 15px 10px;
+  vertical-align: middle;
+  font-weight: bold;
+  font-size: 1rem;
+}
   
   /* Estilo para las filas pares (índices impares) */
   .comparison-table tr:nth-child(odd) {
@@ -51,15 +71,13 @@
     color: white;
   }
   
-  /* Ajustes para las celdas */
-  .comparison-table td {
-    padding: 15px 20px;
-    font-weight: bold;
-    font-size: 1rem;
+  .comparison-table td span {
+    display: inline-block;
+    width: 100%;
     text-align: center;
-    color: inherit; /* hereda color de fila */
+    font-size: 1.1rem; /* más grande que el texto normal */
   }
-  
+
   /* Título de campo centrado y en verde */
   .field-label {
     color: #4AB6A6;
@@ -67,19 +85,44 @@
     font-weight: 700;
   }
   
-.statistics-container-comparator
-{
-  background: linear-gradient(135deg, #b39ddb, #90caf9, #80deea);
-}  
-.highlight-winner {
-  background-color: #a5d6a7; /* verde pastel */
-  font-weight: bold;
-  color: #1b5e20; /* verde más oscuro para contraste */
+  .highlight-winner {
+    color: #8bc34a; /* verde llamativo */
+    font-weight: bold;
+  }
+  
+  .highlight-loser {
+    color: #ef5350; /* rojo llamativo */
+    font-weight: bold;
+  }
+  .highlight-draw {
+    color: #fbc02d !important;
+    font-weight: bold;
+  }
+  .highlight-winner,
+  .highlight-loser,
+  .highlight-draw {
+    font-weight: 900;
+    transition: color 0.3s ease;
+    font-size: 1.5rem !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  }
+  .field-label {
+    color: #ffffff !important;
+    text-transform: uppercase;
+    font-weight: 900!important;
+    font-size: 1.3rem!important; /* <-- aumentá este valor */
+    letter-spacing: 0.5px; /* opcional: más claridad */
+  }
+/* Bordes redondos solo en la primera y última fila */
+.comparison-table tr:first-child td:first-child {
+  border-top-left-radius: 20px;
 }
-
-.highlight-loser {
-  background-color: #ef9a9a; /* rojo pastel */
-  font-weight: bold;
-  color: #b71c1c; /* rojo más oscuro para contraste */
+.comparison-table tr:first-child td:last-child {
+  border-top-right-radius: 20px;
 }
-
+.comparison-table tr:last-child td:first-child {
+  border-bottom-left-radius: 20px;
+}
+.comparison-table tr:last-child td:last-child {
+  border-bottom-right-radius: 20px;
+}

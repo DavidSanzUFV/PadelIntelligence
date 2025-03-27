@@ -12,30 +12,40 @@
 .couples-container {
   padding: 20px;
   text-align: center;
-  background-color: var(--primary-bg);
+  background-color: #4e3a65;
   color: var(--text-white);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   padding-top: 100px; /* 🟣 Da espacio para el navbar fijo */
   align-items: center;
-  background: linear-gradient(135deg, #b39ddb, #90caf9, #80deea);
 }
-
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 /* Título */
 .couples-title {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 10px;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
   color: var(--highlight-teal);
+  font-size: 4.5rem;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+  animation: fadeInUp 0.8s ease-out;
+  padding-top: 50px;
 }
 
 /* Descripción */
 .couples-description {
-  font-size: 1.2rem;
-  margin-bottom: 20px;
-  max-width: 600px;
-  color: var(--text-gray);
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 1000px;
+  margin: 0 auto 30px auto;
+  line-height: 1.6;
+  animation: fadeInUp 0.8s ease-out;
 }
 
 /* Grid con una pareja por fila */
@@ -48,7 +58,16 @@
   padding: 20px;
 }
 
-/* 🟣 Nuevo contenedor por pareja */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 /* 🟣 Nuevo contenedor por pareja */
 .couple-row {
   display: flex;
@@ -58,6 +77,8 @@
   width: 100%;
   max-width: 1100px;
   margin: 0 auto 15px auto; /* ⬅️ centrado horizontal */
+  animation: fadeInUp 0.6s ease-in-out;
+  margin-bottom: 30px;
 }
 
 
@@ -79,6 +100,10 @@
   cursor: pointer;
 }
 
+.couple-card:hover .player-name {
+  color: #ffffff;
+  text-shadow: 1px 1px 6px rgba(255,255,255,0.3);
+}
 
 /* Cada bloque de jugador */
 .player-block {
@@ -110,6 +135,8 @@
   color: var(--text-white);
   white-space: normal;
   word-wrap: break-word;
+  max-width: 180px;
+  overflow-wrap: break-word;
 }
 
 /* 🟣 Icono fuera del card */
@@ -128,6 +155,8 @@
 
 .stats-icon-couples:hover {
   background: linear-gradient(90deg, #6C4AB6, #4AB6A6);
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
 }
 
 .stats-icon-couples img {
@@ -136,87 +165,60 @@
   filter: brightness(0) invert(1);
 }
 
-
-/* Contenedor del filtro */
-.filter-container {
-  margin-bottom: 20px;
+.filters-bar {
   display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* Label del filtro */
-.filter-container label {
-  font-size: 1rem;
-  color: var(--text-gray);
-}
-
-/* Estilos para el select */
-.filter-container select {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-white);
-  border: 2px solid #4AB6A6;
-  padding: 10px 15px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  outline: none;
-  font-weight: bold;
-  transition: background 0.3s ease-in-out;
-  appearance: none;
-}
-
-/* Opciones dentro del select */
-.filter-container select option {
-  background-color: var(--secondary-bg);
-  color: var(--text-white);
-  font-weight: bold;
-}
-
-/* Efecto hover sin cambiar el borde */
-.filter-container select:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
-/* Estilo al hacer click (focus) */
-.filter-container select:focus {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Contenedor de controles (Filtro + Buscador) */
-.controls-container {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
-  justify-content: center;
   flex-wrap: wrap;
+  gap: 25px;
+  justify-content: center;
+  align-items: center;
+  animation: fadeInUp 0.8s ease-out;
+  margin-top: 5px;
+  margin-bottom: 30px;
 }
 
-/* Estilos para el input de búsqueda */
-.search-container input {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-white);
-  border: 2px solid #4AB6A6;
-  padding: 8px 15px;
-  border-radius: 25px;
-  font-size: 1rem;
+/* Input y Select general */
+.gender-select,
+.search-input {
+  padding: 12px 22px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 30px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
   outline: none;
-  font-weight: bold;
-  transition: background 0.3s ease-in-out;
-  width: 200px;
+  width: 220px;
   text-align: center;
-  margin-left: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-white);
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
-/* Efecto hover */
-.search-container input:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+/* Hover y Focus */
+.gender-select:hover,
+.search-input:hover,
+.gender-select:focus,
+.search-input:focus {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: white;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.25);
 }
 
-/* Efecto al hacer foco */
-.search-container input:focus {
-  background-color: rgba(255, 255, 255, 0.2);
+/* Opciones del Select */
+.gender-select option {
+  background: #3e2f55; /* fondo más claro, sin romper */
+  color: var(--text-white);
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 10px;
+  text-align: center;
 }
+
+/* Eliminar flecha en algunos navegadores */
+.gender-select::-ms-expand {
+  display: none;
+}
+
+
 
 /* Estilo para la bandera */
 .flag {

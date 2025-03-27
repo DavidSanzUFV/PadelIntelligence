@@ -7,20 +7,29 @@
   align-items: center;
   color: white;
   padding-top: 100px;
-  background: linear-gradient(135deg, #b39ddb, #90caf9, #80deea);
+  background-color: #4e3a65;
 }
 
 .title {
-  font-size: 2rem;
-  font-weight: bold;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--highlight-teal);
+  font-size: 4.5rem;
+  letter-spacing: 1px;
   margin-bottom: 10px;
-  color: #4AB6A6;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+  animation: fadeInUp 0.8s ease-out;
+  padding-top: 50px;
 }
 
 .subtitle {
-  font-size: 1.2rem;
-  margin-bottom: 20px;
-  max-width: 600px;
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 1000px;
+  margin: 0 auto 30px auto;
+  line-height: 1.6;
+  animation: fadeInUp 0.8s ease-out;
 }
 
 /* 📌 2 columnas para mostrar jugadores */
@@ -119,79 +128,77 @@
   color: white;
 }
 
-/* 📌 Contenedor de Filtros */
+/* ---------------------------------------------- */
+/* Filtros para Statistics                        */
+/* ---------------------------------------------- */
+
 .filters-container {
   display: flex;
   flex-wrap: wrap;
+  gap: 25px;
   justify-content: center;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
+  margin-top: 30px;
+  margin-bottom: 40px;
+  animation: fadeInUp 0.8s ease-out;
 }
 
-/* 📌 Estilos Generales para los Select y el Input */
-.filters-container select,
-.filters-container input {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-white);
-  border: 2px solid #4AB6A6;
-  padding: 10px 15px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 1rem;
+/* Estilos para input de búsqueda y selects */
+.filters-container input,
+.filters-container select {
+  padding: 12px 22px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 30px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
   outline: none;
-  font-weight: bold;
-  transition: background 0.3s ease-in-out;
+  width: 220px;
   text-align: center;
-  appearance: none;
-}
-
-/* 📌 Hover en los filtros */
-.filters-container select:hover,
-.filters-container input:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
-/* 📌 Focus en los filtros */
-.filters-container select:focus,
-.filters-container input:focus {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-/* 📌 Estilos para las opciones del select */
-.filters-container select option {
-  background-color: var(--secondary-bg);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--text-white);
-  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
-/* 📌 Estilos específicos para el campo de búsqueda */
-.filters-container input {
-  width: 200px;
-  text-align: center;
-  border: 2px solid #4AB6A6;
+/* Hover y focus */
+.filters-container input:hover,
+.filters-container select:hover,
+.filters-container input:focus,
+.filters-container select:focus {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: white;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.25);
 }
 
-/* 📌 Estilos para el botón de limpiar filtros */
-.clear-filters-button {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
-  font-weight: bold;
-  padding: 10px 15px;
-  border: 2px solid #4AB6A6;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: background 0.3s ease-in-out;
+/* Opciones de select */
+.filters-container select option {
+  background: #3e2f55;
+  color: var(--text-white);
   font-size: 1rem;
+  font-weight: 600;
+  padding: 10px;
+  text-align: center;
+}
+
+/* Botón de limpiar filtros */
+.clear-filters-button {
+  padding: 12px 22px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 30px;
+  border: 2px solid var(--highlight-purple);
+  background: linear-gradient(135deg, #1F2937, #6C4AB6);;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
 }
 
 .clear-filters-button:hover {
-  background-color: rgba(255, 255, 255, 0.4);
+  background: var(--highlight-purple);
+  color: var(white);
+  border-color: white;
 }
 
-.clear-filters-button:focus {
-  background-color: rgba(255, 255, 255, 0.5);
-}
 
 /* Contenedor de estadísticas */
 .stats-icon {

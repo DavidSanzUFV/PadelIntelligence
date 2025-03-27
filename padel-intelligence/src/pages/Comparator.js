@@ -91,23 +91,31 @@ const Comparator = () => {
   const getHighlightClass = (val1, val2) => {
     const n1 = parseFloat(val1);
     const n2 = parseFloat(val2);
-  
     if (isNaN(n1) || isNaN(n2)) return ["", ""];
-  
     if (n1 > n2) return ["highlight-winner", "highlight-loser"];
     if (n1 < n2) return ["highlight-loser", "highlight-winner"];
-    return ["", ""]; // empate
+    return ["highlight-draw", "highlight-draw"];
   };
   
+  
+
 
   const renderRow = (label, key, format = (v) => `${v}%`) => {
     const [p1Class, p2Class] = getHighlightClass(player1?.[key], player2?.[key]);
     return (
-      <tr>
-        <td className={p1Class}>{player1?.[key] !== undefined ? format(player1[key]) : "-"}</td>
-        <td className="field-label">{label}</td>
-        <td className={p2Class}>{player2?.[key] !== undefined ? format(player2[key]) : "-"}</td>
-      </tr>
+    <tr>
+      <td>
+        <span className={p1Class}>
+          {player1?.[key] !== undefined ? format(player1[key]) : "-"}
+        </span>
+      </td>
+      <td className="field-label">{label}</td>
+      <td>
+        <span className={p2Class}>
+          {player2?.[key] !== undefined ? format(player2[key]) : "-"}
+        </span>
+      </td>
+    </tr>
     );
   };
 

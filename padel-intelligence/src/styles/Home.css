@@ -37,7 +37,7 @@ html, body {
   padding: 0;        /* Ajustar si necesitas un padding */
   box-sizing: border-box;
   text-align: center;
-  background: linear-gradient(135deg, #b39ddb, #90caf9, #80deea);
+  background-color: #4e3a65;
 }
 
 .home-container
@@ -45,18 +45,21 @@ html, body {
   min-height: 130vh;
   padding-top: 100px; /* 🟣 Da espacio para el navbar fijo */
 }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* Título principal */
 .home-title {
-  font-family: 'Verdana', sans-serif; 
-  color: var(--text-white);          
-  font-size: 3rem;                    
-  font-weight: 700;                   
-  text-transform: uppercase;          
-  letter-spacing: 2px;                
-  margin-bottom: 3rem;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-  padding-top: 60px; /* Espacio adicional al final */
+  font-family: 'Rubik', sans-serif;
+  font-size: 4.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: white;
+  text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  animation: fadeInUp 0.8s ease-out;
 }
 
 /* Descripción */
@@ -103,7 +106,7 @@ html, body {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: var(--highlight-purple);
+  background: var(--highlight-teal);
   color: var(--text-white);
   border: none;
   font-size: 1.5rem;
@@ -120,7 +123,7 @@ html, body {
 }
 
 .carousel-button:hover {
-  background: var(--highlight-teal);
+  background: var(--highlight-purple);
   transform: scale(1.1);
 }
 
@@ -138,7 +141,8 @@ html, body {
 .carousel-caption {
   width: 80%; /* Mismo ancho que el carrusel */
   margin: 10px auto 0;
-  background-color: var(--highlight-purple);
+  /*background-color: var(--highlight-purple);*/
+  background-color: var(--primary-bg);
   color: var(--text-white);
   border-radius: 10px;
   padding: 1rem 1.5rem;
@@ -147,6 +151,10 @@ html, body {
   align-items: center;
   justify-content: center;
   gap: 1rem;
+  transform: scale(1.0);
+  .caption-logo {
+    filter: brightness(0) invert(1);
+  }
 }
 
 .carousel-caption:hover {

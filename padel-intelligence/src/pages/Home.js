@@ -12,6 +12,7 @@ import logo from "../assets/logo.png";
 // Example icons from react-icons
 import { FaChartLine, FaHandsHelping, FaUserTie } from "react-icons/fa";
 
+
 const slides = [
   { 
     image: carrousel1, 
@@ -56,7 +57,7 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <h2 className="home-title">Welcome to Padel Intelligence</h2>
+      <h1 className="home-title">Welcome to Padel Intelligence</h1>
       
       {/* Carousel */}
       <div className="carousel-container">

@@ -69,30 +69,24 @@ const Couples = () => {
         View and analyze player couples, their performance, and statistics.
       </p>
 
-      {/* Filtros */}
-      <div className="controls-container">
-        <div className="filter-container">
-          <label htmlFor="genderFilter">Filter by gender:</label>
-          <select
-            id="genderFilter"
-            value={genderFilter}
-            onChange={(e) => setGenderFilter(e.target.value)}
-          >
-            <option value="all">All</option>
-            <option value="M">Men</option>
-            <option value="W">Women</option>
-          </select>
-        </div>
+      <div className="filters-bar">
+        <select
+          className="gender-select"
+          value={genderFilter}
+          onChange={(e) => setGenderFilter(e.target.value)}
+        >
+          <option value="all">All Genders</option>
+          <option value="M">Men</option>
+          <option value="W">Women</option>
+        </select>
 
-        {/* Buscador */}
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search player..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
+        <input
+          type="text"
+          className="search-input"
+          placeholder="🔍 Search player..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
 
       {/* Lista de parejas con imágenes */}

@@ -54,7 +54,23 @@ const Highlights = () => {
           />
         ))}
       </div>
+      <div className="highlights-intense">
+        <h2 className="intense-title">🔥 MOST INTENSE MATCHES</h2>
+        <p className="intense-subtitle">
+          Discover the fiercest battles and the most spectacular duels of the season.
+        </p>
+      </div>
 
+      <div className="highlights-grid-3">
+        {intense.map((item, idx) => (
+          <HighlightCard
+            key={idx}
+            icon={iconMap[item.title]}
+            {...item}
+            isIntense={true}
+          />
+        ))}
+      </div>
       <div className="highlights-summary">
         <h2 className="summary-title">📊 SEASON SUMMARY</h2>
         <div className="summary-stats">
@@ -79,24 +95,6 @@ const Highlights = () => {
             key={idx}
             icon={iconMap[item.title]}
             {...item}
-          />
-        ))}
-      </div>
-
-      <div className="highlights-intense">
-        <h2 className="intense-title">🔥 MOST INTENSE MATCHES</h2>
-        <p className="intense-subtitle">
-          Discover the fiercest battles and the most spectacular duels of the season.
-        </p>
-      </div>
-
-      <div className="highlights-grid-3">
-        {intense.map((item, idx) => (
-          <HighlightCard
-            key={idx}
-            icon={iconMap[item.title]}
-            {...item}
-            isIntense={true}
           />
         ))}
       </div>

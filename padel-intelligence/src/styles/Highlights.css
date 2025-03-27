@@ -2,22 +2,38 @@
     padding: 40px 20px;
     color: var(--text-white);
     text-align: center;
-    background: linear-gradient(135deg, #b39ddb, #90caf9, #80deea);
+    background-color: #4e3a65;
     min-height: 100vh;
     padding-top: 100px;
   }
-  
+  .highlights-title
+  {
+    font-family: 'Rubik', sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--highlight-teal);
+    font-size: 4.5rem;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+    animation: fadeInUp 0.8s ease-out;
+    padding-top: 50px;
+  }
   .highlight-title {
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 8px;
     color: var(--text-white);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   }
   
   .highlights-subtitle {
-    font-size: 1.2rem;
-    margin-bottom: 40px;
-    opacity: 0.9;
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 1000px;
+    margin: 0 auto 30px auto;
+    line-height: 1.6;
+    animation: fadeInUp 0.8s ease-out;
   }
   
   .highlights-grid,  .highlights-grid-2 {
@@ -40,6 +56,7 @@
     text-align: center;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     transition: transform 0.3s ease;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   }
   
   .highlight-card:hover {
@@ -51,6 +68,7 @@
     font-size: 2.5rem;
     color: var(--highlight-teal);
     margin-bottom: 16px; /* más espacio respecto al título */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   }
   
   
@@ -60,15 +78,16 @@
     color: var(--text-gray);
     transition: all 0.3s ease;
     min-height: 4rem; /* espacio mínimo para evitar que cambie el tamaño de la tarjeta */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   }
   
 
   .highlight-player, .highlight-match {
     font-size: 1rem;
     opacity: 0.9;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   }
   .highlights-summary {
-    margin-top: 60px;
     background-color: rgba(255, 255, 255, 0.05);
     padding: 30px 20px;
     border-radius: 12px;
@@ -120,24 +139,21 @@
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     text-align: center;
+    margin-top: 60px;
   }
-  
-  
-  
   .intense-title {
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 20px;
-    color: var(--text-white);
+    color: var(--text-white); /* blanco */
     letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   }
-  
   .intense-subtitle {
     font-size: 1rem;
-    color: var(--text-gray);
-    opacity: 0.9;
-    max-width: 600px;
-    margin: 0 auto;
+    color: var(--text-white);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    opacity: 0.95;
   }
   
   @keyframes fireWaveSoft {
@@ -173,6 +189,9 @@
       animation: fireCard 10s ease-in-out infinite;
       color: var(--text-white);
       box-shadow: 0 4px 20px rgba(255, 87, 34, 0.3);
+      padding: 25px 20px;
+      border-radius: 12px;
+      text-align: center;
     }
     @keyframes fireCard {
       0% {
@@ -205,8 +224,28 @@
     
 .highlight-details {
   font-size: 0.9rem;
-  color: var(--text-gray);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   margin-top: 10px;
   line-height: 1.4;
 }
-        
+
+.highlight-card-intense .highlight-title,
+.highlight-card-intense .highlight-location,
+.highlight-card-intense .highlight-toggle {
+  color: var(--text-white);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.highlight-card-intense .highlight-value {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--text-white);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.highlight-card-intense .highlight-details {
+  color: var(--text-white);
+  font-size: 0.95rem;
+  opacity: 0.95;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}

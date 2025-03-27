@@ -9,6 +9,7 @@ import coupleImg from "../assets/couple.png";
 import ballImg from "../assets/bola.png";
 
 
+
 const Prediction = () => {
   // Fijamos estas probabilidades:
   const pServe = 0.8;
@@ -36,7 +37,9 @@ const Prediction = () => {
   const [predictionOutput, setPredictionOutput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
-
+  const [showSuggestionsT1, setShowSuggestionsT1] = useState(false);
+  const [showSuggestionsT2, setShowSuggestionsT2] = useState(false);
+  
   // Opciones para equipos
   const teamOptions = [
     "Arturo Coello Manso/Agustín Tapia",
@@ -94,11 +97,12 @@ const Prediction = () => {
   };
 
   return (
+    <>
     <div className="prediction-container">
       <div className="prediction-main-card">
         <div className="info-wrapper">
           <h1 className="prediction-title">
-            SCOREBOARD
+            PREDICT A MATCH
             <span className="info-icon" onClick={() => setShowInfo(!showInfo)}>ℹ️</span>
           </h1>
 
@@ -129,46 +133,90 @@ const Prediction = () => {
         </div>
       </div>
 
-      {/* Equipos */}
-      <div className="row-teams">
-        <div className="team-box">
-          <img src={coupleImg} alt="Couple Icon" className="couple-image" />
-          <div className="team-text">
-            <label className="team-label">Team 1</label>
-            <input
-              list="team1-list"
-              className="team-select"
-              value={team1}
-              onChange={(e) => setTeam1(e.target.value)}
-              placeholder="Type or select..."
-            />
-            <datalist id="team1-list">
-              {teamOptions.map((opt) => (
-                <option key={opt} value={opt} />
-              ))}
-            </datalist>
-          </div>
-        </div>
+{/* Equipos */}
+<div className="row-teams">
+  {/* Team 1 */}
+  <div className="team-box team-box-relative">
+    <img src={coupleImg} alt="Couple Icon" className="couple-image" />
+    <div className="team-text autocomplete-wrapper">
+      <label className="team-label">Team 1</label>
+      <input
+        className="team-select"
+        type="text"
+        value={team1}
+        onChange={(e) => {
+          setTeam1(e.target.value);
+          setShowSuggestionsT1(true);
+        }}
+        placeholder="Type to search..."
+        autoComplete="off"
+      />
+      {showSuggestionsT1 && team1 && (
+        <ul className="autocomplete-list">
+          {teamOptions
+            .filter((opt) =>
+              opt.toLowerCase().includes(team1.toLowerCase())
+            )
+            .slice(0, 5)
+            .map((opt) => (
+              <li
+                key={opt}
+                onClick={() => {
+                  setTeam1(opt);
+                  setShowSuggestionsT1(false);
+                }}
+                className="autocomplete-option"
+              >
+                {opt}
+              </li>
+            ))}
+        </ul>
+      )}
+    </div>
+  </div>
 
-        <div className="team-box">
-          <img src={coupleImg} alt="Couple Icon" className="couple-image" />
-          <div className="team-text">
-            <label className="team-label">Team 2</label>
-            <input
-              list="team2-list"
-              className="team-select"
-              value={team2}
-              onChange={(e) => setTeam2(e.target.value)}
-              placeholder="Type or select..."
-            />
-            <datalist id="team2-list">
-              {teamOptions.map((opt) => (
-                <option key={opt} value={opt} />
-              ))}
-            </datalist>
-          </div>
-        </div>
-      </div>
+  {/* Team 2 */}
+  <div className="team-box team-box-relative">
+    <img src={coupleImg} alt="Couple Icon" className="couple-image" />
+    <div className="team-text autocomplete-wrapper">
+      <label className="team-label">Team 2</label>
+      <input
+        className="team-select"
+        type="text"
+        value={team2}
+        onChange={(e) => {
+          setTeam2(e.target.value);
+          setShowSuggestionsT2(true);
+        }}
+        placeholder="Type to search..."
+        autoComplete="off"
+      />
+      {showSuggestionsT2 && team2 && (
+        <ul className="autocomplete-list">
+          {teamOptions
+            .filter((opt) =>
+              opt.toLowerCase().includes(team2.toLowerCase())
+            )
+            .slice(0, 5)
+            .map((opt) => (
+              <li
+                key={opt}
+                onClick={() => {
+                  setTeam2(opt);
+                  setShowSuggestionsT2(false);
+                }}
+                className="autocomplete-option"
+              >
+                {opt}
+              </li>
+            ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</div>
+
+
 
       {/* Estadísticas para Team 1 */}
       <div className="row-stats">
@@ -307,6 +355,7 @@ const Prediction = () => {
       )}
       </div>
     </div>
+    </>
   );
 };
 
