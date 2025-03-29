@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/Statistics.css";
-
+import LobsPieChart from "../components/LobsPieChart"; // Ajusta la ruta si es necesario
+import RadarStatsChart from "../components/RadarStatsChart"; // ajusta la ruta si hace falta
 import statsIcon from "../assets/stats-icon.png"; // Asegúrate de tener esta imagen
 
 // Función para obtener la bandera
@@ -16,6 +17,7 @@ const getFlagURL = (nationality) => {
   return `https://flagcdn.com/w80/${countryCodes[nationality]?.toLowerCase()}.png`;
 };
 
+
 // Función para obtener la imagen de la marca
 const getBrandLogo = (brand) => {
   if (!brand) return "/assets/brands/default.png";
@@ -29,10 +31,122 @@ const getBrandLogo = (brand) => {
 
   return `/assets/brands/${formattedBrand}.png`;
 };
+const Modal = ({ player, onClose, tabs, activeTab, setActiveTab }) => {
+  const [playerStats, setPlayerStats] = useState(null);
+
+  useEffect(() => {
+    if (player) {
+      fetch(`http://localhost:8000/player_stats/${encodeURIComponent(player.player)}`)
+        .then(res => res.json())
+        .then(data => setPlayerStats(data))
+        .catch(err => console.error("❌ Error fetching stats:", err));
+    }
+  }, [player]);
+
+  if (!player) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="close-button" onClick={onClose}>×</button>
+        <h2>{player.player}'s Stats</h2>
+
+        <div className="modal-tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              className={`tab-modal ${activeTab === tab.key ? "active" : ""}`}
+              onClick={() => setActiveTab(tab.key)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {playerStats ? (
+          <div className="tab-content">
+            {activeTab === "tournaments" && (
+              <ul>
+                <li><strong>Tournaments Played:</strong> {playerStats.tournaments_played}</li>
+                <li><strong>Matches Played:</strong> {playerStats.matches_played}</li>
+                <li><strong>Win Rate:</strong> {playerStats.win_rate}%</li>
+              </ul>
+            )}
+            {activeTab === "serves" && (
+              <ul>
+                <li><strong>% First Serves:</strong> {playerStats.percentage_1st_serves}%</li>
+                <li><strong>% Service Games Won:</strong> {playerStats.percentage_service_games_won}%</li>
+              </ul>
+            )}
+            {activeTab === "tactics" && (
+              <ul>
+                <li><strong>% Cross-court Shots:</strong> {playerStats.percentage_cross}%</li>
+                <li><strong>% Parallel Shots:</strong> {playerStats.percentage_parallel}%</li>
+              </ul>
+            )}
+            {activeTab === "returns" && (
+              <ul>
+                <li><strong>% Lob Returns:</strong> {playerStats.percentage_lobbed_returns}%</li>
+                <li><strong>% Flat Returns:</strong> {playerStats.percentage_flat_returns}%</li>
+                <li><strong>% Error Returns:</strong> {playerStats.percentage_return_errors}%</li>
+              </ul>
+            )}
+            {activeTab === "aerial game" && (
+              <ul>
+                <li><strong>Lobs Received per Match:</strong> {playerStats.lobs_received_per_match}</li>
+                <li><strong>% Smashes from Lobs:</strong> {playerStats.percentage_smashes_from_lobs}%</li>
+                <li><strong>% Rulos from Lobs:</strong> {playerStats.percentage_rulos_from_lobs}%</li>
+                <li><strong>% Viborejas from Lobs:</strong> {playerStats.percentage_viborejas_from_lobs}%</li>
+                <li><strong>% Bajadas from Lobs:</strong> {playerStats.percentage_bajadas_from_lobs}%</li>
+                <li><strong>% Winners from Lobs:</strong> {playerStats.winners_from_lobs}%</li>
+              </ul>
+            )}
+            {activeTab === "defense" && (
+              <ul>
+                <li><strong>Outside Recoveries:</strong> {playerStats.outside_recoveries}</li>
+                <li><strong>Lobs Played per Match:</strong> {playerStats.lobs_played_per_match}</li>
+                <li><strong>% Net Recovery with Lob:</strong> {playerStats.net_recovery_with_lob}%</li>
+                <li><strong>Unforced Errors per Match:</strong> {playerStats.unforced_errors_per_match}</li>
+              </ul>
+            )}
+            {activeTab === "graphs" && (
+              <>
+                <div className="charts-row">
+                  <div className="chart-container">
+                    <LobsPieChart stats={playerStats} />
+                  </div>
+                  <div className="chart-container">
+                    <RadarStatsChart stats={playerStats} />
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        ) : (
+          <p style={{ marginTop: "20px" }}>Loading stats...</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const allowedNationalities = ["Spain", "Argentina", "France"];
+
+const tabs = [
+  { key: "tournaments", label: "🎾 tournaments" },
+  { key: "serves", label: "🎯 serves" },
+  { key: "tactics", label: "🧠 tactics" },
+  { key: "returns", label: "↩️ returns" },
+  { key: "aerial game", label: "🚀 aerial game" },
+  { key: "defense", label: "🛡️ defense" },
+  { key: "graphs", label: "📊 graphs" }
+];
 
 const Statistics = () => {
+  const [activeTab, setActiveTab] = useState("tournaments");
   const [players, setPlayers] = useState([]);
   const [filteredPlayers, setFilteredPlayers] = useState([]);
+  const [modalPlayer, setModalPlayer] = useState(null);
 
   // Estados para filtros
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,8 +186,6 @@ const Statistics = () => {
       .catch((error) => console.error("🚨 Error fetching players:", error));
   }, []);
 
-  const allowedNationalities = ["Spain", "Argentina", "France"];
-
   useEffect(() => {
     let filtered = players.filter(player =>
       (searchQuery === "" || player.player.toLowerCase().includes(searchQuery.toLowerCase())) &&
@@ -87,6 +199,8 @@ const Statistics = () => {
         (sideFilter === "Both" && player.side === "Both sides")) &&
       (brandFilter === "All" || (brandFilter === "Others" ? !["Bullpadel", "Nox", "Adidas", "Joma", "Siux"].includes(player.brand) : player.brand === brandFilter))
     );
+
+    
 
     // Ordenar jugadores
     if (sortOrder === "name_asc") {
@@ -108,7 +222,10 @@ const Statistics = () => {
     setBrandFilter("All");
     setSortOrder("name_asc");
   };
-
+  useEffect(() => {
+    document.body.style.overflow = modalPlayer ? 'hidden' : 'auto';
+  }, [modalPlayer]);
+  
   return (
     <div className="statistics-container">
       <h1 className="title">INDIVIDUAL STATISTICS</h1>
@@ -179,15 +296,22 @@ const Statistics = () => {
                 <span className="hand-text">{player.hand === "Right" ? "Right-handed" : "Left-handed"}</span>
                 <span className="side-text">{player.side}</span>
               </div>
-              <div className="stats-icon">
-                <img src={statsIcon} alt="Stats" />
-              </div>
+              <div className="stats-icon" onClick={() => setModalPlayer(player)}>
+              <img src={statsIcon} alt="Stats" />
+            </div>
             </div>
           ))
         ) : (
           <p>No players found.</p>
         )}
       </div>
+      <Modal
+        player={modalPlayer}
+        onClose={() => setModalPlayer(null)}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        tabs={tabs}
+      />
     </div>
   );
 };

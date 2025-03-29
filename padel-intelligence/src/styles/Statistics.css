@@ -187,7 +187,7 @@
   font-weight: bold;
   border-radius: 30px;
   border: 2px solid var(--highlight-purple);
-  background: linear-gradient(135deg, #1F2937, #6C4AB6);;
+  background: linear-gradient(135deg, #1F2937, #6C4AB6);
   color: white;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
@@ -223,4 +223,137 @@
   height: 30px;
   filter: brightness(0) invert(1);
   background: transparent;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  margin-top: 80px;
+  background: var(--highlight-purple);
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 1500px;
+  width: 90%;
+  max-height: 90vh; /* 🔹 Limita la altura del modal */
+  overflow-y: auto;  /* 🔹 Habilita scroll si es necesario */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  position: relative;
+  animation: fadeIn 0.3s ease;
+  color: black;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+.close-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 54px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.modal-tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.tab-modal {
+  padding: 10px 20px;
+  border-radius: 20px;
+  color: #222;
+  font-weight: bold;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  outline: none;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-white);
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.tab-modal:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.tab-modal.active {
+  background: var(--highlight-teal);
+  color: white;
+}
+.tab-content ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.tab-content li {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: white;
+}
+.chart-container {
+  margin-top: 30px;
+  text-align: center;
+  margin-left: 30px;
+}
+
+.chart-inner {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  margin: 20px auto;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: fit-content;
+  height: fit-content;
+}
+
+.chart-title {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 20px;
+  color: #ffffff;
+  font-weight: 600;
+  margin-top: 30px;
+}
+.chart-description {
+  margin-top: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 15px;
+  color: #f0f0f0;
+  font-size: 14px;
+  text-align: center;
+  max-width: 350px;
+  margin-inline: auto;
+  backdrop-filter: blur(3px);
+}
+.charts-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  margin-top: 30px;
 }

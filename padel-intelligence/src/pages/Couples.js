@@ -27,11 +27,112 @@ const getFlagURL = (nationality) => {
   };
   return `https://flagcdn.com/w40/${countryCodes[nationality]?.toLowerCase()}.png`;
 };
+const ModalCouple = ({ couple, stats, onClose, tabs, activeTab, setActiveTab }) => {
+  if (!couple) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="close-button" onClick={onClose}>×</button>
+        <h2>Stats for {couple.player1} & {couple.player2}</h2>
+
+        <div className="modal-tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              className={`tab-modal ${activeTab === tab.key ? "active" : ""}`}
+              onClick={() => setActiveTab(tab.key)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="tab-content">
+          {stats ? (
+            <>
+              {activeTab === "tournaments" && (
+                <>
+                  <p>🏆 Tournaments Played: {stats.tournaments_played}</p>
+                  <p>🎾 Matches Played: {stats.matches_played}</p>
+                  <p>📈 Win Rate: {stats.win_rate}%</p>
+                </>
+              )}
+
+              {activeTab === "serves" && (
+                <>
+                  <p>🎯 % First Serves: {stats.percentage_1st_serves}%</p>
+                  <p>🧱 % Service Games Won: {stats.percentage_service_games_won}%</p>
+                </>
+              )}
+
+              {activeTab === "tactics" && (
+                <>
+                  <p>🧠 % Cross-court Shots: {stats.percentage_cross}%</p>
+                  <p>🛣️ % Parallel Shots: {stats.percentage_parallel}%</p>
+                </>
+              )}
+
+              {activeTab === "returns" && (
+                <>
+                  <p>☁️ % Lob Returns: {stats.percentage_lobbed_returns}%</p>
+                  <p>➖ % Flat Returns: {stats.percentage_flat_returns}%</p>
+                  <p>⚠️ % Return Errors: {stats.percentage_return_errors}%</p>
+                </>
+              )}
+
+              {activeTab === "aerial game" && (
+                <>
+                  <p>🌪️ Lobs Received per Match: {stats.lobs_received_per_match}</p>
+                  <p>💥 % Smashes from Lobs: {stats.percentage_smashes_from_lobs}%</p>
+                  <p>🌀 % Rulos from Lobs: {stats.percentage_rulos_from_lobs}%</p>
+                  <p>🔃 % Viborejas from Lobs: {stats.percentage_viborejas_from_lobs}%</p>
+                  <p>🔽 % Bajadas from Lobs: {stats.percentage_bajadas_from_lobs}%</p>
+                  <p>🏅 % Winners from Lobs: {stats.winners_from_lobs}%</p>
+                </>
+              )}
+
+              {activeTab === "defense" && (
+                <>
+                  <p>🛡️ Outside Recoveries: {stats.outside_recoveries}</p>
+                  <p>🎈 Lobs Played per Match: {stats.lobs_played_per_match}</p>
+                  <p>🕸️ % Net Recovery with Lob: {stats.net_recovery_with_lob}%</p>
+                  <p>❌ Unforced Errors per Match: {stats.unforced_errors_per_match}</p>
+                </>
+              )}
+
+              {activeTab === "graphs" && (
+                <p>📊 Match chart (aquí irá un gráfico)</p>
+              )}
+            </>
+          ) : (
+            <p>Loading stats...</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 const Couples = () => {
   const [pairs, setPairs] = useState([]);
   const [genderFilter, setGenderFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [modalCouple, setModalCouple] = useState(null);
+  const [activeTab, setActiveTab] = useState("tournaments");
+  const [coupleStats, setCoupleStats] = useState(null);
+
+  const tabs = [
+  { key: "tournaments", label: "🎾 tournaments" },
+  { key: "serves", label: "🎯 serves" },
+  { key: "tactics", label: "🧠 tactics" },
+  { key: "returns", label: "↩️ returns" },
+  { key: "aerial game", label: "🚀 aerial game" },
+  { key: "defense", label: "🛡️ defense" },
+  { key: "graphs", label: "📊 graphs" }
+  ];
+
 
   useEffect(() => {
     fetch("http://localhost:8000/pairs")
@@ -109,16 +210,42 @@ const Couples = () => {
             </div>
 
             {/* Icono de estadísticas FUERA del card */}
-            <div className="stats-icon-couples">
-              <img src={statsIcon} alt="Stats" />
-            </div>
-          </div>
+            <div
+                className="stats-icon-couples"
+                onClick={() => {
+                  setModalCouple(pair);
+                  setCoupleStats(null); // limpiar antes de nuevo fetch
 
+                  fetch(`http://localhost:8000/pair_stats/${pair.player1_id}/${pair.player2_id}`)
+                    .then((res) => res.json())
+                    .then((data) => {
+                      setCoupleStats(data);
+                    })
+                    .catch((err) => {
+                      console.error("❌ Error fetching couple stats:", err);
+                    });
+                }}
+              >
+                <img src={statsIcon} alt="Stats" />
+            </div>
+
+          </div>
           ))
         ) : (
           <p>No couples found.</p>
         )}
       </div>
+      <ModalCouple
+        couple={modalCouple}
+        stats={coupleStats}
+        onClose={() => {
+          setModalCouple(null);
+          setCoupleStats(null);
+        }}
+        tabs={tabs}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
     </div>
   );
 };
