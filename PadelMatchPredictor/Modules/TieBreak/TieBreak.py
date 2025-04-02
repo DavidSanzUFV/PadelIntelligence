@@ -40,12 +40,24 @@ class TiebreakCalculator:
         if_win_t1 *= 100
         if_loss_t1 *= 100
 
+        """
         # Imprimir resultados en texto
         print("\n--- Tiebreak Probabilities ---")
         print(f"Probability of winning the tiebreak for T1: {probability_t1:.2f}%")
         print(f"If T1 wins the next point: {if_win_t1:.2f}%")
         print(f"If T1 loses the next point: {if_loss_t1:.2f}%")
         print("--------------------------------\n")
+        
+        """
+        # Crear el diccionario con los resultados
+        result = {
+            "tiebreak_probability_t1": f"{probability_t1:.2f}%",
+            "tiebreak_probability_t2": f"{probability_t2:.2f}%",
+            "if_win_next_point": f"{if_win_t1:.2f}%",
+            "if_lose_next_point": f"{if_loss_t1:.2f}%"
+        }
+        
+        return result
 
 
 # 🔹 **Ejemplo de uso con un estado actual del tiebreak**

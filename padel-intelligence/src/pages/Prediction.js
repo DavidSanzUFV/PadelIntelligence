@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/Prediction.css";
 
 import logo from "../assets/logo.png";
@@ -40,27 +40,24 @@ const Prediction = () => {
   const [showSuggestionsT1, setShowSuggestionsT1] = useState(false);
   const [showSuggestionsT2, setShowSuggestionsT2] = useState(false);
   
-  // Opciones para equipos
-  const teamOptions = [
-    "Arturo Coello Manso/Agustín Tapia",
-    "Juan Lebrón Chincoa/Alejandro Galán Romo"
-  ];
+  const [pairs, setPairs] = useState([]);
 
+ // Fetch de parejas al montar el componente
+ useEffect(() => {
+  fetch("http://127.0.0.1:8000/pairs")
+    .then((response) => response.json())
+    .then((data) => {
+      setPairs(data);
+    })
+    .catch((error) => console.error("❌ Error fetching pairs:", error));
+}, []);
 
-  // Objeto de mapeo para convertir puntos en formato de tenis a valores internos
-  const tennisScoreMap = {
-    "0": 0,
-    "15": 1,
-    "30": 2,
-    "40": 3,
-    "Adv": 4
-  };
 
   const handlePredict = () => {
-    // Construir el objeto de request usando la conversión
+    // Construir el objeto de request usando los valores tal como están en el select
     const requestData = {
-      t1_points: tennisScoreMap[pointsT1],
-      t2_points: tennisScoreMap[pointsT2],
+      t1_points: pointsT1,   // No convertir a número
+      t2_points: pointsT2,   // No convertir a número
       t1_games: parseInt(gamesT1, 10),
       t2_games: parseInt(gamesT2, 10),
       t1_sets: parseInt(setsT1, 10),
@@ -69,12 +66,12 @@ const Prediction = () => {
       p_serve: pServe,
       p_games_won_on_serve: pGamesWonOnServe
     };
-
+  
     // Mostrar panel e indicar carga
     setShowPanel(true);
     setIsLoading(true);
     setPredictionOutput("Loading...");
-
+   
     // Enviar solicitud POST al endpoint de FastAPI
     fetch("http://127.0.0.1:8000/run_prediction/", {
       method: "POST",
@@ -84,10 +81,17 @@ const Prediction = () => {
       .then((response) => response.json())
       .then((data) => {
         setIsLoading(false);
-        if (data.prediction_output) {
-          setPredictionOutput(data.prediction_output);
-        } else if (data.error) {
-          setPredictionOutput("Error: " + data.error);
+        if (data.error && data.error[0]) {
+          setPredictionOutput("Error: " + data.error[1]);
+        } else if (data.game_probability && data.set_probability && data.match_probability) {
+          // Mostrar las probabilidades devueltas por el backend
+          setPredictionOutput(
+            `Game Probability: ${data.game_probability}\n` +
+            `Set Probability: ${data.set_probability}\n` +
+            `Match Probability: ${data.match_probability}`
+          );
+        } else {
+          setPredictionOutput("Unexpected response format.");
         }
       })
       .catch((error) => {
@@ -95,7 +99,8 @@ const Prediction = () => {
         setPredictionOutput("Network error: " + error);
       });
   };
-
+  
+  
   return (
     <>
     <div className="prediction-container">
@@ -153,21 +158,23 @@ const Prediction = () => {
       />
       {showSuggestionsT1 && team1 && (
         <ul className="autocomplete-list">
-          {teamOptions
-            .filter((opt) =>
-              opt.toLowerCase().includes(team1.toLowerCase())
+          {pairs
+            .filter((pair) =>
+              `${pair.player1} / ${pair.player2}`
+                .toLowerCase()
+                .includes(team1.toLowerCase())
             )
             .slice(0, 5)
-            .map((opt) => (
+            .map((pair, index) => (
               <li
-                key={opt}
+                key={index}
                 onClick={() => {
-                  setTeam1(opt);
+                  setTeam1(`${pair.player1} / ${pair.player2}`);
                   setShowSuggestionsT1(false);
                 }}
                 className="autocomplete-option"
               >
-                {opt}
+                {pair.player1} / {pair.player2}
               </li>
             ))}
         </ul>
@@ -193,21 +200,23 @@ const Prediction = () => {
       />
       {showSuggestionsT2 && team2 && (
         <ul className="autocomplete-list">
-          {teamOptions
-            .filter((opt) =>
-              opt.toLowerCase().includes(team2.toLowerCase())
+          {pairs
+            .filter((pair) =>
+              `${pair.player1} / ${pair.player2}`
+                .toLowerCase()
+                .includes(team2.toLowerCase())
             )
             .slice(0, 5)
-            .map((opt) => (
+            .map((pair, index) => (
               <li
-                key={opt}
+                key={index}
                 onClick={() => {
-                  setTeam2(opt);
+                  setTeam2(`${pair.player1} / ${pair.player2}`);
                   setShowSuggestionsT2(false);
                 }}
                 className="autocomplete-option"
               >
-                {opt}
+                {pair.player1} / {pair.player2}
               </li>
             ))}
         </ul>
@@ -216,111 +225,128 @@ const Prediction = () => {
   </div>
 </div>
 
+{/* Estadísticas para Team 1 */}
+<div className="row-stats">
+  <div className="icon-slot">
+    {serving === "team1" && <img src={ballImg} alt="Ball" className="serving-ball" />}
+  </div>
+  
+  {/* SET */}
+  <div className="stats-box">
+    <label className="stats-label">SET</label>
+    <select
+      className="stats-input"
+      value={setsT1}
+      onChange={(e) => setSetsT1(e.target.value)}
+    >
+      <option value="0">0</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+    </select>
+  </div>
 
+  {/* GAMES */}
+  <div className="stats-box">
+    <label className="stats-label">GAMES</label>
+    <select
+      className="stats-input"
+      value={gamesT1}
+      onChange={(e) => setGamesT1(e.target.value)}
+    >
+      {[...Array(8).keys()].map((game) => (
+        <option key={game} value={game}>{game}</option>
+      ))}
+    </select>
+  </div>
 
-      {/* Estadísticas para Team 1 */}
-      <div className="row-stats">
-        <div className="icon-slot">
-          {serving === "team1" && <img src={ballImg} alt="Ball" className="serving-ball" />}
-        </div>
-        <div className="stats-box">
-          <label className="stats-label">POINTS</label>
-          <select
-            className="stats-input"
-            value={pointsT1}
-            onChange={(e) => setPointsT1(e.target.value)}
-          >
-            <option value="0">0</option>
-            <option value="15">15</option>
-            <option value="30">30</option>
-            <option value="40">40</option>
-            <option value="Adv">Adv</option>
-          </select>
-        </div>
-        <div className="stats-box">
-          <label className="stats-label">GAMES</label>
-          <select
-            className="stats-input"
-            value={gamesT1}
-            onChange={(e) => setGamesT1(e.target.value)}
-          >
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-          </select>
-        </div>
-        <div className="stats-box">
-          <label className="stats-label">SET</label>
-          <select
-            className="stats-input"
-            value={setsT1}
-            onChange={(e) => setSetsT1(e.target.value)}
-          >
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-          </select>
-        </div>
-      </div>
+  {/* POINTS */}
+  <div className="stats-box">
+    <label className="stats-label">POINTS</label>
+    <select
+      className="stats-input"
+      value={pointsT1}
+      onChange={(e) => setPointsT1(e.target.value)}
+    >
+      {gamesT1 === "6" && gamesT2 === "6" ? (
+        Array.from({ length: 15 }, (_, i) => (
+          <option key={i} value={i}>{i}</option>
+        ))
+      ) : (
+        <>
+          <option value="0">0</option>
+          <option value="15">15</option>
+          <option value="30">30</option>
+          <option value="40">40</option>
+          <option value="Adv">Adv</option>
+        </>
+      )}
+    </select>
+  </div>
+</div>
 
-      {/* Estadísticas para Team 2 */}
-      <div className="row-stats">
-        <div className="icon-slot">
-          {serving === "team2" && <img src={ballImg} alt="Ball" className="serving-ball" />}
-        </div>
-        <div className="stats-box">
-          <label className="stats-label">POINTS</label>
-          <select
-            className="stats-input"
-            value={pointsT2}
-            onChange={(e) => setPointsT2(e.target.value)}
-          >
-            <option value="0">0</option>
-            <option value="15">15</option>
-            <option value="30">30</option>
-            <option value="40">40</option>
-            <option value="Adv">Adv</option>
-          </select>
-        </div>
-        <div className="stats-box">
-          <label className="stats-label">GAMES</label>
-          <select
-            className="stats-input"
-            value={gamesT2}
-            onChange={(e) => setGamesT2(e.target.value)}
-          >
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-          </select>
-        </div>
-        <div className="stats-box">
-          <label className="stats-label">SET</label>
-          <select
-            className="stats-input"
-            value={setsT2}
-            onChange={(e) => setSetsT2(e.target.value)}
-          >
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-          </select>
-        </div>
-      </div>
+{/* Estadísticas para Team 2 */}
+<div className="row-stats">
+  <div className="icon-slot">
+    {serving === "team2" && <img src={ballImg} alt="Ball" className="serving-ball" />}
+  </div>
 
-      <button className="predict-button" onClick={handlePredict}>
-        PREDICT
-      </button>
+  {/* SET */}
+  <div className="stats-box">
+    <label className="stats-label">SET</label>
+    <select
+      className="stats-input"
+      value={setsT2}
+      onChange={(e) => setSetsT2(e.target.value)}
+    >
+      <option value="0">0</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+    </select>
+  </div>
+
+  {/* GAMES */}
+  <div className="stats-box">
+    <label className="stats-label">GAMES</label>
+    <select
+      className="stats-input"
+      value={gamesT2}
+      onChange={(e) => setGamesT2(e.target.value)}
+    >
+      {[...Array(8).keys()].map((game) => (
+        <option key={game} value={game}>{game}</option>
+      ))}
+    </select>
+  </div>
+
+  {/* POINTS */}
+  <div className="stats-box">
+    <label className="stats-label">POINTS</label>
+    <select
+      className="stats-input"
+      value={pointsT2}
+      onChange={(e) => setPointsT2(e.target.value)}
+    >
+      {gamesT1 === "6" && gamesT2 === "6" ? (
+        Array.from({ length: 15 }, (_, i) => (
+          <option key={i} value={i}>{i}</option>
+        ))
+      ) : (
+        <>
+          <option value="0">0</option>
+          <option value="15">15</option>
+          <option value="30">30</option>
+          <option value="40">40</option>
+          <option value="Adv">Adv</option>
+        </>
+      )}
+    </select>
+  </div>
+</div>
+
+{/* BOTÓN DE PREDICCIÓN */}
+<button className="predict-button" onClick={handlePredict}>
+  PREDICT
+</button>
 
       {/* Overlay and Prediction Panel */}
       {showPanel && (
@@ -360,5 +386,3 @@ const Prediction = () => {
 };
 
 export default Prediction;
-
-
