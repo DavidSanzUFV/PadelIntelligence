@@ -52,14 +52,15 @@ from Modules.Games.games_calculations import calc_total_game_probability
 from Modules.Match.Algo_match import probability_match
 
 app = FastAPI()
-# Configuración CORS única y clara
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["*"],  # Permitir todos los orígenes
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Permitir todos los métodos (GET, POST, OPTIONS, etc.)
+    allow_headers=["*"],  # Permitir todos los encabezados
 )
+
 
 DB_CONFIG = {
     "dbname": "postgres",
@@ -70,8 +71,8 @@ DB_CONFIG = {
 }
 
 class MatchInput(BaseModel):
-    t1_points: str  # Acepta "0", "15", "30", "40", "Adv"
-    t2_points: str  # Acepta "0", "15", "30", "40", "Adv"
+    t1_points: str
+    t2_points: str
     t1_games: int
     t2_games: int
     t1_sets: int
@@ -181,6 +182,17 @@ from fastapi import FastAPI
 import logging
 
 app = FastAPI()
+
+@app.get("/test")
+async def test():
+    return {"message": "CORS funcionando correctamente"}
+@app.options("/run_prediction/")
+async def options_run_prediction():
+    return {
+        "Allow": "POST, OPTIONS",
+        "Content-Length": "0",
+        "Content-Type": "text/plain"
+    }
 
 @app.post("/run_prediction/")
 async def run_prediction(match: MatchInput):
@@ -331,10 +343,25 @@ async def run_prediction(match: MatchInput):
         return response
 
     except Exception as e:
-        logging.error(f"❗ Error en el endpoint: {str(e)}")
-        return {"error": [True, f"Error inesperado: {str(e)}"]}
+        # Obtener el tipo de excepción y el mensaje de error
+        error_type = type(e).__name__
+        error_message = str(e)
 
+        # Obtener información adicional del contexto si es posible
+        logging.error(f"❗ Error en el endpoint: {error_type} - {error_message}")
 
+        # Intentar capturar el contexto del error si es posible
+        try:
+            error_context = sys.exc_info()[2]
+            logging.error(f"📝 Contexto del error: {error_context}")
+        except Exception as context_error:
+            logging.error(f"⚠️ No se pudo obtener el contexto del error: {str(context_error)}")
+
+        # Devolver una respuesta de error con detalles
+        return {
+            "error": [True, f"Unexpected error of type {error_type}: {error_message}"],
+            "traceback": repr(e)
+        }
 @app.get("/pairs")
 def get_pairs():
     try:
@@ -393,7 +420,37 @@ def get_pairs():
     except Exception as e:
         print(f"⚠️ ERROR en la consulta SQL: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+@app.get("/pairs_name")
+def get_pairs_name():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        query = """
+            SELECT DISTINCT ON (LEAST(p1.player_id, p2.player_id), GREATEST(p1.player_id, p2.player_id))
+                p1.player AS player1,
+                p2.player AS player2
+            FROM player_stats p1
+            JOIN player_stats p2 
+                ON p1.partner_id = p2.player_id
+                AND p1.player_id < p2.player_id
+            WHERE p1.player IS NOT NULL 
+            AND p2.player IS NOT NULL
+            ORDER BY LEAST(p1.player_id, p2.player_id), GREATEST(p1.player_id, p2.player_id);
+        """
 
+        cursor.execute(query)
+        pairs = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        # Formatear los nombres como "player1 / player2"
+        formatted_pairs = [f"{pair[0]} / {pair[1]}" for pair in pairs]
+
+        return {"pairs": formatted_pairs}
+
+    except Exception as e:
+        print(f"⚠️ ERROR en la consulta SQL: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/players")
 def get_players():

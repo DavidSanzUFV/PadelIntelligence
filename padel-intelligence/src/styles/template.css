@@ -1,0 +1,412 @@
+/* ---------------------------------------------- */
+/* Variables de color corporativo                 */
+/* ---------------------------------------------- */
+:root {
+    --primary-bg: #1F2937;       /* Azul oscuro      */
+    --secondary-bg: #111827;     /* Gris oscuro      */
+    --highlight-purple: #6C4AB6; /* Morado corporativo */
+    --highlight-teal: #4AB6A6;   /* Verde azulado    */
+    --text-white: #FFFFFF;
+    --text-gray: #E5E7EB;
+    --pink-box: #F2C6D2;         /* Caja rosa */
+  }
+  
+  /* ---------------------------------------------- */
+  /* Estilos generales                              */
+  /* ---------------------------------------------- */
+  
+  /* Aseguramos que html y body ocupen toda la pantalla */
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--text-white);
+    font-family: 'Open Sans', sans-serif;
+  }
+  
+  /* Fondo en body, con gradiente + imagen de padel */
+  body {
+    background-color: #4e3a65;
+  }
+  
+  /* prediction-container sin min-height para que no fuerce margen oscuro abajo */
+  .prediction-container {
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* centra verticalmente */
+    padding-top: 80px; /* por si tienes navbar fijo */
+    margin-top: 90px;
+  }
+  .prediction-main-card {
+    background: linear-gradient(135deg, #1F2937, #6C4AB6);
+    border-radius: 20px;
+    padding: 70px 80px;
+    color: white;
+    position: relative;  /* Para que esté sobre el fondo */
+    z-index: 10;         /* Asegura que está encima */
+    transform: scale(1.15)
+  }
+  
+  /* Título principal (SCOREBOARD) */
+  .prediction-title {
+    font-family: 'Verdana', sans-serif; 
+    color: var(--text-white);          
+    font-size: 3rem;                    
+    font-weight: 700;                   
+    text-transform: uppercase;          
+    letter-spacing: 2px;                
+    margin-bottom: 3rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    margin-top:-40px;
+  }
+  .info-wrapper {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+  }
+  
+  .info-icon {
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 1.4rem;
+    vertical-align: middle;
+    transition: transform 0.2s ease;
+  }
+  
+  .info-icon:hover {
+    transform: scale(1.2);
+  }
+  
+  /* Caja desplegable */
+  .info-box {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--text-white); /* Blanco */
+    color: var(--highlight-purple); /* Morado corporativo */
+    width: 500px;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+    z-index: 1000;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    animation: fadeIn 0.3s ease-in-out forwards;
+  }
+  
+  /* "Who is serving?" */
+  .row-serving {
+    margin-top:-20px
+  }
+  .serving-box {
+    background-color: var(--highlight-teal);
+    width: 60%;
+    margin: 0 auto;
+    border-radius: 10px;
+    padding: 10px 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .serving-image {
+    height: 40px;
+    width: auto;
+    filter: grayscale(100%);
+  }
+  
+  .serving-label {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0;
+  }
+  
+  .serving-select {
+    font-size: 1rem;
+    height: 40px;
+    border: 2px solid white;
+    border-radius: 8px;
+    outline: none;
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .serving-box:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* Team 1 / Team 2 (fila) */
+  .row-teams {
+    display: flex;
+    justify-content: space-between; /* o incluso center si reduces el min-width */
+    align-items: center;
+    gap: 3rem;
+    margin: 40px auto;
+    max-width: 1200px; /* o similar, para controlar el ancho total */
+    margin-top: 20px;
+  }
+  
+  /* Team boxes*/
+  .team-box {
+    background-color: var(--highlight-teal);
+    border-radius: 10px;
+    padding: 10px 15px;
+    min-width: 450px; /* Más ancho para nombres largos */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: flex-start;
+  }
+  .team-box:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  }
+  
+  
+  .couple-image {
+    height: 40px;
+    width: auto;
+  }
+  
+  .team-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .team-label {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .team-select {
+    font-size: 1rem;
+    height: 40px;
+    border: 2px solid white;
+    border-radius: 8px;
+    outline: none;
+    padding: 5px 10px;
+    width: 100%;
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+    font-weight: 600;
+  }
+  select {
+    background-color: #1F2937;
+    color: white;
+    border: 2px solid #4AB6A6;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 1rem;
+  }
+  
+  select option {
+    background-color: #1F2937;
+    color: white;
+  }
+  
+  /* Stats: Points, Games, Set (2 filas) */
+  .row-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -10px;
+    margin-bottom: 30px;
+  }
+  
+  /* Cajas stats en verde azulado */
+  .stats-box {
+    background-color: var(--highlight-teal);
+    border-radius: 10px;
+    padding: 20px 25px;
+    min-width: 120px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-left: 50px;
+    align-items: center;
+  }
+  
+  .stats-box:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  }
+  .stats-label {
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: block;
+  }
+  
+  .stats-input {
+    height: 40px;
+    font-size: 1rem;
+    border: 2px solid white;
+    border-radius: 8px;
+    outline: none;
+    text-align: center;
+    padding: 5px 10px;
+    width: 70px;
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .predict-button {
+    background: linear-gradient(135deg, #6C4AB6, #4AB6A6);
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    padding: 12px 32px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 700;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.3s ease-in-out;
+    margin-top: 10px;
+    margin-left: 90px;
+  }
+  .predict-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255,255,255,0.25);
+  }
+  
+  /* Icon-slot: ancho fijo */
+  .icon-slot {
+    width: 50px; /* Ajusta a tu gusto */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Ícono de la pelota */
+  .serving-ball {
+    width: 30px; /* Tamaño del ícono */
+    height: auto;
+    display: block;
+  }
+  
+  /* Overlay: cover the entire screen */
+  .prediction-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 400vw;       /* Full screen width */
+    height: 400vh;      /* Full screen height */
+    background-color: rgba(0,0,0,0.8); /* Darker background for more contrast */
+    z-index: 9998;
+    animation: fadeIn 0.7s ease forwards;
+  }
+  
+  /* Prediction Panel (modal) - bigger width and more padding */
+  .prediction-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    width: 600px;          /* Increase panel width (e.g., 600px) */
+    max-width: 90%;        /* Still adapt for smaller screens */
+    background-color: var(--highlight-purple);
+    color: var(--text-white);
+    padding: 30px;         /* More padding for a spacious layout */
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+    z-index: 9999;
+    text-align: left;      /* Left-align text if you prefer */
+    animation: fadeIn 0.4s ease forwards;
+  }
+  
+  /* Título dentro del panel */
+  .prediction-panel h2 {
+    margin-top: 0;
+    font-size: 1.8rem;     /* Slightly bigger title */
+    margin-bottom: 15px;
+  }
+  
+  /* Texto dentro del panel */
+  .prediction-panel p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+  
+  /* Botón para cerrar el panel */
+  .close-panel {
+    background-color: white;
+    color: var(--highlight-purple);
+    font-weight: bold;
+    padding: 10px 25px;
+    border-radius: 8px;
+    border: none;
+    margin: 20px auto 0;
+    display: block;
+    transition: all 0.3s ease;
+  }
+  .close-panel:hover {
+    background-color: var(--highlight-purple);
+    color: white;
+    transform: scale(1.05);
+  }
+  
+  /* Animación de entrada */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, calc(-50% + 20px));
+    }
+    100% {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+  .autocomplete-list {
+    background-color: #1F2937;
+    border-radius: 8px;
+    margin-top: 5px;
+    padding: 5px 0;
+    position: absolute;
+    width: 100%;
+    top: 100%; /* se alinea justo debajo del input */
+    left: 0;
+    z-index: 100;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    list-style-type: none; /* Elimina los puntos de la lista */
+  }
+  
+  
+  .autocomplete-option {
+    padding: 10px 15px;
+    cursor: pointer;
+    color: white;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .autocomplete-option:hover {
+    background-color: var(--highlight-purple);
+  }
+  .team-box-relative {
+    position: relative;
+  }
+  .autocomplete-wrapper {
+    position: relative;
+    width: 100%;
+  }
+  

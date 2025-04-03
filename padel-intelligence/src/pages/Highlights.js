@@ -28,7 +28,7 @@ const Highlights = () => {
   const [highlights, setHighlights] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8000/highlights")
+    fetch("/highlights")
       .then(res => res.json())
       .then(data => setHighlights(data))
       .catch(err => console.error("Error loading highlights", err));

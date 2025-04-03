@@ -36,7 +36,7 @@ const Modal = ({ player, onClose, tabs, activeTab, setActiveTab }) => {
 
   useEffect(() => {
     if (player) {
-      fetch(`http://localhost:8000/player_stats/${encodeURIComponent(player.player)}`)
+      fetch(`/player_stats/${encodeURIComponent(player.player)}`)
         .then(res => res.json())
         .then(data => setPlayerStats(data))
         .catch(err => console.error("❌ Error fetching stats:", err));
@@ -158,7 +158,7 @@ const Statistics = () => {
   const [sortOrder, setSortOrder] = useState("name_asc");
 
   useEffect(() => {
-    fetch("http://localhost:8000/players")
+    fetch("/players")
       .then((response) => response.json())
       .then((data) => {
         console.log("📢 Data recibida del backend:", data);

@@ -10,7 +10,7 @@ const Comparator = () => {
   const [query2, setQuery2] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:8000/players")
+    fetch("/players")
       .then((res) => res.json())
       .then((data) => {
         const uniquePlayers = {};
@@ -41,7 +41,7 @@ const Comparator = () => {
     if (!basicInfo) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/player_stats/${basicInfo.player}`);
+      const res = await fetch(`/player_stats/${basicInfo.player}`);
       const extraInfo = await res.json();
       setPlayer({ ...basicInfo, ...extraInfo });
     } catch (error) {
@@ -97,9 +97,6 @@ const Comparator = () => {
     return ["highlight-draw", "highlight-draw"];
   };
   
-  
-
-
   const renderRow = (label, key, format = (v) => `${v}%`) => {
     const [p1Class, p2Class] = getHighlightClass(player1?.[key], player2?.[key]);
     return (

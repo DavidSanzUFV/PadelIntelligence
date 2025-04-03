@@ -133,9 +133,8 @@ const Couples = () => {
   { key: "graphs", label: "📊 graphs" }
   ];
 
-
   useEffect(() => {
-    fetch("http://localhost:8000/pairs")
+    fetch("/pairs")
       .then((response) => response.json())
       .then((data) => {
         const filteredData = data.filter(pair => pair.gender === "M" || pair.gender === "W");

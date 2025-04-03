@@ -125,7 +125,7 @@ const Curiosities = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:8000/curiosities")
+    fetch("/curiosities")
       .then((res) => res.json())
       .then((data) => {
         const transformed = transformCuriosities(data);
