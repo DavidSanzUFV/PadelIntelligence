@@ -551,7 +551,24 @@ def get_basic_player_stats(player_name: str):
                 SUM(num_smash_defense_winners_salida) AS outside_recoveries,
                 ROUND(AVG(num_lobs)::numeric, 2) AS lobs_played_per_match,
                 ROUND(AVG(percentage_net_regains_after_lob), 2)*100 AS percentage_net_regains_with_lob,
-                ROUND(AVG(num_Unforced_Errors)::numeric, 2) AS unforced_errors_per_match
+                ROUND(AVG(num_Unforced_Errors)::numeric, 2) AS unforced_errors_per_match,
+                
+                -- Variables Radar Chart
+                AVG(ci_per_point) AS ci_per_point,
+                ROUND(COALESCE(AVG(num_direct_points_on_serve)::numeric, 0), 2) AS num_direct_points_on_serve,
+                ROUND(COALESCE((AVG(percentage_points_won_on_serve_team) * 100)::numeric, 0), 2) AS percentage_points_won_on_serve_team,
+                ROUND(COALESCE((AVG(percentage_points_won_return_team) * 100)::numeric, 0), 2) AS percentage_points_won_return_team,
+                ROUND(COALESCE((AVG(percentage_shots_smash) * 100)::numeric, 0), 2) AS percentage_shots_smash,
+                ROUND(COALESCE(AVG(num_bajadas)::numeric, 0), 2) AS num_bajadas,
+                ROUND(COALESCE((AVG(percentage_viborejas_winners) * 100)::numeric, 0), 2) AS percentage_viborejas_winners,
+                ROUND(COALESCE((AVG(percentage_winners) * 100)::numeric, 0), 2) AS percentage_winners,
+                ROUND(COALESCE((AVG(percentage_assists_shots) * 100)::numeric, 0), 2) AS percentage_assists_shots,
+                ROUND(COALESCE((AVG(percentage_error_setups) * 100)::numeric, 0), 2) AS percentage_error_setups,
+                ROUND(COALESCE((AVG(percentage_ue) * 100)::numeric, 0), 2) AS percentage_ue,
+                ROUND(COALESCE((AVG(percentage_pe) * 100)::numeric, 0), 2) AS percentage_pe,
+                ROUND(COALESCE((AVG(percentage_winner_setups) * 100)::numeric, 0), 2) AS percentage_winner_setups,
+                ROUND(COALESCE(AVG(num_smash_defenses)::numeric, 0), 2) AS num_smash_defenses
+
 
             FROM player_stats
             WHERE player = %s;
@@ -583,7 +600,22 @@ def get_basic_player_stats(player_name: str):
             "outside_recoveries": int(result[15]) if result[15] is not None else 0,
             "lobs_played_per_match": float(result[16]) if result[16] is not None else 0.0,
             "net_recovery_with_lob": float(result[17]) if result[17] is not None else 0.0,
-            "unforced_errors_per_match": float(result[18]) if result[18] is not None else 0.0
+            "unforced_errors_per_match": float(result[18]) if result[18] is not None else 0.0,
+            "ci_per_point": float(result[19]) if result[19] is not None else 0.0,
+            "num_direct_points_on_serve": float(result[20]) if result[20] is not None else 0.0,
+            "percentage_points_won_on_serve_team": float(result[21]) if result[21] is not None else 0.0,
+            "percentage_points_won_return_team": float(result[22]) if result[22] is not None else 0.0,
+            "percentage_shots_smash": float(result[23]) if result[23] is not None else 0.0,
+            "num_bajadas": float(result[24]) if result[24] is not None else 0.0,
+            "percentage_viborejas_winners": float(result[25]) if result[25] is not None else 0.0,
+            "percentage_winners": float(result[26]) if result[26] is not None else 0.0,
+            "percentage_assists_shots": float(result[27]) if result[27] is not None else 0.0,
+            "percentage_error_setups": float(result[28]) if result[28] is not None else 0.0,
+            "percentage_ue": float(result[29]) if result[29] is not None else 0.0,
+            "percentage_pe": float(result[30]) if result[30] is not None else 0.0,
+            "percentage_winner_setups": float(result[31]) if result[31] is not None else 0.0,
+            "num_smash_defenses": float(result[32]) if result[32] is not None else 0.0,
+
         }
 
     except Exception as e:
@@ -1796,7 +1828,23 @@ def get_pair_stats(player1_id: int, player2_id: int):
                 SUM(num_smash_defense_winners_salida),
                 ROUND(AVG(num_lobs)::numeric, 2),
                 ROUND(AVG(percentage_net_regains_after_lob) * 100, 2),
-                ROUND(AVG(num_Unforced_Errors)::numeric, 2)
+                ROUND(AVG(num_Unforced_Errors)::numeric, 2),
+                -- Variables Radar Chart para Parejas
+                AVG(ci_per_point) AS ci_per_point,
+                ROUND(COALESCE(AVG(num_direct_points_on_serve)::numeric, 0), 2) AS num_direct_points_on_serve,
+                ROUND(COALESCE((AVG(percentage_points_won_on_serve_team) * 100)::numeric, 0), 2) AS percentage_points_won_on_serve_team,
+                ROUND(COALESCE((AVG(percentage_points_won_return_team) * 100)::numeric, 0), 2) AS percentage_points_won_return_team,
+                ROUND(COALESCE((AVG(percentage_shots_smash) * 100)::numeric, 0), 2) AS percentage_shots_smash,
+                ROUND(COALESCE(AVG(num_bajadas)::numeric, 0), 2) AS num_bajadas,
+                ROUND(COALESCE((AVG(percentage_viborejas_winners) * 100)::numeric, 0), 2) AS percentage_viborejas_winners,
+                ROUND(COALESCE((AVG(percentage_winners) * 100)::numeric, 0), 2) AS percentage_winners,
+                ROUND(COALESCE((AVG(percentage_assists_shots) * 100)::numeric, 0), 2) AS percentage_assists_shots,
+                ROUND(COALESCE((AVG(percentage_error_setups) * 100)::numeric, 0), 2) AS percentage_error_setups,
+                ROUND(COALESCE((AVG(percentage_ue) * 100)::numeric, 0), 2) AS percentage_ue,
+                ROUND(COALESCE((AVG(percentage_pe) * 100)::numeric, 0), 2) AS percentage_pe,
+                ROUND(COALESCE((AVG(percentage_winner_setups) * 100)::numeric, 0), 2) AS percentage_winner_setups,
+                ROUND(COALESCE(AVG(num_smash_defenses)::numeric, 0), 2) AS num_smash_defenses
+
             FROM player_stats
             WHERE 
                 (player_id = %s AND partner_id = %s) 
@@ -1829,7 +1877,21 @@ def get_pair_stats(player1_id: int, player2_id: int):
             "outside_recoveries": int(result[15]) or 0,
             "lobs_played_per_match": float(result[16]) or 0.0,
             "net_recovery_with_lob": float(result[17]) or 0.0,
-            "unforced_errors_per_match": float(result[18]) or 0.0
+            "unforced_errors_per_match": float(result[18]) or 0.0,
+            "ci_per_point": float(result[19]) if result[19] is not None else 0.0,
+            "num_direct_points_on_serve": float(result[20]) if result[20] is not None else 0.0,
+            "percentage_points_won_on_serve_team": float(result[21]) if result[21] is not None else 0.0,
+            "percentage_points_won_return_team": float(result[22]) if result[22] is not None else 0.0,
+            "percentage_shots_smash": float(result[23]) if result[23] is not None else 0.0,
+            "num_bajadas": float(result[24]) if result[24] is not None else 0.0,
+            "percentage_viborejas_winners": float(result[25]) if result[25] is not None else 0.0,
+            "percentage_winners": float(result[26]) if result[26] is not None else 0.0,
+            "percentage_assists_shots": float(result[27]) if result[27] is not None else 0.0,
+            "percentage_error_setups": float(result[28]) if result[28] is not None else 0.0,
+            "percentage_ue": float(result[29]) if result[29] is not None else 0.0,
+            "percentage_pe": float(result[30]) if result[30] is not None else 0.0,
+            "percentage_winner_setups": float(result[31]) if result[31] is not None else 0.0,
+            "num_smash_defenses": float(result[32]) if result[32] is not None else 0.0
         }
 
     except Exception as e:
@@ -1874,7 +1936,24 @@ def get_benchmark():
                 ROUND(AVG(outside_recoveries), 2) AS outside_recoveries,
                 ROUND(AVG(lobs_played_per_match), 2) AS lobs_played_per_match,
                 ROUND(AVG(net_recovery_with_lob), 2) AS net_recovery_with_lob,
-                ROUND(AVG(unforced_errors_per_match), 2) AS unforced_errors_per_match
+                ROUND(AVG(unforced_errors_per_match), 2) AS unforced_errors_per_match,
+
+                -- Variables Radar Chart
+                AVG(ci_per_point) AS ci_per_point,
+                ROUND(CAST(AVG(num_direct_points_on_serve) AS numeric), 2) AS num_direct_points_on_serve,
+                ROUND(CAST(AVG(percentage_points_won_on_serve_team) AS numeric), 2) AS percentage_points_won_on_serve_team,
+                ROUND(CAST(AVG(percentage_points_won_return_team) AS numeric), 2) AS percentage_points_won_return_team,
+                ROUND(CAST(AVG(percentage_shots_smash) AS numeric), 2) AS percentage_shots_smash,
+                ROUND(CAST(AVG(num_bajadas) AS numeric), 2) AS num_bajadas,
+                ROUND(CAST(AVG(percentage_viborejas_winners) AS numeric), 2) AS percentage_viborejas_winners,
+                ROUND(CAST(AVG(percentage_winners) AS numeric), 2) AS percentage_winners,
+                ROUND(CAST(AVG(percentage_assists_shots) AS numeric), 2) AS percentage_assists_shots,
+                ROUND(CAST(AVG(percentage_error_setups) AS numeric), 2) AS percentage_error_setups,
+                ROUND(CAST(AVG(percentage_ue) AS numeric), 2) AS percentage_ue,
+                ROUND(CAST(AVG(percentage_pe) AS numeric), 2) AS percentage_pe,
+                ROUND(CAST(AVG(percentage_winner_setups) AS numeric), 2) AS percentage_winner_setups,
+                ROUND(CAST(AVG(num_smash_defenses) AS numeric), 2) AS num_smash_defenses
+
 
             FROM (
                 SELECT gender,
@@ -1920,7 +1999,24 @@ def get_benchmark():
                     SUM(num_smash_defense_winners_salida) AS outside_recoveries,
                     ROUND(AVG(num_lobs)::numeric, 2) AS lobs_played_per_match,
                     ROUND(AVG(percentage_net_regains_after_lob), 2) * 100 AS net_recovery_with_lob,
-                    ROUND(AVG(num_Unforced_Errors)::numeric, 2) AS unforced_errors_per_match
+                    ROUND(AVG(num_Unforced_Errors)::numeric, 2) AS unforced_errors_per_match,
+
+                    -- Variables Radar Chart
+                    AVG(ci_per_point) AS ci_per_point,
+                    ROUND(CAST(AVG(num_direct_points_on_serve) AS numeric), 2) AS num_direct_points_on_serve,
+                    ROUND(CAST(AVG(percentage_points_won_on_serve_team) AS numeric), 2) AS percentage_points_won_on_serve_team,
+                    ROUND(CAST(AVG(percentage_points_won_return_team) AS numeric), 2) AS percentage_points_won_return_team,
+                    ROUND(CAST(AVG(percentage_shots_smash) AS numeric), 2) AS percentage_shots_smash,
+                    ROUND(CAST(AVG(num_bajadas) AS numeric), 2) AS num_bajadas,
+                    ROUND(CAST(AVG(percentage_viborejas_winners) AS numeric), 2) AS percentage_viborejas_winners,
+                    ROUND(CAST(AVG(percentage_winners) AS numeric), 2) AS percentage_winners,
+                    ROUND(CAST(AVG(percentage_assists_shots) AS numeric), 2) AS percentage_assists_shots,
+                    ROUND(CAST(AVG(percentage_error_setups) AS numeric), 2) AS percentage_error_setups,
+                    ROUND(CAST(AVG(percentage_ue) AS numeric), 2) AS percentage_ue,
+                    ROUND(CAST(AVG(percentage_pe) AS numeric), 2) AS percentage_pe,
+                    ROUND(CAST(AVG(percentage_winner_setups) AS numeric), 2) AS percentage_winner_setups,
+                    ROUND(CAST(AVG(num_smash_defenses) AS numeric), 2) AS num_smash_defenses
+
 
                 FROM player_stats
                 GROUP BY gender, player
@@ -1956,7 +2052,21 @@ def get_benchmark():
                 "outside_recoveries": int(row[16]),
                 "lobs_played_per_match": float(row[17]),
                 "net_recovery_with_lob": float(row[18]),
-                "unforced_errors_per_match": float(row[19])
+                "unforced_errors_per_match": float(row[19]),
+                "ci_per_point": float(row[20]),
+                "num_direct_points_on_serve": float(row[21]),
+                "percentage_points_won_on_serve_team": float(row[22]*100),
+                "percentage_points_won_return_team": float(row[23]*100),
+                "percentage_shots_smash": float(row[24]*100),
+                "num_bajadas": float(row[25]),
+                "percentage_viborejas_winners": float(row[26]*100),
+                "percentage_winners": float(row[27]*100),
+                "percentage_assists_shots": float(row[28]*100),
+                "percentage_error_setups": float(row[29]*100),
+                "percentage_ue": float(row[30]*100),
+                "percentage_pe": float(row[31]*100),
+                "percentage_winner_setups": float(row[32]*100),
+                "num_smash_defenses": float(row[33])
             }
 
         return benchmark
@@ -2003,7 +2113,24 @@ def get_benchmark_couples():
                 ROUND(AVG(outside_recoveries), 2) AS outside_recoveries,
                 ROUND(AVG(lobs_played_per_match), 2) AS lobs_played_per_match,
                 ROUND(AVG(net_recovery_with_lob), 2) AS net_recovery_with_lob,
-                ROUND(AVG(unforced_errors_per_match), 2) AS unforced_errors_per_match
+                ROUND(AVG(unforced_errors_per_match), 2) AS unforced_errors_per_match,
+
+                -- Variables Radar Chart
+                AVG(ci_per_point) AS ci_per_point,
+                ROUND(CAST(AVG(num_direct_points_on_serve) AS numeric), 2) AS num_direct_points_on_serve,
+                ROUND(CAST(AVG(percentage_points_won_on_serve_team) AS numeric), 2) AS percentage_points_won_on_serve_team,
+                ROUND(CAST(AVG(percentage_points_won_return_team) AS numeric), 2) AS percentage_points_won_return_team,
+                ROUND(CAST(AVG(percentage_shots_smash) AS numeric), 2) AS percentage_shots_smash,
+                ROUND(CAST(AVG(num_bajadas) AS numeric), 2) AS num_bajadas,
+                ROUND(CAST(AVG(percentage_viborejas_winners) AS numeric), 2) AS percentage_viborejas_winners,
+                ROUND(CAST(AVG(percentage_winners) AS numeric), 2) AS percentage_winners,
+                ROUND(CAST(AVG(percentage_assists_shots) AS numeric), 2) AS percentage_assists_shots,
+                ROUND(CAST(AVG(percentage_error_setups) AS numeric), 2) AS percentage_error_setups,
+                ROUND(CAST(AVG(percentage_ue) AS numeric), 2) AS percentage_ue,
+                ROUND(CAST(AVG(percentage_pe) AS numeric), 2) AS percentage_pe,
+                ROUND(CAST(AVG(percentage_winner_setups) AS numeric), 2) AS percentage_winner_setups,
+                ROUND(CAST(AVG(num_smash_defenses) AS numeric), 2) AS num_smash_defenses
+
 
             FROM (
                 SELECT 
@@ -2053,7 +2180,24 @@ def get_benchmark_couples():
                     SUM(num_smash_defense_winners_salida) AS outside_recoveries,
                     ROUND(AVG(num_lobs)::numeric, 2) AS lobs_played_per_match,
                     ROUND(AVG(percentage_net_regains_after_lob), 2) * 100 AS net_recovery_with_lob,
-                    ROUND(AVG(num_Unforced_Errors)::numeric, 2) AS unforced_errors_per_match
+                    ROUND(AVG(num_Unforced_Errors)::numeric, 2) AS unforced_errors_per_match,
+
+                    -- Variables Radar Chart
+                    ROUND(CAST(AVG(ci_per_point) AS numeric), 2) AS ci_per_point,
+                    ROUND(CAST(AVG(num_direct_points_on_serve) AS numeric), 2) AS num_direct_points_on_serve,
+                    ROUND(CAST(AVG(percentage_points_won_on_serve_team) AS numeric), 2) AS percentage_points_won_on_serve_team,
+                    ROUND(CAST(AVG(percentage_points_won_return_team) AS numeric), 2) AS percentage_points_won_return_team,
+                    ROUND(CAST(AVG(percentage_shots_smash) AS numeric), 2) AS percentage_shots_smash,
+                    ROUND(CAST(AVG(num_bajadas) AS numeric), 2) AS num_bajadas,
+                    ROUND(CAST(AVG(percentage_viborejas_winners) AS numeric), 2) AS percentage_viborejas_winners,
+                    ROUND(CAST(AVG(percentage_winners) AS numeric), 2) AS percentage_winners,
+                    ROUND(CAST(AVG(percentage_assists_shots) AS numeric), 2) AS percentage_assists_shots,
+                    ROUND(CAST(AVG(percentage_error_setups) AS numeric), 2) AS percentage_error_setups,
+                    ROUND(CAST(AVG(percentage_ue) AS numeric), 2) AS percentage_ue,
+                    ROUND(CAST(AVG(percentage_pe) AS numeric), 2) AS percentage_pe,
+                    ROUND(CAST(AVG(percentage_winner_setups) AS numeric), 2) AS percentage_winner_setups,
+                    ROUND(CAST(AVG(num_smash_defenses) AS numeric), 2) AS num_smash_defenses
+
 
                 FROM player_stats
                 GROUP BY player1_id, player2_id
@@ -2085,11 +2229,109 @@ def get_benchmark_couples():
             "lobs_played_per_match": float(result[16]) if result[16] is not None else 0.0,
             "net_recovery_with_lob": float(result[17]) if result[17] is not None else 0.0,
             "unforced_errors_per_match": float(result[18]) if result[18] is not None else 0.0,
+            "ci_per_point": float(result[19]) if result[19] is not None else 0.0,
+            "num_direct_points_on_serve": float(result[20]) if result[20] is not None else 0.0,
+            "percentage_points_won_on_serve_team": float(result[21]*100) if result[21] is not None else 0.0,
+            "percentage_points_won_return_team": float(result[22]*100) if result[22] is not None else 0.0,
+            "percentage_shots_smash": float(result[23]*100) if result[23] is not None else 0.0,
+            "num_bajadas": float(result[24]) if result[24] is not None else 0.0,
+            "percentage_viborejas_winners": float(result[25]*100) if result[25] is not None else 0.0,
+            "percentage_winners": float(result[26]*100) if result[26] is not None else 0.0,
+            "percentage_assists_shots": float(result[27]*100) if result[27] is not None else 0.0,
+            "percentage_error_setups": float(result[28]*100) if result[28] is not None else 0.0,
+            "percentage_ue": float(result[29]*100) if result[29] is not None else 0.0,
+            "percentage_pe": float(result[30]*100) if result[30] is not None else 0.0,
+            "percentage_winner_setups": float(result[31]*100) if result[31] is not None else 0.0,
+            "num_smash_defenses": float(result[32]) if result[32] is not None else 0.0,
+
         }
 
     except Exception as e:
         print(f"❌ Error en benchmark_couples: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/benchmark_max")
+def get_benchmark_max():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+
+        # Consulta SQL ajustada por género
+        query = """
+            SELECT gender,
+                MAX(avg_ci_per_point) AS max_ci_per_point,
+                MAX(avg_num_direct_points_on_serve) AS max_direct_points_on_serve,
+                MAX(avg_percentage_points_won_on_serve_team) AS max_points_won_on_serve_team,
+                MAX(avg_percentage_return_errors) AS max_percentage_return_errors,
+                MAX(avg_percentage_points_won_return_team) AS max_points_won_return_team,
+                MAX(avg_percentage_shots_smash) AS max_shots_smash,
+                MAX(avg_num_bajadas) AS max_bajadas,
+                MAX(avg_percentage_viborejas_winners) AS max_viborejas_winners,
+                MAX(avg_percentage_winners) AS max_winners,
+                MAX(avg_percentage_assists_shots) AS max_assists_shots,
+                MAX(avg_percentage_error_setups) AS max_error_setups,
+                MAX(avg_percentage_ue) AS max_ue,
+                MAX(avg_percentage_pe) AS max_pe,
+                MAX(avg_percentage_winner_setups) AS max_winner_setups,
+                MAX(avg_num_smash_defenses) AS max_smash_defenses
+            FROM (
+                SELECT 
+                    gender,
+                    player,
+                    AVG(ci_per_point) AS avg_ci_per_point,
+                    AVG(num_direct_points_on_serve) AS avg_num_direct_points_on_serve,
+                    AVG(percentage_points_won_on_serve_team) * 100 AS avg_percentage_points_won_on_serve_team,
+                    
+                    -- Calcular el porcentaje de errores de resto previamente
+                    ROUND(SUM(num_return_errors)::numeric / NULLIF(SUM(num_returns), 0) * 100, 2) AS avg_percentage_return_errors,
+
+                    AVG(percentage_points_won_return_team) * 100 AS avg_percentage_points_won_return_team,
+                    AVG(percentage_shots_smash) * 100 AS avg_percentage_shots_smash,
+                    AVG(num_bajadas) AS avg_num_bajadas,
+                    AVG(percentage_viborejas_winners) * 100 AS avg_percentage_viborejas_winners,
+                    AVG(percentage_winners) * 100 AS avg_percentage_winners,
+                    AVG(percentage_assists_shots) * 100 AS avg_percentage_assists_shots,
+                    AVG(percentage_error_setups) * 100 AS avg_percentage_error_setups,
+                    AVG(percentage_ue) * 100 AS avg_percentage_ue,
+                    AVG(percentage_pe) * 100 AS avg_percentage_pe,
+                    AVG(percentage_winner_setups) * 100 AS avg_percentage_winner_setups,
+                    AVG(num_smash_defenses) AS avg_num_smash_defenses
+                FROM player_stats
+                GROUP BY gender, player
+            ) AS player_averages
+            GROUP BY gender;
+        """
+
+        cursor.execute(query)
+        results = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        # Formatear el resultado en un diccionario diferenciado por género
+        benchmark_max = {}
+        for row in results:
+            gender = row[0]
+            benchmark_max[gender] = {
+                "ci_per_point": float(row[1]) if row[1] is not None else 0.0,
+                "num_direct_points_on_serve": float(row[2]) if row[2] is not None else 0.0,
+                "percentage_points_won_on_serve_team": float(row[3]) if row[3] is not None else 0.0,
+                "percentage_return_errors": float(row[4]) if row[4] is not None else 0.0,
+                "percentage_points_won_return_team": float(row[5]) if row[5] is not None else 0.0,
+                "percentage_shots_smash": float(row[6]) if row[6] is not None else 0.0,
+                "num_bajadas": float(row[7]) if row[7] is not None else 0.0,
+                "percentage_viborejas_winners": float(row[8]) if row[8] is not None else 0.0,
+                "percentage_winners": float(row[9]) if row[9] is not None else 0.0,
+                "percentage_assists_shots": float(row[10]) if row[10] is not None else 0.0,
+                "percentage_error_setups": float(row[11]) if row[11] is not None else 0.0,
+                "percentage_ue": float(row[12]) if row[12] is not None else 0.0,
+                "percentage_pe": float(row[13]) if row[13] is not None else 0.0,
+                "percentage_winner_setups": float(row[14]) if row[14] is not None else 0.0,
+                "num_smash_defenses": float(row[15]) if row[15] is not None else 0.0
+            }
+
+        return benchmark_max
+    except Exception as e:
+        return {"error": str(e)}
 
 
 if __name__ == "__main__":

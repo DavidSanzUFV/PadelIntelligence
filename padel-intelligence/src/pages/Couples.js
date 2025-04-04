@@ -215,7 +215,7 @@ const Couples = () => {
                   setModalCouple(pair);
                   setCoupleStats(null); // limpiar antes de nuevo fetch
 
-                  fetch(`http://localhost:8000/pair_stats/${pair.player1_id}/${pair.player2_id}`)
+                  fetch(`/pair_stats/${pair.player1_id}/${pair.player2_id}`)
                     .then((res) => res.json())
                     .then((data) => {
                       setCoupleStats(data);

@@ -31,7 +31,7 @@ const getBrandLogo = (brand) => {
 
   return `/assets/brands/${formattedBrand}.png`;
 };
-const Modal = ({ player, onClose, tabs, activeTab, setActiveTab }) => {
+const Modal = ({ player, onClose, tabs, activeTab, setActiveTab, benchmarkMax, benchmark }) => {
   const [playerStats, setPlayerStats] = useState(null);
 
   useEffect(() => {
@@ -108,19 +108,24 @@ const Modal = ({ player, onClose, tabs, activeTab, setActiveTab }) => {
                 <li><strong>% Net Recovery with Lob:</strong> {playerStats.net_recovery_with_lob}%</li>
                 <li><strong>Unforced Errors per Match:</strong> {playerStats.unforced_errors_per_match}</li>
               </ul>
-            )}
-            {activeTab === "graphs" && (
-              <>
-                <div className="charts-row">
-                  <div className="chart-container">
-                    <LobsPieChart stats={playerStats} />
-                  </div>
-                  <div className="chart-container">
-                    <RadarStatsChart stats={playerStats} />
-                  </div>
-                </div>
-              </>
-            )}
+                  )}
+{activeTab === "graphs" && (
+  <>
+    <div className="charts-row">
+      <div className="chart-container">
+        <LobsPieChart stats={playerStats} />
+      </div>
+      <div className="chart-container">
+        <RadarStatsChart 
+          stats={playerStats} 
+          benchmarkMax={benchmarkMax} 
+          benchmark={benchmark} 
+          gender={player.gender} 
+        />
+      </div>
+    </div>
+  </>
+)}
           </div>
         ) : (
           <p style={{ marginTop: "20px" }}>Loading stats...</p>
@@ -142,11 +147,37 @@ const tabs = [
   { key: "graphs", label: "📊 graphs" }
 ];
 
+const fetchBenchmark = async () => {
+  try {
+    const response = await fetch("/benchmark");
+    if (!response.ok) throw new Error("Error fetching benchmark");
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("❌ Error fetching benchmark:", error);
+    return null;
+  }
+};
+
+const fetchBenchmarkMax = async () => {
+  try {
+    const response = await fetch("/benchmark_max");
+    if (!response.ok) throw new Error("Error fetching benchmark max");
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("❌ Error fetching benchmark max:", error);
+    return null;
+  }
+};
+
 const Statistics = () => {
   const [activeTab, setActiveTab] = useState("tournaments");
   const [players, setPlayers] = useState([]);
   const [filteredPlayers, setFilteredPlayers] = useState([]);
   const [modalPlayer, setModalPlayer] = useState(null);
+  const [benchmarkMax, setBenchmarkMax] = useState(null); // Nuevo estado para el benchmark máximo
+  const [benchmark, setBenchmark] = useState(null);
 
   // Estados para filtros
   const [searchQuery, setSearchQuery] = useState("");
@@ -184,6 +215,31 @@ const Statistics = () => {
         setFilteredPlayers(formattedPlayers);
       })
       .catch((error) => console.error("🚨 Error fetching players:", error));
+
+      const fetchBenchmarks = async () => {
+        try {
+          const maxData = await fetchBenchmarkMax();
+          const avgData = await fetchBenchmark();
+    
+          if (maxData) {
+            console.log("✅ Benchmark máximo obtenido:", maxData);
+            setBenchmarkMax(maxData);
+          } else {
+            console.error("❌ Error al obtener el benchmark máximo");
+          }
+    
+          if (avgData) {
+            console.log("✅ Benchmark obtenido:", avgData);
+            setBenchmark(avgData);
+          } else {
+            console.error("❌ Error al obtener el benchmark");
+          }
+        } catch (error) {
+          console.error("❌ Error en fetch de benchmarks:", error);
+        }
+      };
+    
+      fetchBenchmarks();
   }, []);
 
   useEffect(() => {
@@ -305,13 +361,17 @@ const Statistics = () => {
           <p>No players found.</p>
         )}
       </div>
-      <Modal
-        player={modalPlayer}
-        onClose={() => setModalPlayer(null)}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        tabs={tabs}
-      />
+      {modalPlayer && (
+        <Modal
+          player={modalPlayer}
+          onClose={() => setModalPlayer(null)}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          benchmarkMax={benchmarkMax}
+          benchmark={benchmark}
+          tabs={tabs}
+        />
+)}
     </div>
   );
 };
