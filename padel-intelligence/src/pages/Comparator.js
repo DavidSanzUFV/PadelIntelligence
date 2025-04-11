@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/Statistics.css";
 import "../styles/Comparator.css";
+import RadarChartComparison from "../components/RadarChartComparison";
 
 const Comparator = () => {
   const [players, setPlayers] = useState([]);
@@ -8,6 +9,7 @@ const Comparator = () => {
   const [player2, setPlayer2] = useState(null);
   const [query1, setQuery1] = useState("");
   const [query2, setQuery2] = useState("");
+  const [benchmarkMax, setBenchmarkMax] = useState(null);
 
   useEffect(() => {
     fetch("/players")
@@ -36,6 +38,13 @@ const Comparator = () => {
       });
   }, []);
 
+  useEffect(() => {
+    fetch("/benchmark_max")
+      .then((res) => res.json())
+      .then((data) => setBenchmarkMax(data))
+      .catch((err) => console.error("❌ Error fetching benchmark max:", err));
+  }, []);
+  
   const findPlayer = async (query, setPlayer) => {
     const basicInfo = players.find((p) => p.player.toLowerCase().includes(query.toLowerCase()));
     if (!basicInfo) return;
@@ -144,13 +153,21 @@ const Comparator = () => {
         />
       </div>
 
-      <div className="players-grid">
-        <PlayerCard player={player1} />
-        <PlayerCard player={player2} />
-      </div>
-
       {player1 && player2 && (
+        
         <>
+   <div className="players-grid">
+      <PlayerCard player={player1} />
+      <PlayerCard player={player2} />
+    </div>
+
+    <div className="radar-chart-wrapper">
+      <RadarChartComparison
+        player1={player1}
+        player2={player2}
+        benchmarkMax={benchmarkMax}
+      />
+    </div>
           <div className="comparison-block">
             <h3 className="comparison-title">TOURNAMENTS</h3>
             <div className="comparison-box">
@@ -224,7 +241,7 @@ const Comparator = () => {
                 <tbody>
                   {renderRow("Number of Outside recoveries in the season", "outside_recoveries", (v) => v)}
                   {renderRow("Lobs Played per Match", "lobs_played_per_match", (v) => v)}
-                  {renderRow("% Net Recovery with Lob", "net_recovery_with_lob", (v) => `${(v * 100).toFixed(2)}%`)}
+                  {renderRow("% Net Recovery with Lob", "net_recovery_with_lob", (v) => `${parseFloat(v).toFixed(2)}%`)}
                   {renderRow("Number of Unforced Errors per Match", "unforced_errors_per_match", (v) => v)}
                 </tbody>
               </table>

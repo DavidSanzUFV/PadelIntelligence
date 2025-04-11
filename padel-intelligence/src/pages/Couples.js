@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "../styles/Couples.css";
 import statsIcon from "../assets/stats-icon.png"; // Asegúrate de tener esta imagen
+import LobsPieChart from "../components/LobsPieChart";
+import RadarStatsChart from "../components/RadarStatsChart";
+
 
 const getFlagURL = (nationality) => {
   const countryCodes = {
@@ -27,7 +30,7 @@ const getFlagURL = (nationality) => {
   };
   return `https://flagcdn.com/w40/${countryCodes[nationality]?.toLowerCase()}.png`;
 };
-const ModalCouple = ({ couple, stats, onClose, tabs, activeTab, setActiveTab }) => {
+const ModalCouple = ({ couple, stats, onClose, tabs, activeTab, setActiveTab, benchmark, benchmarkMax }) => {
   if (!couple) return null;
 
   return (
@@ -101,9 +104,24 @@ const ModalCouple = ({ couple, stats, onClose, tabs, activeTab, setActiveTab }) 
                 </>
               )}
 
-              {activeTab === "graphs" && (
-                <p>📊 Match chart (aquí irá un gráfico)</p>
-              )}
+                {activeTab === "graphs" && (
+                  <>
+                    <div className="charts-row">
+                      <div className="chart-container">
+                        <LobsPieChart stats={stats} />
+                      </div>
+                      <div className="chart-container">
+                      <RadarStatsChart 
+                        stats={stats}
+                        benchmark={benchmark}
+                        benchmarkMax={benchmarkMax}
+                        gender={couple.gender}
+                        label="Couple"
+                      />
+                      </div>
+                    </div>
+                  </>
+                )}
             </>
           ) : (
             <p>Loading stats...</p>
@@ -122,6 +140,8 @@ const Couples = () => {
   const [modalCouple, setModalCouple] = useState(null);
   const [activeTab, setActiveTab] = useState("tournaments");
   const [coupleStats, setCoupleStats] = useState(null);
+  const [benchmarkMaxCouples, setBenchmarkMaxCouples] = useState(null);
+  const [benchmarkCouples, setBenchmarkCouples] = useState(null);
 
   const tabs = [
   { key: "tournaments", label: "🎾 tournaments" },
@@ -142,16 +162,41 @@ const Couples = () => {
       })
       .catch((error) => console.error("Error fetching pairs:", error));
   }, []);
-
-  // Filtrar por género y búsqueda
+  
+  // 📊 Benchmark de parejas (promedio y máximo)
+  useEffect(() => {
+    const fetchBenchmarks = async () => {
+      try {
+        const [maxRes, avgRes] = await Promise.all([
+          fetch("/benchmark_max_couples"),
+          fetch("/benchmark_couples"),
+        ]);
+  
+        const [maxData, avgData] = await Promise.all([
+          maxRes.json(),
+          avgRes.json(),
+        ]);
+  
+        setBenchmarkMaxCouples(maxData);
+        setBenchmarkCouples(avgData);
+      } catch (err) {
+        console.error("❌ Error fetching couple benchmarks:", err);
+      }
+    };
+  
+    fetchBenchmarks();
+  }, []);
+  
+  // 🔍 Filtro por género y búsqueda
   const filteredPairs = pairs.filter((pair) => {
     const matchesGender = genderFilter === "all" || pair.gender === genderFilter;
     const matchesSearch = searchQuery === "" ||
       pair.player1.toLowerCase().includes(searchQuery.toLowerCase()) ||
       pair.player2.toLowerCase().includes(searchQuery.toLowerCase());
-
+  
     return matchesGender && matchesSearch;
   });
+  
 
   const formatName = (fullName) => {
     const parts = fullName.split(" ");
@@ -235,16 +280,18 @@ const Couples = () => {
         )}
       </div>
       <ModalCouple
-        couple={modalCouple}
-        stats={coupleStats}
-        onClose={() => {
-          setModalCouple(null);
-          setCoupleStats(null);
-        }}
-        tabs={tabs}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
+  couple={modalCouple}
+  stats={coupleStats}
+  onClose={() => {
+    setModalCouple(null);
+    setCoupleStats(null);
+  }}
+  tabs={tabs}
+  activeTab={activeTab}
+  setActiveTab={setActiveTab}
+  benchmark={benchmarkCouples}
+  benchmarkMax={benchmarkMaxCouples}
+/>
     </div>
   );
 };

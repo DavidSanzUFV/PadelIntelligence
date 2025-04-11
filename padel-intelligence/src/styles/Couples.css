@@ -232,3 +232,17 @@
   margin-right: 8px;
   border-radius: 3px;
 }
+.tab-content
+{
+  margin-top: 20px;
+}
+.tab-content p {
+  margin-bottom: 12px;  /* Un poco más de espacio entre estadísticas */
+  font-size: 1.3rem;    /* Aumenta el tamaño del texto */
+  color: #e0e0e0;       /* Cambia el color a un gris claro */
+  font-weight: 500;     /* Un poco más de grosor */
+}
+.tab-content p strong {
+  font-size: 1.4rem;    /* Tamaño del texto destacado */
+  color: #ffffff;       /* Texto destacado en blanco */
+}

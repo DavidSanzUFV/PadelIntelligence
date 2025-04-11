@@ -357,3 +357,28 @@
   gap: 30px;
   margin-top: 30px;
 }
+.tab-content ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.tab-content li {
+  margin-bottom: 12px;  /* Un poco más de espacio entre estadísticas */
+  font-size: 1.3rem;    /* Aumenta el tamaño del texto */
+  color: #e0e0e0;       /* Cambia el color a un gris claro */
+  font-weight: 500;     /* Un poco más de grosor */
+}
+
+.tab-content li strong {
+  font-size: 1.4rem;    /* Tamaño del texto destacado */
+  color: #ffffff;       /* Texto destacado en blanco */
+}
+
+.modal-content h2 {
+  font-size: 2rem;      /* Aumenta el tamaño del título */
+  color: #ffffff;       /* Color blanco */
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 700;     /* Título más grueso */
+}

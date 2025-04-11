@@ -26,12 +26,24 @@ const iconMap = {
 
 const Highlights = () => {
   const [highlights, setHighlights] = useState([]);
+  const [summary, setSummary] = useState({
+    matches_played: 0,
+    sets_played: 0,
+    points_played: 0
+  });
 
   useEffect(() => {
+    // Fetch de los highlights
     fetch("/highlights")
       .then(res => res.json())
       .then(data => setHighlights(data))
       .catch(err => console.error("Error loading highlights", err));
+
+    // Fetch del resumen de temporada
+    fetch("/summary_season")
+      .then(res => res.json())
+      .then(data => setSummary(data))
+      .catch(err => console.error("Error loading season summary", err));
   }, []);
 
   const top = highlights.slice(0, 4);
@@ -54,6 +66,7 @@ const Highlights = () => {
           />
         ))}
       </div>
+
       <div className="highlights-intense">
         <h2 className="intense-title">🔥 MOST INTENSE MATCHES</h2>
         <p className="intense-subtitle">
@@ -71,19 +84,20 @@ const Highlights = () => {
           />
         ))}
       </div>
+
       <div className="highlights-summary">
         <h2 className="summary-title">📊 SEASON SUMMARY</h2>
         <div className="summary-stats">
           <div className="summary-item">
-            <span className="summary-number">264</span>
+            <span className="summary-number">{summary.matches_played.toLocaleString()}</span>
             <span className="summary-label">Total Matches</span>
           </div>
           <div className="summary-item">
-            <span className="summary-number">846</span>
+            <span className="summary-number">{summary.sets_played.toLocaleString()}</span>
             <span className="summary-label">Total Sets Played</span>
           </div>
           <div className="summary-item">
-            <span className="summary-number">12,300</span>
+            <span className="summary-number">{summary.points_played.toLocaleString()}</span>
             <span className="summary-label">Total Points</span>
           </div>
         </div>

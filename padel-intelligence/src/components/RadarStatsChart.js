@@ -4,13 +4,14 @@ import {
   PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend
 } from "recharts";
 
-const RadarStatsChart = ({ stats, benchmark, benchmarkMax, gender }) => {
+const COLORS = ["#a5d6ff", "#9fe2bf", "#fdd36e", "#f28b82", "#cdb4db"]; // Colores pastel suaves
+
+const RadarStatsChart = ({ stats, benchmark, benchmarkMax, gender, label }) => {
   if (!stats || !benchmark || !benchmarkMax || !gender) {
     console.warn("❌ Missing data for RadarStatsChart", { stats, benchmark, benchmarkMax, gender });
     return null;
   }
 
-  // Obtener el benchmark correspondiente al género
   const genderBenchmark = benchmark[gender];
   const genderBenchmarkMax = benchmarkMax[gender];
 
@@ -19,14 +20,11 @@ const RadarStatsChart = ({ stats, benchmark, benchmarkMax, gender }) => {
     return null;
   }
 
-  console.log("✅ Data received in RadarStatsChart:", { stats, genderBenchmark, genderBenchmarkMax });
-
   const normalize = (value, max) => {
     if (max === 0 || max === undefined || max === null) return 0;
     return (value / max) * 100;
   };
 
-  // Calcular el valor normalizado y ponderado de cada métrica
   const calculateMetric = (statValues, benchmarkValues, weights) => {
     const weightedStat = statValues.reduce((sum, val, idx) => sum + (val * weights[idx]), 0);
     const weightedBenchmark = benchmarkValues.reduce((sum, val, idx) => sum + (val * weights[idx]), 0);
@@ -40,7 +38,7 @@ const RadarStatsChart = ({ stats, benchmark, benchmarkMax, gender }) => {
       benchmark: normalize(genderBenchmark.ci_per_point, genderBenchmarkMax.ci_per_point),
     },
     {
-      metric: "Servicio",
+      metric: "Serve",
       player: calculateMetric(
         [stats.num_direct_points_on_serve, stats.percentage_points_won_on_serve_team],
         [genderBenchmarkMax.num_direct_points_on_serve, genderBenchmarkMax.percentage_points_won_on_serve_team],
@@ -53,7 +51,7 @@ const RadarStatsChart = ({ stats, benchmark, benchmarkMax, gender }) => {
       ),
     },
     {
-      metric: "Resto",
+      metric: "Return",
       player: calculateMetric(
         [stats.percentage_return_errors, stats.percentage_points_won_return_team],
         [genderBenchmarkMax.percentage_return_errors, genderBenchmarkMax.percentage_points_won_return_team],
@@ -66,7 +64,7 @@ const RadarStatsChart = ({ stats, benchmark, benchmarkMax, gender }) => {
       ),
     },
     {
-      metric: "Agresividad",
+      metric: "Aggressiveness",
       player: calculateMetric(
         [stats.percentage_shots_smash, stats.num_bajadas, stats.percentage_viborejas_winners],
         [genderBenchmarkMax.percentage_shots_smash, genderBenchmarkMax.num_bajadas, genderBenchmarkMax.percentage_viborejas_winners],
@@ -79,7 +77,7 @@ const RadarStatsChart = ({ stats, benchmark, benchmarkMax, gender }) => {
       ),
     },
     {
-      metric: "Ataque",
+      metric: "Attack",
       player: calculateMetric(
         [stats.percentage_winners, stats.percentage_assists_shots, stats.percentage_error_setups],
         [genderBenchmarkMax.percentage_winners, genderBenchmarkMax.percentage_assists_shots, genderBenchmarkMax.percentage_error_setups],
@@ -92,7 +90,7 @@ const RadarStatsChart = ({ stats, benchmark, benchmarkMax, gender }) => {
       ),
     },
     {
-      metric: "Consistencia",
+      metric: "Consistency",
       player: calculateMetric(
         [stats.percentage_ue, stats.percentage_pe, stats.percentage_winner_setups, stats.num_smash_defenses],
         [genderBenchmarkMax.percentage_ue, genderBenchmarkMax.percentage_pe, genderBenchmarkMax.percentage_winner_setups, genderBenchmarkMax.num_smash_defenses],
@@ -108,21 +106,27 @@ const RadarStatsChart = ({ stats, benchmark, benchmarkMax, gender }) => {
 
   return (
     <div className="chart-container">
-      <h3 style={{ textAlign: "center", marginBottom: "10px", color: "#fff" }}>
-        📊 Tactical Profile
-      </h3>
-      <ResponsiveContainer width={550} height={350}>
-        <RadarChart data={data}>
-          <PolarGrid />
-          <PolarAngleAxis dataKey="metric" tick={{ fill: "#ffffff", fontSize: 15 }} />
-          <PolarRadiusAxis domain={[0, 100]} tick={false} /> {/* Quitar los números */}
-          <Radar name="Player" dataKey="player" stroke="#0088FE" fill="#0088FE" fillOpacity={0.6} />
-          <Radar name="Benchmark" dataKey="benchmark" stroke="#FFBB28" fill="#FFBB28" fillOpacity={0.4} />
-          <Legend />
-        </RadarChart>
-      </ResponsiveContainer>
+      <h3 className="chart-title">📊 Tactical Profile</h3>
+      <div className="chart-inner">
+        <ResponsiveContainer width={500} height={400}>
+          <RadarChart data={data}>
+            <PolarGrid />
+            <PolarAngleAxis dataKey="metric" tick={{ fill: "#ffffff", fontSize: 15 }} />
+            <PolarRadiusAxis domain={[0, 100]} tick={false} />
+            <Radar name={label || "Player"} dataKey="player" stroke={COLORS[0]} fill={COLORS[0]} fillOpacity={0.6} />
+            <Radar name="Benchmark" dataKey="benchmark" stroke={COLORS[2]} fill={COLORS[2]} fillOpacity={0.4} />
+            <Legend layout="horizontal" verticalAlign="bottom" align="center" />
+          </RadarChart>
+        </ResponsiveContainer>
+        <p className="chart-description">
+  This chart visualizes the {label?.toLowerCase() === "couple" ? "couple's" : "player's"} tactical profile based on six core dimensions. 
+  Values are normalized against gender-specific benchmarks to highlight strengths 
+  and improvement areas compared to the average {label?.toLowerCase() === "couple" ? "couple" : "player"}.
+</p>
+      </div>
     </div>
   );
 };
 
 export default RadarStatsChart;
+

@@ -63,88 +63,90 @@ const Modal = ({ player, onClose, tabs, activeTab, setActiveTab, benchmarkMax, b
           ))}
         </div>
 
-        {playerStats ? (
-          <div className="tab-content">
-            {activeTab === "tournaments" && (
-              <ul>
-                <li><strong>Tournaments Played:</strong> {playerStats.tournaments_played}</li>
-                <li><strong>Matches Played:</strong> {playerStats.matches_played}</li>
-                <li><strong>Win Rate:</strong> {playerStats.win_rate}%</li>
-              </ul>
-            )}
-            {activeTab === "serves" && (
-              <ul>
-                <li><strong>% First Serves:</strong> {playerStats.percentage_1st_serves}%</li>
-                <li><strong>% Service Games Won:</strong> {playerStats.percentage_service_games_won}%</li>
-              </ul>
-            )}
-            {activeTab === "tactics" && (
-              <ul>
-                <li><strong>% Cross-court Shots:</strong> {playerStats.percentage_cross}%</li>
-                <li><strong>% Parallel Shots:</strong> {playerStats.percentage_parallel}%</li>
-              </ul>
-            )}
-            {activeTab === "returns" && (
-              <ul>
-                <li><strong>% Lob Returns:</strong> {playerStats.percentage_lobbed_returns}%</li>
-                <li><strong>% Flat Returns:</strong> {playerStats.percentage_flat_returns}%</li>
-                <li><strong>% Error Returns:</strong> {playerStats.percentage_return_errors}%</li>
-              </ul>
-            )}
-            {activeTab === "aerial game" && (
-              <ul>
-                <li><strong>Lobs Received per Match:</strong> {playerStats.lobs_received_per_match}</li>
-                <li><strong>% Smashes from Lobs:</strong> {playerStats.percentage_smashes_from_lobs}%</li>
-                <li><strong>% Rulos from Lobs:</strong> {playerStats.percentage_rulos_from_lobs}%</li>
-                <li><strong>% Viborejas from Lobs:</strong> {playerStats.percentage_viborejas_from_lobs}%</li>
-                <li><strong>% Bajadas from Lobs:</strong> {playerStats.percentage_bajadas_from_lobs}%</li>
-                <li><strong>% Winners from Lobs:</strong> {playerStats.winners_from_lobs}%</li>
-              </ul>
-            )}
-            {activeTab === "defense" && (
-              <ul>
-                <li><strong>Outside Recoveries:</strong> {playerStats.outside_recoveries}</li>
-                <li><strong>Lobs Played per Match:</strong> {playerStats.lobs_played_per_match}</li>
-                <li><strong>% Net Recovery with Lob:</strong> {playerStats.net_recovery_with_lob}%</li>
-                <li><strong>Unforced Errors per Match:</strong> {playerStats.unforced_errors_per_match}</li>
-              </ul>
-                  )}
-{activeTab === "graphs" && (
-  <>
-    <div className="charts-row">
-      <div className="chart-container">
-        <LobsPieChart stats={playerStats} />
-      </div>
-      <div className="chart-container">
-        <RadarStatsChart 
-          stats={playerStats} 
-          benchmarkMax={benchmarkMax} 
-          benchmark={benchmark} 
-          gender={player.gender} 
-        />
-      </div>
-    </div>
-  </>
-)}
-          </div>
-        ) : (
-          <p style={{ marginTop: "20px" }}>Loading stats...</p>
-        )}
+        <div className="tab-content">
+          {playerStats ? (
+            <>
+              {activeTab === "tournaments" && (
+                <>
+                  <p>🏆 Tournaments Played: {playerStats.tournaments_played}</p>
+                  <p>🎾 Matches Played: {playerStats.matches_played}</p>
+                  <p>📈 Win Rate: {playerStats.win_rate}%</p>
+                </>
+              )}
+              {activeTab === "serves" && (
+                <>
+                  <p>🎯 % First Serves: {playerStats.percentage_1st_serves}%</p>
+                  <p>🧱 % Service Games Won: {playerStats.percentage_service_games_won}%</p>
+                </>
+              )}
+              {activeTab === "tactics" && (
+                <>
+                  <p>🧠 % Cross-court Shots: {playerStats.percentage_cross}%</p>
+                  <p>🛣️ % Parallel Shots: {playerStats.percentage_parallel}%</p>
+                </>
+              )}
+              {activeTab === "returns" && (
+                <>
+                  <p>☁️ % Lob Returns: {playerStats.percentage_lobbed_returns}%</p>
+                  <p>➖ % Flat Returns: {playerStats.percentage_flat_returns}%</p>
+                  <p>⚠️ % Return Errors: {playerStats.percentage_return_errors}%</p>
+                </>
+              )}
+              {activeTab === "aerial game" && (
+                <>
+                  <p>🌪️ Lobs Received per Match: {playerStats.lobs_received_per_match}</p>
+                  <p>💥 % Smashes from Lobs: {playerStats.percentage_smashes_from_lobs}%</p>
+                  <p>🌀 % Rulos from Lobs: {playerStats.percentage_rulos_from_lobs}%</p>
+                  <p>🔃 % Viborejas from Lobs: {playerStats.percentage_viborejas_from_lobs}%</p>
+                  <p>🔽 % Bajadas from Lobs: {playerStats.percentage_bajadas_from_lobs}%</p>
+                  <p>🏅 % Winners from Lobs: {playerStats.winners_from_lobs}%</p>
+                </>
+              )}
+              {activeTab === "defense" && (
+                <>
+                  <p>🛡️ Outside Recoveries: {playerStats.outside_recoveries}</p>
+                  <p>🎈 Lobs Played per Match: {playerStats.lobs_played_per_match}</p>
+                  <p>🕸️ % Net Recovery with Lob: {playerStats.net_recovery_with_lob}%</p>
+                  <p>❌ Unforced Errors per Match: {playerStats.unforced_errors_per_match}</p>
+                </>
+              )}
+              {activeTab === "graphs" && (
+                <div className="charts-row">
+                  <div className="chart-container">
+                    <LobsPieChart stats={playerStats} />
+                  </div>
+                  <div className="chart-container">
+                    <RadarStatsChart
+                      stats={playerStats}
+                      benchmarkMax={benchmarkMax}
+                      benchmark={benchmark}
+                      gender={player.gender}
+                      label="Player"
+                    />
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <p style={{ marginTop: "20px" }}>Loading stats...</p>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
+
 const allowedNationalities = ["Spain", "Argentina", "France"];
 
 const tabs = [
-  { key: "tournaments", label: "🎾 tournaments" },
-  { key: "serves", label: "🎯 serves" },
-  { key: "tactics", label: "🧠 tactics" },
-  { key: "returns", label: "↩️ returns" },
-  { key: "aerial game", label: "🚀 aerial game" },
-  { key: "defense", label: "🛡️ defense" },
-  { key: "graphs", label: "📊 graphs" }
+  { key: "tournaments", label: "🎾 Tournaments" },
+  { key: "serves", label: "🎯 Serves" },
+  { key: "tactics", label: "🧠 Tactics" },
+  { key: "returns", label: "↩️ Returns" },
+  { key: "aerial game", label: "🚀 Aerial game" },
+  { key: "defense", label: "🛡️ Defense" },
+  { key: "graphs", label: "📊 Graphs" }
 ];
 
 const fetchBenchmark = async () => {

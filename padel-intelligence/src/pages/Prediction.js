@@ -52,6 +52,8 @@ const Prediction = () => {
   
   // Estado para almacenar el resultado de la predicción
   const [predictionResult, setPredictionResult] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   
   const handlePredict = async () => {
     const matchData = {
@@ -65,24 +67,25 @@ const Prediction = () => {
       p_serve: 0.8,
       p_games_won_on_serve: 0.7,
     };
-
+  
     try {
+      setIsLoading(true); // 👈 mostrar loading
       const response = await fetch("/run_prediction/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(matchData),
       });
       const prediction = await response.json();
       setPredictionResult(prediction);
-      setIsModalOpen(true); // Abrir el modal al recibir la predicción
+      setIsModalOpen(true);
     } catch (error) {
       console.error("Error during prediction:", error);
       alert("Error while fetching prediction.");
+    } finally {
+      setIsLoading(false); // 👈 ocultar loading
     }
   };
-
+  
   const closeModal = () => {
     setIsModalOpen(false);
   };
@@ -91,19 +94,18 @@ const Prediction = () => {
     <div className="prediction-container">
       <div className="prediction-main-card">
         <div className="info-wrapper">
+        {showInfo && (
+  <div className="info-box top">
+    <p>
+      Enter the current match result by specifying the teams that are playing and the points, games, and sets currently in progress.
+      Click on <b>PREDICT</b> to receive key insights and potential outcomes of the match.
+    </p>
+  </div>
+)}
           <h1 className="prediction-title">
             PREDICT A MATCH
             <span className="info-icon" onClick={() => setShowInfo(!showInfo)}>ℹ️</span>
           </h1>
-
-          {showInfo && (
-            <div className="info-box">
-              <p>
-                Enter the current match result by specifying the teams that are playing and the points, games, and sets currently in progress.
-                Click on <b>PREDICT</b> to receive key insights and potential outcomes of the match.
-              </p>
-            </div>
-          )}
         </div>
         
       <div className="pair-selection">
@@ -314,13 +316,32 @@ const Prediction = () => {
           </button>
         )}
       </div>
+      {isLoading && (
+  <div className="modal-overlay-pre">
+    <div className="modal-contenido">
+      <span className="loading-spinner">⏳</span>
+      <h2>Generating prediction...</h2>
+    </div>
+  </div>
+)}
 
       {/* Modal para mostrar el resultado de la predicción */}
       {predictionResult && isModalOpen && (
         <div className="modal-overlay-pre" onClick={closeModal}>
           <div className="modal-contenido" onClick={(e) => e.stopPropagation()}>
             <span className="close-button" onClick={closeModal}>&times;</span>
-            <h2>Prediction Result</h2>
+            <h2>
+  Victory prediction for
+  <br />
+  <span style={{ fontStyle: "italic", color: "#d0d0ff" }}>
+    {team1}
+  </span>{" "}
+  <span style={{ fontWeight: "normal", fontStyle: "italic", color: "#aaa" }}>
+    vs {team2}
+  </span>
+</h2>
+
+
             <div className="prediction-result">
               <FormattedPredictionResult predictionResult={predictionResult} />
             </div>

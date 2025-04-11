@@ -86,7 +86,7 @@
   }
   
   .highlight-winner {
-    color: #8bc34a; /* verde llamativo */
+    color: var(--highlight-teal); /* verde llamativo */
     font-weight: bold;
   }
   
@@ -125,4 +125,9 @@
 }
 .comparison-table tr:last-child td:last-child {
   border-bottom-right-radius: 20px;
+}
+.radar-chart-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: -45px;
 }

@@ -2,7 +2,8 @@
 import React from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
-const COLORS = ["#a5d6ff", "#9fe2bf", "#fdd36e", "#f28b82", "#cdb4db"]; // pastel suave
+const COLORS = ["#f28b82", "#a5d6ff", "#fdd36e", "#9fe2bf", "#cdb4db"];
+
 
 const LobsPieChart = ({ stats }) => {
   if (!stats) return null;
@@ -18,11 +19,11 @@ const LobsPieChart = ({ stats }) => {
   const data = [
     { name: "Smashes", value: smash },
     { name: "Rulos", value: rulos },
-    { name: "Viborejas", value: viborejas },
+    { name: "Viboras and Bandejas", value: viborejas },
     { name: "Bajadas", value: bajadas },
   ];
 
-  if (missing > 0.5) {
+  if (missing > 0.15) {
     data.push({ name: "Others", value: parseFloat(missing.toFixed(2)) });
   }
 
@@ -31,7 +32,7 @@ const LobsPieChart = ({ stats }) => {
   <h3 className="chart-title">📊 Distribution of Shots After Lobs</h3>
 
   <div className="chart-inner"> {/* ⬅️ Añade esto */}
-    <ResponsiveContainer width={350} height={350}>
+    <ResponsiveContainer width={350} height={400}>
       <PieChart>
       <Pie
             data={data}
