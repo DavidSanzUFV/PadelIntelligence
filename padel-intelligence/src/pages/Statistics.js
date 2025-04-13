@@ -36,7 +36,7 @@ const Modal = ({ player, onClose, tabs, activeTab, setActiveTab, benchmarkMax, b
 
   useEffect(() => {
     if (player) {
-      fetch(`/player_stats/${encodeURIComponent(player.player)}`)
+      fetch(`/api/player_stats/${encodeURIComponent(player.player)}`)
         .then(res => res.json())
         .then(data => setPlayerStats(data))
         .catch(err => console.error("❌ Error fetching stats:", err));
@@ -151,7 +151,7 @@ const tabs = [
 
 const fetchBenchmark = async () => {
   try {
-    const response = await fetch("/benchmark");
+    const response = await fetch("/api/benchmark");
     if (!response.ok) throw new Error("Error fetching benchmark");
     const data = await response.json();
     return data;
@@ -163,7 +163,7 @@ const fetchBenchmark = async () => {
 
 const fetchBenchmarkMax = async () => {
   try {
-    const response = await fetch("/benchmark_max");
+    const response = await fetch("/api/benchmark_max");
     if (!response.ok) throw new Error("Error fetching benchmark max");
     const data = await response.json();
     return data;
@@ -191,7 +191,7 @@ const Statistics = () => {
   const [sortOrder, setSortOrder] = useState("name_asc");
 
   useEffect(() => {
-    fetch("/players")
+    fetch("/api/players")
       .then((response) => response.json())
       .then((data) => {
         console.log("📢 Data recibida del backend:", data);
@@ -240,7 +240,6 @@ const Statistics = () => {
           console.error("❌ Error en fetch de benchmarks:", error);
         }
       };
-    
       fetchBenchmarks();
   }, []);
 

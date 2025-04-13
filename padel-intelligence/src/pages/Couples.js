@@ -154,7 +154,7 @@ const Couples = () => {
   ];
 
   useEffect(() => {
-    fetch("/pairs")
+    fetch("/api/pairs")
       .then((response) => response.json())
       .then((data) => {
         const filteredData = data.filter(pair => pair.gender === "M" || pair.gender === "W");
@@ -168,8 +168,8 @@ const Couples = () => {
     const fetchBenchmarks = async () => {
       try {
         const [maxRes, avgRes] = await Promise.all([
-          fetch("/benchmark_max_couples"),
-          fetch("/benchmark_couples"),
+          fetch("/api/benchmark_max_couples"),
+          fetch("/api/benchmark_couples"),
         ]);
   
         const [maxData, avgData] = await Promise.all([
@@ -260,7 +260,7 @@ const Couples = () => {
                   setModalCouple(pair);
                   setCoupleStats(null); // limpiar antes de nuevo fetch
 
-                  fetch(`/pair_stats/${pair.player1_id}/${pair.player2_id}`)
+                  fetch(`/api/pair_stats/${pair.player1_id}/${pair.player2_id}`)
                     .then((res) => res.json())
                     .then((data) => {
                       setCoupleStats(data);

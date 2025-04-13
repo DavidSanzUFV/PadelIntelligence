@@ -34,13 +34,13 @@ const Highlights = () => {
 
   useEffect(() => {
     // Fetch de los highlights
-    fetch("/highlights")
+    fetch("/api/highlights")
       .then(res => res.json())
       .then(data => setHighlights(data))
       .catch(err => console.error("Error loading highlights", err));
 
     // Fetch del resumen de temporada
-    fetch("/summary_season")
+    fetch("/api/summary_season")
       .then(res => res.json())
       .then(data => setSummary(data))
       .catch(err => console.error("Error loading season summary", err));

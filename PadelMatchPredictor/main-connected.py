@@ -62,15 +62,16 @@ app.add_middleware(
 )
 
 
+import os
+
 DB_CONFIG = {
-    "dbname": "postgres",
-    "user": "postgres",
-    "password": "PadelIntelligence1",
-    "host": "localhost",
-    "port": "5432",
+    "dbname": os.getenv("DB_NAME", "postgres"),
+    "user": os.getenv("DB_USER", "postgres"),
+    "password": os.getenv("DB_PASSWORD", "postgres"),
+    "host": os.getenv("DB_HOST", "localhost"),
+    "port": os.getenv("DB_PORT", "5432"),
     "options": "-c client_encoding=UTF8"
 }
-
 
 class MatchInput(BaseModel):
     t1_points: str

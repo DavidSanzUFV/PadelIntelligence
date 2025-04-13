@@ -27,7 +27,7 @@ const Prediction = () => {
   useEffect(() => {
     const fetchPairs = async () => {
       try {
-        const response = await fetch("/pairs_name");
+        const response = await fetch("/api/pairs_name");
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
         }
@@ -70,7 +70,7 @@ const Prediction = () => {
   
     try {
       setIsLoading(true); // 👈 mostrar loading
-      const response = await fetch("/run_prediction/", {
+      const response = await fetch("/api/run_prediction/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(matchData),

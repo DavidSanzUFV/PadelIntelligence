@@ -12,7 +12,7 @@ const Comparator = () => {
   const [benchmarkMax, setBenchmarkMax] = useState(null);
 
   useEffect(() => {
-    fetch("/players")
+    fetch("/api/players")
       .then((res) => res.json())
       .then((data) => {
         const uniquePlayers = {};
@@ -39,7 +39,7 @@ const Comparator = () => {
   }, []);
 
   useEffect(() => {
-    fetch("/benchmark_max")
+    fetch("/api/benchmark_max")
       .then((res) => res.json())
       .then((data) => setBenchmarkMax(data))
       .catch((err) => console.error("❌ Error fetching benchmark max:", err));
@@ -50,7 +50,7 @@ const Comparator = () => {
     if (!basicInfo) return;
 
     try {
-      const res = await fetch(`/player_stats/${basicInfo.player}`);
+      const res = await fetch(`/api/player_stats/${basicInfo.player}`);
       const extraInfo = await res.json();
       setPlayer({ ...basicInfo, ...extraInfo });
     } catch (error) {
