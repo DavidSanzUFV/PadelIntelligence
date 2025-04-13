@@ -3,31 +3,34 @@ services:
     name: nginx
     env: docker
     dockerfilePath: ./nginx/Dockerfile
-    context: ./nginx
     plan: free
     startCommand: ""
+    build:
+      context: ./nginx
     ports:
-      - 80
+      - port: 80
 
   - type: web
     name: frontend
     env: docker
     dockerfilePath: ./padel-intelligence/Dockerfile
-    context: ./padel-intelligence
     plan: free
     startCommand: "npm start"
+    build:
+      context: ./padel-intelligence
     ports:
-      - 3000
+      - port: 3000
 
   - type: web
     name: backend
     env: docker
     dockerfilePath: ./PadelMatchPredictor/Dockerfile
-    context: ./PadelMatchPredictor
     plan: free
     startCommand: "uvicorn main-connected:app --host 0.0.0.0 --port 8000"
+    build:
+      context: ./PadelMatchPredictor
     ports:
-      - 8000
+      - port: 8000
     envVars:
       - key: DB_HOST
         value: db
@@ -43,7 +46,8 @@ services:
   - type: pserv
     name: db
     env: docker
-    image: postgres:15
+    image:
+      name: postgres:15
     envVars:
       - key: POSTGRES_USER
         value: postgres
