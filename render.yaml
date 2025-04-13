@@ -37,10 +37,13 @@ services:
   - type: pserv
     name: db
     env: image
-    image:
-      name: postgres:15
+    image: postgres:15
     plan: free
     autoDeploy: true
+    disk:
+      name: db-disk
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 1
     envVars:
       - key: POSTGRES_USER
         value: postgres
@@ -48,4 +51,5 @@ services:
         value: PadelIntelligence1
       - key: POSTGRES_DB
         value: postgres
+
 
