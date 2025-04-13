@@ -2,8 +2,9 @@ services:
   - type: pserv
     name: db
     env: docker
-    dockerfilePath: ./db/Dockerfile
-    context: ./db
+    build:
+      context: ./db
+      dockerfilePath: Dockerfile
     plan: free
     autoDeploy: true
     envVars:
@@ -21,8 +22,9 @@ services:
   - type: web
     name: backend
     env: docker
-    dockerfilePath: ./PadelMatchPredictor/Dockerfile
-    context: ./PadelMatchPredictor
+    build:
+      context: ./PadelMatchPredictor
+      dockerfilePath: Dockerfile
     buildCommand: ""
     startCommand: "uvicorn main-connected:app --host 0.0.0.0 --port 8000"
     plan: free
@@ -42,8 +44,9 @@ services:
   - type: web
     name: frontend
     env: docker
-    dockerfilePath: ./padel-intelligence/Dockerfile
-    context: ./padel-intelligence
+    build:
+      context: ./padel-intelligence
+      dockerfilePath: Dockerfile
     buildCommand: ""
     startCommand: "npm start"
     plan: free
@@ -52,8 +55,9 @@ services:
   - type: web
     name: nginx
     env: docker
-    dockerfilePath: ./nginx/Dockerfile
-    context: ./nginx
+    build:
+      context: ./nginx
+      dockerfilePath: Dockerfile
     buildCommand: ""
     startCommand: ""
     plan: free
