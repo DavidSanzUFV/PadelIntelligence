@@ -3,8 +3,7 @@ services:
     name: nginx
     env: docker
     dockerfilePath: ./nginx/Dockerfile
-    buildCommand: ""
-    startCommand: ""
+    context: ./
     plan: free
     ports:
       - port: 80
@@ -13,6 +12,7 @@ services:
     name: frontend
     env: docker
     dockerfilePath: ./padel-intelligence/Dockerfile
+    context: ./padel-intelligence
     plan: free
     ports:
       - port: 3000
@@ -21,13 +21,13 @@ services:
     name: backend
     env: docker
     dockerfilePath: ./PadelMatchPredictor/Dockerfile
+    context: ./PadelMatchPredictor
     plan: free
     ports:
       - port: 8000
 
-  - type: pserv
+  - type: worker
     name: db
-    env: docker
     image: postgres:15
     envVars:
       - key: POSTGRES_USER
