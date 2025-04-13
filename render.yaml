@@ -3,34 +3,28 @@ services:
     name: nginx
     env: docker
     dockerfilePath: ./nginx/Dockerfile
+    contextPath: ./nginx
     plan: free
     startCommand: ""
-    build:
-      context: ./nginx
-    ports:
-      - port: 80
+    autoDeploy: true
 
   - type: web
     name: frontend
     env: docker
     dockerfilePath: ./padel-intelligence/Dockerfile
+    contextPath: ./padel-intelligence
     plan: free
     startCommand: "npm start"
-    build:
-      context: ./padel-intelligence
-    ports:
-      - port: 3000
+    autoDeploy: true
 
   - type: web
     name: backend
     env: docker
     dockerfilePath: ./PadelMatchPredictor/Dockerfile
+    contextPath: ./PadelMatchPredictor
     plan: free
     startCommand: "uvicorn main-connected:app --host 0.0.0.0 --port 8000"
-    build:
-      context: ./PadelMatchPredictor
-    ports:
-      - port: 8000
+    autoDeploy: true
     envVars:
       - key: DB_HOST
         value: db
@@ -46,8 +40,9 @@ services:
   - type: pserv
     name: db
     env: docker
-    image:
-      name: postgres:15
+    imageName: postgres:15
+    plan: free
+    autoDeploy: true
     envVars:
       - key: POSTGRES_USER
         value: postgres
