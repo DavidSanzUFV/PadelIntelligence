@@ -5,7 +5,7 @@ services:
     dockerfilePath: ./nginx/Dockerfile
     context: ./nginx
     plan: free
-    startCommand: ""  # nginx usa el comando por defecto
+    startCommand: ""
     ports:
       - 80
 
@@ -40,7 +40,7 @@ services:
       - key: DB_PASSWORD
         value: PadelIntelligence1
 
-  - type: privateService
+  - type: pserv
     name: db
     env: docker
     image: postgres:15
