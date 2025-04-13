@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: nginx
+    env: docker
+    dockerfilePath: ./nginx/Dockerfile
+    buildCommand: ""
+    startCommand: ""
+    plan: free
+    ports:
+      - port: 80
+
+  - type: web
+    name: frontend
+    env: docker
+    dockerfilePath: ./padel-intelligence/Dockerfile
+    plan: free
+    ports:
+      - port: 3000
+
+  - type: web
+    name: backend
+    env: docker
+    dockerfilePath: ./PadelMatchPredictor/Dockerfile
+    plan: free
+    ports:
+      - port: 8000
+
+  - type: pserv
+    name: db
+    env: docker
+    image: postgres:15
+    envVars:
+      - key: POSTGRES_USER
+        value: postgres
+      - key: POSTGRES_PASSWORD
+        value: PadelIntelligence1
+      - key: POSTGRES_DB
+        value: postgres
+    persistentDisk:
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 1
