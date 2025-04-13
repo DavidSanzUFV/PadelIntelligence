@@ -37,7 +37,8 @@ services:
   - type: pserv
     name: db
     env: image
-    image: postgres:15
+    image:
+      name: postgres:15
     plan: free
     autoDeploy: true
     envVars:
