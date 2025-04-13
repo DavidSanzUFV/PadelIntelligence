@@ -1,26 +1,29 @@
 services:
-  - type: web
-    name: nginx
+  - type: pserv
+    name: db
     env: docker
-    dockerfilePath: ./nginx/Dockerfile
+    image: postgres:15
     plan: free
-    startCommand: ""
     autoDeploy: true
-
-  - type: web
-    name: frontend
-    env: docker
-    dockerfilePath: ./padel-intelligence/Dockerfile
-    plan: free
-    startCommand: "npm start"
-    autoDeploy: true
+    envVars:
+      - key: POSTGRES_USER
+        value: postgres
+      - key: POSTGRES_PASSWORD
+        value: PadelIntelligence1
+      - key: POSTGRES_DB
+        value: postgres
+    disk:
+      name: db_data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 1
 
   - type: web
     name: backend
     env: docker
     dockerfilePath: ./PadelMatchPredictor/Dockerfile
-    plan: free
+    buildCommand: ""
     startCommand: "uvicorn main-connected:app --host 0.0.0.0 --port 8000"
+    plan: free
     autoDeploy: true
     envVars:
       - key: DB_HOST
@@ -34,22 +37,23 @@ services:
       - key: DB_PASSWORD
         value: PadelIntelligence1
 
-  - type: pserv
-    name: db
-    env: image
-    image: postgres:15
+  - type: web
+    name: frontend
+    env: docker
+    dockerfilePath: ./padel-intelligence/Dockerfile
+    buildCommand: ""
+    startCommand: "npm start"
     plan: free
     autoDeploy: true
-    disk:
-      name: db-disk
-      mountPath: /var/lib/postgresql/data
-      sizeGB: 1
-    envVars:
-      - key: POSTGRES_USER
-        value: postgres
-      - key: POSTGRES_PASSWORD
-        value: PadelIntelligence1
-      - key: POSTGRES_DB
-        value: postgres
+
+  - type: web
+    name: nginx
+    env: docker
+    dockerfilePath: ./nginx/Dockerfile
+    buildCommand: ""
+    startCommand: ""
+    plan: free
+    autoDeploy: true
+
 
 
