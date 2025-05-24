@@ -64,8 +64,8 @@ const Prediction = () => {
       t1_sets: parseInt(setsT1),
       t2_sets: parseInt(setsT2),
       serve: serving === "team1" ? 1 : 2,
-      p_serve: 0.8,
-      p_games_won_on_serve: 0.7,
+      p_serve: 0.64,
+      p_games_won_on_serve: 0.82,
     };
   
     try {
@@ -87,6 +87,7 @@ const Prediction = () => {
   };
   
   const closeModal = () => {
+    setPredictionResult(null);
     setIsModalOpen(false);
   };
 
@@ -310,7 +311,7 @@ const Prediction = () => {
         </div>
       {/* Botón de Predicción centrado debajo de las estadísticas */}
       <div className="button-container">
-        {team1 && team2 && (
+        {team1 && team2 && serving && (
           <button className="predict-button" onClick={handlePredict}>
             PREDICT
           </button>
@@ -340,10 +341,12 @@ const Prediction = () => {
     vs {team2}
   </span>
 </h2>
-
-
             <div className="prediction-result">
-              <FormattedPredictionResult predictionResult={predictionResult} />
+              <FormattedPredictionResult
+                predictionResult={predictionResult}
+                team1Name={team1}
+                team2Name={team2}
+              />
             </div>
           </div>
         </div>

@@ -1,96 +1,102 @@
 import React from "react";
 
-const FormattedPredictionResult = ({ predictionResult }) => {
-  if (!predictionResult) {
-    return null;
-  }
+const FormattedPredictionResult = ({ predictionResult, team1Name, team2Name }) => {
+  if (!predictionResult) return null;
 
-  // Limitar el breakdown a un máximo de 3 deuces
+  const round = (value) => {
+    const num = parseFloat(value);
+    return isNaN(num) ? "0%" : `${Math.round(num)}%`;
+  };  
+  
+  const game = predictionResult.game_probability || {};
+  const set = predictionResult.set_probability || {};
+  const match = predictionResult.match_probability || {};
+
   const renderDeuceBreakdown = (breakdown) => {
+    if (!Array.isArray(breakdown) || breakdown.length === 0) return null;
     return (
-      <div>
-        {breakdown.slice(0, 3).map((scenario, index) => (
-          <div key={index}>
-            <p>{scenario.Scenario}: {scenario.Probability.toFixed(2)}%</p>
-          </div>
-        ))}
-      </div>
+      <>
+        <p>
+          If the game reaches deuce, here is how the probability of <strong>{team1Name}</strong> winning evolves over the next deuces:
+        </p>
+        <ul>
+          {breakdown.slice(0, 3).map((s, i) => (
+            <li key={i}>
+              <strong>{s.Scenario}</strong>: <strong>{round(s.Probability)}</strong>
+            </li>
+          ))}
+        </ul>
+      </>
     );
   };
 
   return (
     <div className="formatted-result">
-      <h3>Prediction Result:</h3>
+      {/* Match */}
+      <h3>
+        The probability of <strong>{team1Name}</strong> winning the match is <strong>{round(match.match_total)}</strong>
+      </h3>
+      <p style={{ fontWeight: "bold", color: "#2b61c8" }}>
+        💡 What if {team1Name} wins this set? Their match win probability rises to <strong>{round(match.if_win_set)}</strong>!
+      </p>
+      <p style={{ fontWeight: "bold", color: "#2b61c8" }}>
+        💡 And if they lose it? Their match win probability drops to <strong>{round(match.if_loss_set)}</strong>!
+      </p>
+      
+      {!(game["tiebreak_probability_t1"] && game["tiebreak_probability_t2"]) && (
+        <>
+      {/* Set */}
+      <h3>
+        The probability of <strong>{team1Name}</strong> winning the current set is <strong>{round(set.calculated)}</strong>
+      </h3>
+      <p>
+        If they win this game, their set win probability increases to <strong>{round(set.if_win)}</strong>.
+      </p>
+      <p>
+        If they lose this game, it drops to <strong>{round(set.if_loss)}</strong>.
+      </p>
 
-      {/* Game Probability */}
-      {predictionResult.game_probability && (
-        <div>
-          <h4>Game Probability:</h4>
-          {predictionResult.game_probability["Probability before deuce"] && (
-            <p>Probability before deuce: {predictionResult.game_probability["Probability before deuce"].toFixed(2)}%</p>
-          )}
-          {predictionResult.game_probability["Probability after deuce"] && (
-            <p>Probability after deuce: {predictionResult.game_probability["Probability after deuce"].toFixed(2)}%</p>
-          )}
-          {predictionResult.game_probability["Probability to reach deuce"] && (
-            <p>Probability to reach deuce: {predictionResult.game_probability["Probability to reach deuce"].toFixed(2)}%</p>
-          )}
-          {predictionResult.game_probability["Total probability to win the game"] && (
-            <p>Total probability to win the game: {predictionResult.game_probability["Total probability to win the game"].toFixed(2)}%</p>
-          )}
-          {predictionResult.game_probability["Breakdown after deuce"] && renderDeuceBreakdown(predictionResult.game_probability["Breakdown after deuce"])}
 
-          {predictionResult.game_probability["tiebreak_probability_t1"] && (
-            <p>Tiebreak probability T1: {predictionResult.game_probability["tiebreak_probability_t1"]}</p>
+      {/* Game (only if not in tiebreak) */}
+
+          <h3>
+            The probability of <strong>{team1Name}</strong> winning the current game is <strong>{round(game["Total probability to win the game"])}</strong>
+          </h3>
+          <p>
+            <strong>{team1Name}</strong> has a <strong>{round(game["Probability before deuce"])}</strong> chance of winning the game before reaching deuce (40-40).
+          </p>
+          <p>
+            The chance of reaching deuce is <strong>{round(game["Probability to reach deuce"])}</strong>.
+          </p>
+          {parseFloat(game["Probability to reach deuce"]) > 0 && (
+            <p>
+              If the game goes to deuce, <strong>{team1Name}</strong> has a <strong>{round(game["Probability after deuce"])}</strong> chance of winning.
+            </p>
           )}
-          {predictionResult.game_probability["tiebreak_probability_t2"] && (
-            <p>Tiebreak probability T2: {predictionResult.game_probability["tiebreak_probability_t2"]}</p>
-          )}
-          {predictionResult.game_probability["if_win_next_point"] && (
-            <p>If win next point: {predictionResult.game_probability["if_win_next_point"]}</p>
-          )}
-          {predictionResult.game_probability["if_lose_next_point"] && (
-            <p>If lose next point: {predictionResult.game_probability["if_lose_next_point"]}</p>
-          )}
-        </div>
+          {/* Deuce breakdown */}
+          {parseFloat(game["Probability to reach deuce"]) > 0 && game["Breakdown after deuce"] &&
+            renderDeuceBreakdown(game["Breakdown after deuce"])}
+        </>
       )}
 
-      {/* Set Probability */}
-      {predictionResult.set_probability && (
-        <div>
-          <h4>Set Probability:</h4>
-          <p>If Win: {predictionResult.set_probability.if_win}</p>
-          <p>If Loss: {predictionResult.set_probability.if_loss}</p>
-          <p>Calculated: {predictionResult.set_probability.calculated}</p>
-        </div>
-      )}
-
-      {/* Match Probability */}
-      {predictionResult.match_probability && (
-        <div>
-          <h4>Match Probability:</h4>
-          {predictionResult.match_probability.if_win_set && (
-            <p>If Win Set: {predictionResult.match_probability.if_win_set}</p>
+      {/* Tiebreak */}
+      {game["tiebreak_probability_t1"] && game["tiebreak_probability_t2"] && (
+        <>
+          <h3>Tiebreak</h3>
+          <p>
+            The match is currently in a tiebreak. <strong>{team1Name}</strong> has a <strong>{round(game["tiebreak_probability_t1"])}</strong> chance of winning it.
+          </p>
+          {game["if_win_next_point"] && game["if_lose_next_point"] && (
+            <>
+              <p>
+                If <strong>{team1Name}</strong> wins the next point, their probability of winning the tiebreak increases to <strong>{round(game["if_win_next_point"])}</strong>.
+              </p>
+              <p>
+                If they lose the next point, it drops to <strong>{round(game["if_lose_next_point"])}</strong>.
+              </p>
+            </>
           )}
-          {predictionResult.match_probability.if_loss_set && (
-            <p>If Loss Set: {predictionResult.match_probability.if_loss_set}</p>
-          )}
-          {predictionResult.match_probability.if_win_tiebreak && (
-            <p>If Win Tiebreak: {predictionResult.match_probability.if_win_tiebreak}</p>
-          )}
-          {predictionResult.match_probability.if_loss_tiebreak && (
-            <p>If Loss Tiebreak: {predictionResult.match_probability.if_loss_tiebreak}</p>
-          )}
-          <p>Match Total: {predictionResult.match_probability.match_total}</p>
-        </div>
-      )}
-
-      {/* Set Win Probability */}
-      {predictionResult.set_win_probability && (
-        <div>
-          <h4>Set Win Probability:</h4>
-          <p>{predictionResult.set_win_probability}</p>
-        </div>
+        </>
       )}
     </div>
   );

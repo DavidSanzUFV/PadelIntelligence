@@ -273,7 +273,9 @@ async def run_prediction(match: MatchInput):
             match_probability = {
                 "if_win_tiebreak": f"{ifwin * 100:.2f}%",
                 "if_loss_tiebreak": f"{ifloss * 100:.2f}%",
-                "match_total": f"{prob_ganar_partido * 100:.2f}%"
+                "match_total": f"{prob_ganar_partido * 100:.2f}%",
+                "if_win_set": f"{ifwin * 100:.2f}%",
+                "if_loss_set": f"{ifloss * 100:.2f}%"
             }
 
             logging.info(f"✅ Probabilidades formateadas correctamente (tiebreak): {match_probability}")
@@ -639,6 +641,8 @@ def get_basic_player_stats(player_name: str):
 def get_curiosities():
     try:
         conn = psycopg2.connect(**DB_CONFIG)
+        conn.set_client_encoding('UTF8')
+
         cursor = conn.cursor()
 
         curiosities = {}

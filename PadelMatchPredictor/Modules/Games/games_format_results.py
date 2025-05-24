@@ -85,8 +85,8 @@ def print_game_probabilities(result):
 # Ejemplo de uso
 if __name__ == "__main__":
     # Ejemplo: estado con 4-4 en puntos (tipo 40-40), 4-3 en juegos, 1-1 en sets, T1 sacando
-    estado_actual = MatchState(3, 4, 1, 5, 1, 0, 1)
-    p_serve = 0.645
+    estado_actual = MatchState(0, 0, 0, 0, 0, 0, 0)
+    p_serve = 0.64
 
     resultado = calculate_game_probabilities(estado_actual, p_serve)
     print_game_probabilities(resultado)

@@ -56,7 +56,11 @@ def calc_win_before_deuce(p_serve, p_return, state:MatchState):
         combin = comb(num_points, t2_wins) if num_points >= t2_wins >= 0 else 0
         
         # Calcular probabilidad
-        prob = combin * (p_serve ** t1_wins) * (p_return ** t2_wins)
+        if state.serve == 1:
+            prob = combin * (p_serve ** t1_wins) * (p_return ** t2_wins)
+        else:
+            prob = combin * (p_return ** t1_wins) * (p_serve ** t2_wins)
+
         total_prob += prob
 
         # Añadir resultado
@@ -101,7 +105,10 @@ def calc_exact_deuce(p_serve, p_return, state:MatchState):
         prob = 0
     else:
         combin = comb(num_points, t2_wins)
-        prob = combin * (p_serve ** t1_wins) * (p_return ** t2_wins) * 100
+        if state.serve == 1:
+            prob = combin * (p_serve ** t1_wins) * (p_return ** t2_wins) * 100
+        else:
+            prob = combin * (p_return ** t1_wins) * (p_serve ** t2_wins) * 100
 
     return {
         "Points needed (T1)": POINTS_NEEDED_DEUCE[0],
@@ -148,7 +155,10 @@ def calc_win_after_deuce(p_serve, state:MatchState, max_iterations=21):
             combin = 0
         else:
             combin = comb_dict.get(num_points, 0)
-            prob = combin * (p_serve ** t1_wins) * ((1 - p_serve) ** t2_wins) if combin > 0 else 0
+            if state.serve == 1:
+                prob = combin * (p_serve ** t1_wins) * ((1 - p_serve) ** t2_wins) if combin > 0 else 0
+            else:
+                prob = combin * ((1 - p_serve) ** t1_wins) * (p_serve ** t2_wins) if combin > 0 else 0
 
         total_prob += prob
         results.append({
