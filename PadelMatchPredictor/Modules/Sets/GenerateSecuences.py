@@ -3,16 +3,16 @@ from Modules.Sets.match_result import MatchState
 
 def generate_game_sequence(estado_actual, analysis_file_path, output_csv_ifwin, output_csv_ifloss, win=True):
     """
-    Genera la secuencia de juegos para todas las iteraciones en dos archivos separados:
-    - `Updated_Set_Analysis_IfWin.csv` si `win=True` (T1 gana)
-    - `Updated_Set_Analysis_IfLoss.csv` si `win=False` (T2 gana)
+    Generates the sequence of games for all iterations and saves them in two separate files:
+    - `Updated_Set_Analysis_IfWin.csv` if `win=True` (T1 wins)
+    - `Updated_Set_Analysis_IfLoss.csv` if `win=False` (T2 wins)
 
-    Parámetros:
-        estado_actual (MatchState): Estado actual del partido.
-        analysis_file_path (str): Ruta del archivo CSV de análisis.
-        output_csv_ifwin (str): Ruta donde se guardará el CSV si T1 gana.
-        output_csv_ifloss (str): Ruta donde se guardará el CSV si T2 gana.
-        win (bool): `True` si se calcula el caso de victoria de T1, `False` si es victoria de T2.
+    Parameters:
+        estado_actual (MatchState): Current match state.
+        analysis_file_path (str): Path to the analysis CSV file.
+        output_csv_ifwin (str): Path to save the CSV if T1 wins.
+        output_csv_ifloss (str): Path to save the CSV if T2 wins.
+        win (bool): `True` to compute the scenario where T1 wins, `False` for T2's win scenario.
     """
 
     # Cargar el archivo CSV de análisis de sets

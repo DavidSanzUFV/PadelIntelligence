@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "../styles/Home.css";
 
-// Import images
 import carrousel1 from "../assets/carrousel1.webp";
 import carrousel2 from "../assets/carrousel2.jpg";
 import carrousel3 from "../assets/carrousel3.jpeg";
 import carrousel4 from "../assets/carrousel4.jpeg";
-// Import logo
 import logo from "../assets/logo.png";
 
-// Example icons from react-icons
 import { FaChartLine, FaHandsHelping, FaUserTie } from "react-icons/fa";
 
 

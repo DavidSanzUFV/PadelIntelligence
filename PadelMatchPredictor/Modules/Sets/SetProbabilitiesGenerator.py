@@ -61,9 +61,9 @@ class SetProbabilitiesGenerator:
 
         # Mostrar la suma de la columna Prob_Acumulada
         suma_prob_acumulada = df_prob['Prob_Acumulada'].sum()
-        #print(f"🔢 Suma total de Prob_Acumulada: {suma_prob_acumulada}")
+        #print(f" Suma total de Prob_Acumulada: {suma_prob_acumulada}")
 
-# 🔹 **Ejemplo de uso**
+#  **Ejemplo de uso**
 if __name__ == "__main__":
     """
     from match_result import MatchState

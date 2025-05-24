@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import "../styles/Statistics.css";
-import LobsPieChart from "../components/LobsPieChart"; // Ajusta la ruta si es necesario
-import RadarStatsChart from "../components/RadarStatsChart"; // ajusta la ruta si hace falta
-import statsIcon from "../assets/stats-icon.png"; // Asegúrate de tener esta imagen
+import LobsPieChart from "../components/LobsPieChart"; 
+import RadarStatsChart from "../components/RadarStatsChart"; 
+import statsIcon from "../assets/stats-icon.png"; 
 
-// Función para obtener la bandera
 const getFlagURL = (nationality) => {
   if (!nationality) return "/flags/default.png";
 
@@ -18,7 +17,6 @@ const getFlagURL = (nationality) => {
 };
 
 
-// Función para obtener la imagen de la marca
 const getBrandLogo = (brand) => {
   if (!brand) return "/assets/brands/default.png";
 
@@ -178,10 +176,10 @@ const Statistics = () => {
   const [players, setPlayers] = useState([]);
   const [filteredPlayers, setFilteredPlayers] = useState([]);
   const [modalPlayer, setModalPlayer] = useState(null);
-  const [benchmarkMax, setBenchmarkMax] = useState(null); // Nuevo estado para el benchmark máximo
+  const [benchmarkMax, setBenchmarkMax] = useState(null); 
   const [benchmark, setBenchmark] = useState(null);
 
-  // Estados para filtros
+  // Filter states
   const [searchQuery, setSearchQuery] = useState("");
   const [genderFilter, setGenderFilter] = useState("All");
   const [nationalityFilter, setNationalityFilter] = useState("All");
@@ -196,7 +194,6 @@ const Statistics = () => {
       .then((data) => {
         console.log("📢 Data recibida del backend:", data);
 
-        // 🔹 Agrupar jugadores únicos y combinar valores de 'side'
         const uniquePlayers = {};
         data.forEach((player) => {
           const key = player.player;
@@ -207,7 +204,7 @@ const Statistics = () => {
           }
         });
 
-        // 🔹 Convertir `side` en texto legible (Right side, Left side o Both sides)
+        // Convertir 'side' en texto legible (Right side, Left side o Both sides)
         const formattedPlayers = Object.values(uniquePlayers).map((player) => ({
           ...player,
           side: player.side.size > 1 ? "Both sides" : player.side.has("Right") ? "Right side" : "Left side"
@@ -269,7 +266,6 @@ const Statistics = () => {
     setFilteredPlayers(filtered);
   }, [searchQuery, genderFilter, nationalityFilter, handFilter, sideFilter, brandFilter, sortOrder, players]);
 
-  // 🔹 Función para limpiar los filtros
   const clearFilters = () => {
     setSearchQuery("");
     setGenderFilter("All");
@@ -288,7 +284,7 @@ const Statistics = () => {
       <h1 className="title">INDIVIDUAL STATISTICS</h1>
       <p className="subtitle">Click on a player to see detailed statistics.</p>
 
-      {/* 📌 Menú de Filtros */}
+      {/* Filters menus */}
       <div className="filters-container">
         <input type="text" placeholder="Search player..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
         
@@ -334,11 +330,11 @@ const Statistics = () => {
           <option value="name_desc">Name Z-A</option>
         </select>
 
-        {/* 📌 Botón para limpiar filtros */}
+        {/* Clear filters */}
         <button className="clear-filters-button" onClick={clearFilters}>Clear Filters</button>
       </div>
 
-      {/* 📌 Lista de Jugadores */}
+      {/* Players list */}
       <div className="players-grid">
         {filteredPlayers.length > 0 ? (
           filteredPlayers.map((player, index) => (

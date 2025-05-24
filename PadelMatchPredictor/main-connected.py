@@ -40,8 +40,6 @@ import logging
 import pandas as pd
 import os
 
-
-# Import your algorithm modules
 from Modules.Games.match_result import MatchState
 from Modules.Games.games_format_results import calculate_game_probabilities, print_game_probabilities
 from Modules.Sets.GenerateSecuences import generate_game_sequence
@@ -55,10 +53,10 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permitir todos los orígenes
+    allow_origins=["*"],  
     allow_credentials=True,
-    allow_methods=["*"],  # Permitir todos los métodos (GET, POST, OPTIONS, etc.)
-    allow_headers=["*"],  # Permitir todos los encabezados
+    allow_methods=["*"],  
+    allow_headers=["*"],  
 )
 
 
@@ -84,7 +82,7 @@ class MatchInput(BaseModel):
     p_serve: float
     p_games_won_on_serve: float
 
-# Mapeo de puntos en formato tenis
+# Score Mapping
 score_map = {
     "0": 0,
     "15": 1,
@@ -99,17 +97,17 @@ def leer_probabilidad_final(file_path):
     y devuelve la probabilidad final.
     """
     try:
-        # Ruta absoluta
+        
         absolute_path = os.path.abspath(file_path)
         logging.info(f"🌐 Ruta absoluta del archivo: {absolute_path}")
 
-        # Verificar existencia del archivo
+        
         if not os.path.exists(absolute_path):
             logging.error(f"❌ El archivo no existe en la ruta: {absolute_path}")
             return 0.0
 
-        # Intentar leer el archivo
-        logging.info(f"📂 Intentando leer el archivo: {file_path}")
+        
+        logging.info(f"Intentando leer el archivo: {file_path}")
         df = pd.read_csv(file_path, delimiter=';', encoding='utf-8', on_bad_lines='skip')
 
         # Filtrar las filas donde 'Iteración' tenga el valor 'Total'
@@ -993,7 +991,7 @@ def get_highlights():
 
         highlights = []
 
-        # 🧊 QUERY 1 - Biggest Nevera
+        # QUERY 1 - Biggest Nevera
         cursor.execute("""          WITH lowest_stat AS (
                 SELECT 
                     player_id,
@@ -1059,7 +1057,7 @@ def get_highlights():
             "location": tournament_name
         })
 
-        # 🔁 QUERY 2 - Most Shots
+        # QUERY 2 - Most Shots
         cursor.execute("""WITH total_shots_per_match AS (
     SELECT 
         match_id,
@@ -1130,7 +1128,7 @@ FROM
             "location": tournament_name
         })
 
-# 🟣 QUERY 3 - Most Points in a Match
+# QUERY 3 - Most Points in a Match
         cursor.execute("""
             WITH top_match AS (
                 SELECT 
@@ -1188,7 +1186,7 @@ FROM
             "location": tournament_name
         })
 
-# 🌫️ QUERY 4 - Most Lobs in a Match
+# QUERY 4 - Most Lobs in a Match
         cursor.execute("""
             WITH total_lobs_per_match AS (
                 SELECT 
@@ -1255,7 +1253,7 @@ FROM
             "location": tournament_name
         })
 
-        # 🚪 QUERY 5 - Most Door Exits in a Match
+        # QUERY 5 - Most Door Exits in a Match
         cursor.execute("""
             WITH total_door_exits_per_match AS (
                 SELECT 
@@ -1321,7 +1319,7 @@ FROM
             "location": tournament_name
         })
 
-        # 💥 QUERY 6 - Most Smashes in a Match
+        # QUERY 6 - Most Smashes in a Match
         cursor.execute("""
             WITH total_smashes_per_match AS (
                 SELECT 
@@ -1387,7 +1385,7 @@ FROM
             "location": tournament_name
         })
 
-        # ❄️ QUERY 7 - Fewest Smashes in a Match
+        # QUERY 7 - Fewest Smashes in a Match
         cursor.execute("""
             WITH total_smashes_per_match AS (
                 SELECT 
@@ -1453,7 +1451,7 @@ FROM
             "location": tournament_name
         })
 
-        # 🧼 QUERY 8 - Fewest Unforced Errors in a Match
+        # QUERY 8 - Fewest Unforced Errors in a Match
         cursor.execute("""
             WITH total_errors_per_match AS (
                 SELECT 
@@ -1519,7 +1517,7 @@ FROM
             "location": tournament_name
         })
 
-        # 🔁 QUERY 9 - Most Repeated Matchup of the Year
+        # QUERY 9 - Most Repeated Matchup of the Year
         cursor.execute("""
             WITH player_pairs AS (
                 SELECT
@@ -1591,7 +1589,7 @@ FROM
             "location": "Premier Padel"
         })
 
-        # 🔥 QUERY 10 - Most Long Points in a Match
+        # QUERY 10 - Most Long Points in a Match
         cursor.execute("""
             WITH long_point_totals AS (
                 SELECT
@@ -1651,7 +1649,7 @@ FROM
             "location": tournament_name
         })
 
-        # 🎯 QUERY 11 - Most Winners in a Match
+        # QUERY 11 - Most Winners in a Match
         cursor.execute("""
             WITH total_winners_per_match AS (
                 SELECT
@@ -1710,7 +1708,7 @@ FROM
             "location": tournament_name
         })
 
-        # 💣 QUERY 12 - Most Forced Errors in a Match
+        # QUERY 12 - Most Forced Errors in a Match
         cursor.execute("""
             WITH total_forced_errors_per_match AS (
                 SELECT
@@ -1770,8 +1768,6 @@ FROM
             "location": tournament_name
         })
 
-
-#TERMINAR
         cursor.close()
         conn.close()
 
@@ -2417,7 +2413,7 @@ def get_summary_season():
     try:
         conn = psycopg2.connect(**DB_CONFIG)
         cursor = conn.cursor()
-        cursor.execute("SET client_encoding TO 'UTF8';")  # Esto lo refuerza por si options no basta
+        cursor.execute("SET client_encoding TO 'UTF8';")
 
         query = """
         WITH max_sets AS (

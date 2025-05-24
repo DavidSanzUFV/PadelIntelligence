@@ -4,34 +4,34 @@ from math import floor
 from Modules.Games.match_result import MatchState
 
 """
-Este programa calcula las probabilidades detalladas de ganar un juego de pádel, basándose en el estado actual del partido.
+This program calculates the detailed probabilities of winning a padel game based on the current match state.
 
-El programa incluye las siguientes funcionalidades:
+The program includes the following features:
 
-1. **Calcular la probabilidad de ganar antes de deuce:**
-   - Evalúa las combinaciones necesarias para que un jugador gane el juego sin llegar a deuce.
-   - Usa probabilidades de servicio y resto para calcular los escenarios posibles.
+1. **Calculate the probability of winning before deuce:**
+   - Evaluates the combinations needed for a player to win the game without reaching deuce.
+   - Uses serve and return probabilities to compute the possible scenarios.
 
-2. **Calcular la probabilidad de llegar a deuce:**
-   - Determina la probabilidad de que el marcador alcance el estado de deuce (3-3).
-   - Evalúa las combinaciones necesarias para llegar a este marcador desde el estado actual.
+2. **Calculate the probability of reaching deuce:**
+   - Determines the probability that the score reaches the deuce state (3-3).
+   - Evaluates the necessary combinations to reach this score from the current state.
 
-3. **Calcular la probabilidad de ganar después de deuce:**
-   - Genera combinaciones posibles para ganar después de deuce.
-   - Evalúa probabilidades basadas en un diccionario dinámico de combinaciones.
+3. **Calculate the probability of winning after deuce:**
+   - Generates possible combinations to win after reaching deuce.
+   - Evaluates probabilities based on a dynamic dictionary of combinations.
 
-4. **Calcular la probabilidad total de ganar el juego:**
-   - Combina las probabilidades anteriores utilizando la fórmula:
-     P(ganar el juego) = P(ganar antes de deuce) + P(reach deuce) * P(ganar después de deuce)
+4. **Calculate the total probability of winning the game:**
+   - Combines the previous probabilities using the formula:
+     P(win the game) = P(win before deuce) + P(reach deuce) * P(win after deuce)
 
-El programa utiliza:
-- Librerías matemáticas para cálculos combinatorios.
-- Pandas para estructurar los resultados en tablas detalladas.
-- Un modelo de estado del partido representado por la clase `MatchState`.
+The program uses:
+- Math libraries for combinatorial calculations.
+- Pandas to structure the results into detailed tables.
+- A match state model represented by the `MatchState` class.
 
-Salida:
-- DataFrames con detalles de cada escenario y probabilidades.
-- Valores agregados como la probabilidad total de ganar el juego.
+Output:
+- DataFrames with details of each scenario and corresponding probabilities.
+- Aggregated values such as the total probability of winning the game.
 """
 
 # Calcular probabilidad de ganar el juego antes de deuce

@@ -23,7 +23,7 @@ const Prediction = () => {
   const [showInfo, setShowInfo] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch de los nombres de las parejas
+  // Name of the couples Fetch
   useEffect(() => {
     const fetchPairs = async () => {
       try {
@@ -50,7 +50,7 @@ const Prediction = () => {
     }
   }, [gamesT1, gamesT2]);
   
-  // Estado para almacenar el resultado de la predicción
+  // State to store the result prediction
   const [predictionResult, setPredictionResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -69,7 +69,7 @@ const Prediction = () => {
     };
   
     try {
-      setIsLoading(true); // 👈 mostrar loading
+      setIsLoading(true);
       const response = await fetch("/api/run_prediction/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -82,7 +82,7 @@ const Prediction = () => {
       console.error("Error during prediction:", error);
       alert("Error while fetching prediction.");
     } finally {
-      setIsLoading(false); // 👈 ocultar loading
+      setIsLoading(false); 
     }
   };
   
@@ -179,7 +179,7 @@ const Prediction = () => {
         </div>
       </div>
 
-        {/* Quién sirve */}
+        {/* Who serves? */}
         <div className="row-serving">
           <div className="serving-box">
             <img src={servingImg} alt="Who is serving" className="serving-image" />
@@ -196,7 +196,7 @@ const Prediction = () => {
           </div>
         </div>
 
-        {/* Estadísticas del Equipo 1 */}
+        {/* Stats Team 1 */}
         <div className="row-stats">
           <div className="icon-slot">
             {serving === "team1" && <img src={ballImg} alt="Ball" className="serving-ball" />}
@@ -253,7 +253,7 @@ const Prediction = () => {
       </div>
       </div>
 
-        {/* Estadísticas del Equipo 2 */}
+        {/* Stats Team 2 */}
         <div className="row-stats">
           <div className="icon-slot">
             {serving === "team2" && <img src={ballImg} alt="Ball" className="serving-ball" />}
@@ -309,7 +309,7 @@ const Prediction = () => {
         </div>
 
         </div>
-      {/* Botón de Predicción centrado debajo de las estadísticas */}
+      {/* Prediction button */}
       <div className="button-container">
         {team1 && team2 && serving && (
           <button className="predict-button" onClick={handlePredict}>
@@ -326,7 +326,7 @@ const Prediction = () => {
   </div>
 )}
 
-      {/* Modal para mostrar el resultado de la predicción */}
+      {/* Modal for prediction result */}
       {predictionResult && isModalOpen && (
         <div className="modal-overlay-pre" onClick={closeModal}>
           <div className="modal-contenido" onClick={(e) => e.stopPropagation()}>

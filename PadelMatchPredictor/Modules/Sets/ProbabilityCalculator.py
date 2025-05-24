@@ -15,10 +15,10 @@ class SetProbabilityCalculator:
         self.previous_sequences = set()
         self.game_columns = [f'J{i}' for i in range(1, 14)]
 
-        # 📌 Cargar Set_Probabilities.csv
+        # Cargar Set_Probabilities.csv
         self.df_prob = self.load_data(self.probabilities_file)
 
-        # 📌 Procesar IfWin y IfLoss
+        # Procesar IfWin y IfLoss
         self.process_probabilities(win=True)
         self.process_probabilities(win=False)
 
@@ -52,7 +52,7 @@ class SetProbabilityCalculator:
         df_analysis = pd.concat([df_analysis, sum_row], ignore_index=True)
         df_analysis.to_csv(output_file, index=False, sep=';', encoding='utf-8')
 
-        #print(f"\n✅ Archivo guardado en {output_file} ({'IfWin' if win else 'IfLoss'}), con probabilidades en porcentaje.")
+        #print(f"\n Archivo guardado en {output_file} ({'IfWin' if win else 'IfLoss'}), con probabilidades en porcentaje.")
 
     def calculate_probability(self, row, new_t1_games, new_t2_games):
         """
@@ -60,26 +60,26 @@ class SetProbabilityCalculator:
         """
         start_index = new_t1_games + new_t2_games
 
-        # 📌 Verificar si la secuencia de juegos es válida antes de calcular la probabilidad
+        # Verificar si la secuencia de juegos es válida antes de calcular la probabilidad
         if not self.validate_sequence(row, new_t1_games, new_t2_games):
             return "0.00%"
 
-        # 📌 Si el índice no existe en df_prob, devolver 0%
+        # Si el índice no existe en df_prob, devolver 0%
         if row.name >= len(self.df_prob):
             return "0.00%"  
 
-        # 📌 Obtener la fila correspondiente en df_prob
+        # Obtener la fila correspondiente en df_prob
         prob_row = self.df_prob.iloc[row.name]
 
-        # 📌 Obtener las probabilidades a partir del índice correcto
+        # Obtener las probabilidades a partir del índice correcto
         selected_probs = prob_row[self.game_columns[start_index:]].dropna().tolist()
 
-        # 📌 Multiplicar las probabilidades seleccionadas
+        # Multiplicar las probabilidades seleccionadas
         product_prob = 1.0
         for prob in selected_probs:
             product_prob *= prob
 
-        # 📌 Multiplicar por W/L
+        # Multiplicar por W/L
         try:
             win_loss = float(prob_row['W/L'])
         except ValueError:
@@ -87,26 +87,26 @@ class SetProbabilityCalculator:
 
         probability = product_prob * win_loss
 
-        # 📌 Convertir a porcentaje y redondear a 5 decimales
+        # Convertir a porcentaje y redondear a 5 decimales
         return f"{round(probability * 100, 5)}%"
 
     def validate_sequence(self, row, new_t1_games, new_t2_games):
         """
         Verifica si la secuencia de juegos es válida según el estado actualizado del partido.
         """
-        # 📌 Obtener los primeros valores de la fila
+        # Obtener los primeros valores de la fila
         first_values = row[self.game_columns[:new_t1_games + new_t2_games]].tolist()
 
-        # 📌 Validar si los primeros valores cumplen la cantidad de `1s` y `0s` esperados (sin importar el orden)
+        # Validar si los primeros valores cumplen la cantidad de `1s` y `0s` esperados (sin importar el orden)
         if first_values.count(1) != new_t1_games or first_values.count(0) != new_t2_games:
             return False  # ❌ No coincide con el resultado del partido
 
-        # 📌 Validar si la secuencia ya apareció antes
+        # Validar si la secuencia ya apareció antes
         game_sequence = row['Game_Sequence'] if pd.notna(row['Game_Sequence']) else ""
         if game_sequence in self.previous_sequences:
             return False  # ❌ Secuencia repetida
 
-        # 📌 Validar si la fila tiene suficientes `1s` y `0s` en total
+        # Validar si la fila tiene suficientes `1s` y `0s` en total
         count_ones = (row[self.game_columns] == 1).sum()
         count_zeros = (row[self.game_columns] == 0).sum()
         if count_ones < new_t1_games or count_zeros < new_t2_games:
@@ -116,7 +116,7 @@ class SetProbabilityCalculator:
         self.previous_sequences.add(game_sequence)
         return True
 
-# 🔹 **Ejemplo de uso**
+# **Ejemplo de uso**
 """
 if __name__ == "__main__":
     estado_actual = MatchState(2, 1, 2, 1, 0, 0, 1)
